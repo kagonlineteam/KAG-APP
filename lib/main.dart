@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 
+
+import './Views/Home.dart' as Home;
+import './Views/RPlan.dart' as RPlan;
+import './Views/Calendar.dart' as Calendar;
+import './Views/News.dart' as News;
+import './Views/Settings.dart' as Settings;
+
 void main() => runApp(KAGApp());
 
 class KAGApp extends StatelessWidget {
@@ -36,7 +43,37 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
+        body: TabBarView(
+            children: <Widget>[
+              new Home.Home(),
+              new RPlan.RPlan(),
+              new Calendar.Calendar(),
+              new News.News(),
+              new Settings.Settings()
+            ]
+        ),
+        bottomNavigationBar: TabBar(
+          tabs: <Widget>[
+            Tab(text: "Home", icon: Icon(Icons.home),),
+            Tab(text: "VPlan", icon: Icon(Icons.compare_arrows),),
+            Tab(text: "Termine", icon: Icon(Icons.event),),
+            Tab(text: "KAGtuell", icon: Icon(Icons.public),),
+            Tab(text: "Einstellungen", icon: Icon(Icons.settings),),
+          ],
+          isScrollable: false,
+          labelColor: Color.fromRGBO(0, 108, 254, 1),
+          unselectedLabelColor: Colors.grey,
+          indicatorColor: Colors.transparent,
+          labelStyle: TextStyle(
+            fontSize: 10
+          ),
+        ),
+        //backgroundColor: Colors.green,
+      ),
     );
+
   }
 }
