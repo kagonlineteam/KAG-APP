@@ -5,7 +5,7 @@ import './Views/Home.dart' as Home;
 import './Views/RPlan.dart' as RPlan;
 import './Views/Calendar.dart' as Calendar;
 import './Views/News.dart' as News;
-import './Views/Settings.dart' as Settings;
+import './Views/User.dart' as User;
 
 void main() => runApp(KAGApp());
 
@@ -52,25 +52,28 @@ class _HomePageState extends State<HomePage> {
               new RPlan.RPlan(),
               new Calendar.Calendar(),
               new News.News(),
-              new Settings.Settings()
+              new User.User()
             ]
         ),
-        bottomNavigationBar: TabBar(
-          tabs: <Widget>[
-            Tab(text: "Home", icon: Icon(Icons.home),),
-            Tab(text: "VPlan", icon: Icon(Icons.compare_arrows),),
-            Tab(text: "Termine", icon: Icon(Icons.event),),
-            Tab(text: "KAGtuell", icon: Icon(Icons.public),),
-            Tab(text: "Einstellungen", icon: Icon(Icons.settings),),
-          ],
-          isScrollable: false,
-          labelColor: Color.fromRGBO(0, 108, 254, 1),
-          unselectedLabelColor: Colors.grey,
-          indicatorColor: Colors.transparent,
-          labelStyle: TextStyle(
-            fontSize: 10
+        bottomNavigationBar: Container(
+          color: Color.fromRGBO(244, 244, 244, 1),
+          child: TabBar(
+            tabs: <Widget>[
+              Tab(text: "Home", icon: Icon(Icons.home),),
+              Tab(text: "VPlan", icon: Icon(Icons.compare_arrows),),
+              Tab(text: "Termine", icon: Icon(Icons.event),),
+              Tab(text: "KAGtuell", icon: Icon(Icons.public),),
+              Tab(text: "User", icon: Icon(Icons.person),),
+            ],
+            isScrollable: false,
+            labelColor: Color.fromRGBO(47, 109, 29, 1),
+            unselectedLabelColor: Colors.grey,
+            indicatorColor: Colors.transparent,
+            labelStyle: TextStyle(
+                fontSize: 10,
+            ),
           ),
-        ),
+        )
         //backgroundColor: Colors.green,
       ),
     );

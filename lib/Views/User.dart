@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Settings extends StatelessWidget {
+class User extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
     return new Container(
       child: new Center(
-        child: Text("SettingsView"),
+        child: Text("UserView"),
       ),
     );
   }
