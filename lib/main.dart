@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'api.dart';
 
 import './Views/Home.dart' as Home;
 import './Views/RPlan.dart' as RPlan;
@@ -10,6 +11,7 @@ import './Views/User.dart' as User;
 void main() => runApp(KAGApp());
 
 class KAGApp extends StatelessWidget {
+  static final API api = new API();
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
