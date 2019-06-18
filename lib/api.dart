@@ -39,7 +39,9 @@ class API {
   ///
   Future<_APIRequest> getAPIRequest(APIAction action) async {
     if (_isLogInNeeded(action) && !_user.isLoggedIn()) {
-      await _user.login();
+      if (!await _user.login()) {
+        return null;
+      }
     }
     return new _APIRequest(action, _user);
   }
