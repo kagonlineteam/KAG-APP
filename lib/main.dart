@@ -12,6 +12,7 @@ void main() => runApp(KAGApp());
 
 class KAGApp extends StatelessWidget {
   static final API api = new API();
+  static TabController tabs;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -41,14 +42,16 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
+    KAGApp.tabs = new TabController(length: 5, vsync: this);
     return DefaultTabController(
       length: 5,
       child: Scaffold(
         body: TabBarView(
+            controller: KAGApp.tabs,
             children: <Widget>[
               new Home.Home(),
               new RPlan.RPlan(),
@@ -60,6 +63,7 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: Container(
           color: Color.fromRGBO(244, 244, 244, 1),
           child: TabBar(
+            controller: KAGApp.tabs,
             tabs: <Widget>[
               Tab(text: "Home", icon: Icon(Icons.home),),
               Tab(text: "VPlan", icon: Icon(Icons.compare_arrows),),
@@ -79,6 +83,13 @@ class _HomePageState extends State<HomePage> {
         //backgroundColor: Colors.green,
       ),
     );
-
   }
+
+  @override
+  void dispose() {
+    KAGApp.tabs.dispose();
+    super.dispose();
+  }
+
+
 }
