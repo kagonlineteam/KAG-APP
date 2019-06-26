@@ -32,8 +32,13 @@ class UserState extends State<User> {
   @override
   Widget build(BuildContext context) {
     return new Container(
-      child: new Center(
-        child: Text("UserView"),
+      child: Column(
+        children: <Widget>[
+          MaterialButton(
+            child: Text("Logout"),
+            onPressed: () => KAGApp.api.setLoginCredentials(null, null),
+          )
+        ],
       ),
     );
   }
