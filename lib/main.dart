@@ -95,7 +95,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
               Tab(text: "Home", icon: Icon(Icons.home),),
               Tab(text: "VPlan", icon: Icon(Icons.compare_arrows),),
               Tab(text: "Termine", icon: Icon(Icons.event),),
-              Tab(text: "KAGtuell", icon: Icon(Icons.public),),
+              Tab(text: "Aktuelles", icon: Icon(Icons.public),),
               Tab(text: "User", icon: Icon(Icons.person),),
             ],
             isScrollable: false,
