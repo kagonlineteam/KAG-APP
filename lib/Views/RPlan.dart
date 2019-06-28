@@ -12,17 +12,23 @@ class RPlan extends StatefulWidget {
 
 class RPlanState extends State<RPlan> {
   var lessons = <Widget>[];
+  APIAction requestDate = APIAction.GET_RPLAN_TODAY;
   static const textStyle = TextStyle(fontSize: 20);
+  String dateText = "";
+
 
   Future _load() async {
-    var rplanRequest = await KAGApp.api.getAPIRequest(APIAction.GET_RPLAN_TODAY);
+    var rplanRequest =
+        await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
       var rplan = jsonDecode(await rplanRequest.getRAWRPlan(null));
       if (rplan != null) {
         var newLessons = <Widget>[];
-        await rplan['vertretungen'].forEach((lesson) => newLessons.add(_loadLesson(lesson)));
+        await rplan['vertretungen']
+            .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
         setState(() {
           lessons = newLessons;
+          dateText = rplan['date'];
         });
       }
     }
@@ -63,11 +69,40 @@ class RPlanState extends State<RPlan> {
     _load();
   }
 
+  Future switchToNextDay() async {
+    if (requestDate == APIAction.GET_RPLAN_TODAY) {
+      requestDate = APIAction.GET_RPLAN_TOMORROW;
+    } else if (requestDate == APIAction.GET_RPLAN_TOMORROW &&
+        ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+                .getGroups()
+                .contains("ROLE_TEACHER") ||
+            (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+                .getGroups()
+                .contains("ROLE_ADMINISTRATOR"))) {
+      requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
+    } else {
+      requestDate = APIAction.GET_RPLAN_TODAY;
+    }
+    _load();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Container(
-        child: ListView(
-      children: lessons,
-    ));
+    return new GestureDetector(
+        onDoubleTap: switchToNextDay,
+        child: Column(
+          children: <Widget>[
+            Text(dateText,
+            style: TextStyle(
+              fontSize: 30
+            )),
+            Expanded(
+              child: ListView(
+                children: lessons,
+              ),
+            )
+          ],
+        )
+    );
   }
 }
