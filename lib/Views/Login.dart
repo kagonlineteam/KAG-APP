@@ -36,7 +36,7 @@ class LoginState extends State<Login> {
         await KAGApp.api.setLoginCredentials(username.text, password.text);
     Navigator.pop(context);
     if (success) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => new KAGApp()));
+      KAGApp.app.setLoggedIn();
     } else {
       showDialog(
           context: context,
@@ -138,6 +138,15 @@ class LoginState extends State<Login> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class NotLoggedIn extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: MaterialButton(onPressed: () => KAGApp.tabs.animateTo(4), child: Text("Bitte logge dich ein!")),
     );
   }
 }

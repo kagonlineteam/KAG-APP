@@ -15,14 +15,17 @@ class RPlanState extends State<RPlan> {
   static const textStyle = TextStyle(fontSize: 20);
 
   Future _load() async {
-    var rplan = jsonDecode(
-        await (await KAGApp.api.getAPIRequest(APIAction.GET_RPLAN_TODAY))
-            .getRAWRPlan(null));
-    var newLessons = <Widget>[];
-    await rplan['vertretungen'].forEach((lesson) => newLessons.add(_loadLesson(lesson)));
-    setState(() {
-      lessons = newLessons;
-    });
+    var rplanRequest = await KAGApp.api.getAPIRequest(APIAction.GET_RPLAN_TODAY);
+    if (rplanRequest != null) {
+      var rplan = jsonDecode(await rplanRequest.getRAWRPlan(null));
+      if (rplan != null) {
+        var newLessons = <Widget>[];
+        await rplan['vertretungen'].forEach((lesson) => newLessons.add(_loadLesson(lesson)));
+        setState(() {
+          lessons = newLessons;
+        });
+      }
+    }
   }
 
   Widget _loadLesson(lesson) {
