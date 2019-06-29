@@ -16,10 +16,8 @@ class RPlanState extends State<RPlan> {
   static const textStyle = TextStyle(fontSize: 20);
   String dateText = "";
 
-
   Future _load() async {
-    var rplanRequest =
-        await KAGApp.api.getAPIRequest(requestDate);
+    var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
       var rplan = jsonDecode(await rplanRequest.getRAWRPlan(null));
       if (rplan != null) {
@@ -88,22 +86,20 @@ class RPlanState extends State<RPlan> {
 
   @override
   Widget build(BuildContext context) {
-    return new SafeArea(child:
-    GestureDetector(
-        onDoubleTap: switchToNextDay,
-        child: Column(
-          children: <Widget>[
-            Text(dateText,
-                style: TextStyle(
-                    fontSize: 30
-                )),
-            Expanded(
-              child: ListView(
-                children: lessons,
-              ),
-            )
-          ],
-        )
-    ));
+    return new SafeArea(
+        child: GestureDetector(
+            onDoubleTap: switchToNextDay,
+            child: RefreshIndicator(
+                child: Column(
+                  children: <Widget>[
+                    Text(dateText, style: TextStyle(fontSize: 30)),
+                    Expanded(
+                      child: ListView(
+                        children: lessons,
+                      ),
+                    )
+                  ],
+                ),
+                onRefresh: _load)));
   }
 }
