@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:date_format/date_format.dart';
 import 'dart:async';
 
 import '../main.dart';
@@ -13,12 +14,15 @@ class Home extends StatefulWidget {
 
 class HomeState extends State<Home> {
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
+  String date = "", title = "", description = "";
   int holiday;
   Timer timer;
 
   @override
   Widget build(BuildContext context) {
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
+    TextStyle eventText = new TextStyle(fontSize: 25);
+    TextStyle eventDescriptionText = new TextStyle(fontSize: 18);
 
     return new SafeArea(
       child: Column(
@@ -37,9 +41,38 @@ class HomeState extends State<Home> {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[Text("w"), Text("d"), Text("h"), Text("m"), Text("s")],
+                children: <Widget>[
+                  Text("w"),
+                  Text("d"),
+                  Text("h"),
+                  Text("m"),
+                  Text("s")
+                ],
               )
             ],
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            child: Column(
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                      child: Material(
+                        child: Text(date, style: countdownNumbers),
+                        color: Colors.green,
+                        borderRadius: BorderRadiusDirectional.all(Radius.circular(10)),
+                      ),
+                    ),
+                    Text(title, style: eventText)
+                  ],
+                ),
+                Row(
+                  children: <Widget>[Text(description, style: eventDescriptionText)],
+                )
+              ],
+            ),
           )
         ],
       ),
@@ -52,6 +85,13 @@ class HomeState extends State<Home> {
       holiday = timestamp;
     });
     request.getNextCalendarEntry().then((entry) {
+      setState(() {
+        date = formatDate(
+            new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
+            [dd, ".", mm]);
+        title = entry['title'];
+        description = entry['description'];
+      });
       print(entry);
     });
   }
