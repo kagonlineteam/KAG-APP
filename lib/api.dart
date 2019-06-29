@@ -232,6 +232,19 @@ class _APIRequest {
   }
 
   ///
+  /// Returns the next Calendar Entry
+  ///
+  Future<Map<String, dynamic>> getNextCalendarEntry() async {
+    _actionExecution(APIAction.GET_CALENDAR);
+    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "orderby%5Bstart%5D": "asc"}, _user.getJWT()))['entities'][0];
+  }
+
+  Future<int> getHolidayUnixTimestamp() async {
+    _actionExecution(APIAction.GET_CALENDAR);
+    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like"}, _user.getJWT()))['entities'][0]['start'];
+  }
+
+  ///
   /// Return RPLAN
   /// Date specified as method
   /// If teacher is null all will be shown
