@@ -92,7 +92,6 @@ class HomeState extends State<Home> {
         title = entry['title'];
         description = entry['description'];
       });
-      print(entry);
     });
   }
 
@@ -135,4 +134,12 @@ class HomeState extends State<Home> {
         new Timer.periodic(Duration(seconds: 1), (timer) => calculateTimer());
     _load();
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
+  }
+
+
 }
