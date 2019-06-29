@@ -42,10 +42,10 @@ class UserState extends State<User> {
                     child: Container(
                       child: Material(
                         borderRadius: BorderRadius.circular(30.0),
-                        color: Colors.green,
+                        color: Color.fromRGBO(47, 109, 29, 1),
                         child: MaterialButton(
                           onPressed: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
-                          child: Text("Stundenraster"),
+                          child: Text("Stundenraster", style: TextStyle(color: Colors.white),),
                         ),
                       ),
                       padding: EdgeInsets.fromLTRB(20, 10, 20, 10),

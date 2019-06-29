@@ -121,6 +121,7 @@ class RPlanDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(lesson['klasse'] + " " + lesson['fach']),
+        backgroundColor: Color.fromRGBO(47, 109, 29, 1),
       ),
       body: SafeArea(
         child: Column(

@@ -21,49 +21,68 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
-    TextStyle eventText = new TextStyle(fontSize: 25);
+    TextStyle eventDate = new TextStyle(fontSize: 35, color: Colors.white);
+    TextStyle eventTitle = new TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
     TextStyle eventDescriptionText = new TextStyle(fontSize: 18);
+    TextStyle titleStyle = new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
     return new SafeArea(
       child: Column(
         children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Text(weeks, style: countdownNumbers),
-                  Text("w")
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Text(days, style: countdownNumbers),
-                  Text("d")
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Text(hours, style: countdownNumbers),
-                  Text("h")
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Text(minutes, style: countdownNumbers),
-                  Text("m")
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  Text(seconds, style: countdownNumbers),
-                  Text("s")
-                ],
-              )
-            ],
+
+          //Holiday Countdown
+          Container(
+          child: Text("Ferien-Countdown", style: titleStyle),
+              margin: EdgeInsets.fromLTRB(10,10,10,0),
+            alignment: Alignment.centerLeft,
+      ),
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Text(weeks, style: countdownNumbers),
+                    Text("w")
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(days, style: countdownNumbers),
+                    Text("d")
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(hours, style: countdownNumbers),
+                    Text("h")
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(minutes, style: countdownNumbers),
+                    Text("m")
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(seconds, style: countdownNumbers),
+                    Text("s")
+                  ],
+                )
+              ],
+            ),
+              margin: EdgeInsets.fromLTRB(0,10,10,0),
+          ),
+
+          //Appointments
+          Container(
+          child: Text("Die nächsten Termine", style: titleStyle),
+          margin: EdgeInsets.fromLTRB(10,20,10,0),
+          alignment: Alignment.centerLeft,
           ),
           Container(
-            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
             child: Column(
               children: <Widget>[
                 Row(
@@ -71,18 +90,35 @@ class HomeState extends State<Home> {
                     Container(
                       margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
                       child: Material(
-                        child: Text(date, style: countdownNumbers),
-                        color: Colors.green,
-                        borderRadius:
-                            BorderRadiusDirectional.all(Radius.circular(10)),
+                        child: RichText(text: TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                              text: " ",
+                              style: TextStyle(fontSize: 25)
+                            ),
+                            TextSpan(
+                              text: date,
+                              style: eventDate
+                            ),
+                            TextSpan(
+                                text: " ",
+                                style: TextStyle(fontSize: 25)
+                            )
+                          ]
+                        ), //Text(" " + date + " ", style: eventDate)
+                        ),
+                        color: Color.fromRGBO(47, 109, 29, 1),
                       ),
                     ),
-                    Text(title, style: eventText)
+                    Text(title, style: eventTitle)
                   ],
                 ),
                 Row(
                   children: <Widget>[
-                    Text(description, style: eventDescriptionText)
+                    Container(
+                      child: Text(description, style: eventDescriptionText),
+                      margin: EdgeInsets.fromLTRB(0,10,10,0)
+                    )
                   ],
                 )
               ],
@@ -133,11 +169,11 @@ class HomeState extends State<Home> {
     if (minutes < 0) minutes = 0;
     if (seconds < 0) seconds = 0;
     setState(() {
-      this.weeks = weeks.toString();
-      this.days = days.toString();
-      this.hours = hours.toString();
-      this.minutes = minutes.toString();
-      this.seconds = seconds.toString();
+      this.weeks    = betterNumber(weeks);
+      this.days     = betterNumber(days);
+      this.hours    = betterNumber(hours);
+      this.minutes  = betterNumber(minutes);
+      this.seconds  = betterNumber(seconds);
     });
   }
 
@@ -153,5 +189,12 @@ class HomeState extends State<Home> {
   void dispose() {
     super.dispose();
     timer.cancel();
+  }
+
+  String betterNumber(int number) {
+    if (number.toString().length == 1) {
+      return "0" + number.toString();
+    }
+    return number.toString();
   }
 }
