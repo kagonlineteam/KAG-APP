@@ -27,25 +27,36 @@ class HomeState extends State<Home> {
     return new SafeArea(
       child: Column(
         children: <Widget>[
-          Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Column(
                 children: <Widget>[
                   Text(weeks, style: countdownNumbers),
-                  Text(days, style: countdownNumbers),
-                  Text(hours, style: countdownNumbers),
-                  Text(minutes, style: countdownNumbers),
-                  Text(seconds, style: countdownNumbers)
+                  Text("w")
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Column(
                 children: <Widget>[
-                  Text("w"),
-                  Text("d"),
-                  Text("h"),
-                  Text("m"),
+                  Text(days, style: countdownNumbers),
+                  Text("d")
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  Text(hours, style: countdownNumbers),
+                  Text("h")
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  Text(minutes, style: countdownNumbers),
+                  Text("m")
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  Text(seconds, style: countdownNumbers),
                   Text("s")
                 ],
               )
@@ -62,14 +73,17 @@ class HomeState extends State<Home> {
                       child: Material(
                         child: Text(date, style: countdownNumbers),
                         color: Colors.green,
-                        borderRadius: BorderRadiusDirectional.all(Radius.circular(10)),
+                        borderRadius:
+                            BorderRadiusDirectional.all(Radius.circular(10)),
                       ),
                     ),
                     Text(title, style: eventText)
                   ],
                 ),
                 Row(
-                  children: <Widget>[Text(description, style: eventDescriptionText)],
+                  children: <Widget>[
+                    Text(description, style: eventDescriptionText)
+                  ],
                 )
               ],
             ),
@@ -140,6 +154,4 @@ class HomeState extends State<Home> {
     super.dispose();
     timer.cancel();
   }
-
-
 }
