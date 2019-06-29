@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum APIAction {GET_USERNAME, GET_GROUPS, GET_CALENDAR, GET_RPLAN_TODAY, GET_RPLAN_TOMORROW, GET_RPLAN_DAYAFTERTOMMOROW}
+enum APIAction {GET_USERNAME, GET_GROUPS, GET_CALENDAR, GET_RPLAN_TODAY, GET_RPLAN_TOMORROW, GET_RPLAN_DAYAFTERTOMMOROW, GET_USER_INFO}
 
 class API {
   _User _user;
@@ -28,6 +28,8 @@ class API {
       case APIAction.GET_RPLAN_TOMORROW:
         return true;
       case APIAction.GET_RPLAN_DAYAFTERTOMMOROW:
+        return true;
+      case APIAction.GET_USER_INFO:
         return true;
     }
     return true;
@@ -244,6 +246,20 @@ class _APIRequest {
       params["abbreviation"] = teacher;
     }
     return _APIConnection.getFromAPI("vplan", params, _user.getJWT());
+  }
+
+  Future<String> getUserInfo(String info) async {
+    _actionExecution(APIAction.GET_USER_INFO);
+    String response = await _APIConnection.getFromAPI("users/${_user.getUsername()}", null, _user.getJWT());
+    if (response != null) {
+      final jResponse = jsonDecode(response);
+      try {
+        return jResponse['entity']['attributes'][info][0];
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   }
 
 
