@@ -236,12 +236,12 @@ class _APIRequest {
   ///
   Future<Map<String, dynamic>> getNextCalendarEntry() async {
     _actionExecution(APIAction.GET_CALENDAR);
-    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "orderby%5Bstart%5D": "asc"}, _user.getJWT()))['entities'][0];
+    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "orderby%5Bstart%5D": "asc", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'][0];
   }
 
   Future<int> getHolidayUnixTimestamp() async {
     _actionExecution(APIAction.GET_CALENDAR);
-    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like"}, _user.getJWT()))['entities'][0]['start'];
+    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'][0]['start'];
   }
 
   ///
