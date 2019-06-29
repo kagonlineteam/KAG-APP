@@ -109,8 +109,8 @@ class LoginState extends State<Login> {
       ),
     );
 
-    return Scaffold(
-      body: Center(
+    return Container(
+      child: Center(
         child: Container(
           decoration: BoxDecoration(
               image: DecorationImage(

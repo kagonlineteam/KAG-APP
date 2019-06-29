@@ -88,14 +88,15 @@ class RPlanState extends State<RPlan> {
 
   @override
   Widget build(BuildContext context) {
-    return new GestureDetector(
+    return new SafeArea(child:
+    GestureDetector(
         onDoubleTap: switchToNextDay,
         child: Column(
           children: <Widget>[
             Text(dateText,
-            style: TextStyle(
-              fontSize: 30
-            )),
+                style: TextStyle(
+                    fontSize: 30
+                )),
             Expanded(
               child: ListView(
                 children: lessons,
@@ -103,6 +104,6 @@ class RPlanState extends State<RPlan> {
             )
           ],
         )
-    );
+    ));
   }
 }

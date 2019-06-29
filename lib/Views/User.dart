@@ -26,7 +26,7 @@ class UserState extends State<User> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
+    return new SafeArea(
       child: Column(
         children: <Widget>[
           MaterialButton(
