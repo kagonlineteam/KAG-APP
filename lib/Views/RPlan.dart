@@ -35,28 +35,31 @@ class RPlanState extends State<RPlan> {
   Widget _loadLesson(lesson) {
     return new Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-      child: Column(
-        children: <Widget>[
-          new Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                child: Text(lesson['klasse'], style: textStyle),
-              ),
-              Container(
-                child: Text(lesson['fach'], style: textStyle),
-              ),
-              Container(
-                child: Text(lesson['stunde'], style: textStyle),
-              ),
-            ],
-          ),
-          Container(
-            alignment: Alignment.topCenter,
-            child: Text(lesson['art'], style: textStyle),
-          ),
-        ],
+      child: GestureDetector(
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
+        child: Column(
+          children: <Widget>[
+            new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  child: Text(lesson['klasse'], style: textStyle),
+                ),
+                Container(
+                  child: Text(lesson['fach'], style: textStyle),
+                ),
+                Container(
+                  child: Text(lesson['stunde'], style: textStyle),
+                ),
+              ],
+            ),
+            Container(
+              alignment: Alignment.topCenter,
+              child: Text(lesson['art'], style: textStyle),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -101,5 +104,63 @@ class RPlanState extends State<RPlan> {
                   ],
                 ),
                 onRefresh: _load)));
+  }
+}
+
+class RPlanDetail extends StatelessWidget {
+  RPlanDetail(this.lesson);
+
+  final lesson;
+  static const TextStyle textStyle = const TextStyle(fontSize: 30);
+
+  @override
+  Widget build(BuildContext context) {
+    if (lesson['lehrer'] == null) lesson['lehrer'] = "";
+    if (lesson['v_lehrer'] == null) lesson['v_lehrer'] = "";
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(lesson['klasse'] + " " + lesson['fach']),
+      ),
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Text(lesson['klasse'], style: textStyle),
+                  Text(lesson['stunde'], style: textStyle)
+                ],
+              ),
+              margin: EdgeInsets.fromLTRB(0, 20, 0, 40),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['fach'], style: textStyle),
+                Text(lesson['v_fach'], style: textStyle)
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['raum'], style: textStyle),
+                Text(lesson['v_raum'], style: textStyle)
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['lehrer'], style: textStyle),
+                Text(lesson['v_lehrer'], style: textStyle)
+              ],
+            ),
+            Text(lesson['art'], style: textStyle)
+          ],
+        ),
+      ),
+    );
   }
 }
