@@ -248,6 +248,13 @@ class _APIRequest {
     return _APIConnection.getFromAPI("vplan", params, _user.getJWT());
   }
 
+  ///
+  /// Returns specified information of user
+  /// Info needs a LDAP field name
+  /// E.g. employeeNumber, givenName, sn etc.
+  ///
+  /// It directly returns the Information as String
+  ///
   Future<String> getUserInfo(String info) async {
     _actionExecution(APIAction.GET_USER_INFO);
     String response = await _APIConnection.getFromAPI("users/${_user.getUsername()}", null, _user.getJWT());
