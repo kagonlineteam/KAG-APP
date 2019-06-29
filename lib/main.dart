@@ -33,6 +33,7 @@ class KAGApp extends StatelessWidget {
         primarySwatch: Colors.green,
       ),
       home: HomePage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
