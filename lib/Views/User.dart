@@ -13,7 +13,7 @@ class User extends StatefulWidget {
 }
 
 class UserState extends State<User> {
-  var username = "";
+  var name = "";
   var timeTableButton = Row();
 
   void logout() {
@@ -23,40 +23,45 @@ class UserState extends State<User> {
   }
 
   Future _load() async {
-    KAGApp.api.getAPIRequest(APIAction.GET_USERNAME).then((apiRequest) =>
-        apiRequest != null
-            ? setState(() => username = apiRequest.getUsername())
-            : null);
-    KAGApp.api.getAPIRequest(APIAction.GET_GROUPS).then((apiRequest) => _loadTimeTableURL(apiRequest));
+    KAGApp.api.getAPIRequest(APIAction.GET_USER_INFO).then((request) async {
+      Map<String, String> userInfo = await request.getUserInfo(["sn", "givenName", "employeeNumber"]);
+
+      // Set Timetable
+      if (userInfo.containsKey("employeeNumber") && (userInfo['employeeNumber'] == "EF" || userInfo['employeeNumber'] == "Q1" || userInfo['employeeNumber'] == "Q2")){
+        _setTimeTable(userInfo['employeeNumber']);
+      }
+
+      // Set Name
+      if (userInfo.containsKey("employeeNumber")) {
+        // Student
+        name = userInfo['givenName'];
+      } else {
+        // Teacher
+        name = userInfo['sn'];
+      }
+    });
   }
 
-  Future _loadTimeTableURL(groupsAPIRequest) async {
-    if (groupsAPIRequest != null) {
-      if (groupsAPIRequest.getGroups().contains("ROLE_OBERSTUFE") || groupsAPIRequest.getGroups().contains("ROLE_ADMINISTRATOR")) {
-        final employeeNumber = await (await KAGApp.api.getAPIRequest(APIAction.GET_USER_INFO)).getUserInfo("employeeNumber");
-        if (employeeNumber != null) {
-          setState(() {
-            timeTableButton = Row(
-              children: <Widget>[
-                Expanded(
-                    child: Container(
-                      child: Material(
-                        borderRadius: BorderRadius.circular(30.0),
-                        color: Color.fromRGBO(47, 109, 29, 1),
-                        child: MaterialButton(
-                          onPressed: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
-                          child: Text("Stundenraster", style: TextStyle(color: Colors.white),),
-                        ),
-                      ),
-                      padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    )
-                )
-              ],
-            );
-          });
-        }
-      }
-    }
+  void _setTimeTable(employeeNumber) {
+    setState(() {
+      timeTableButton = Row(
+        children: <Widget>[
+          Expanded(
+              child: Container(
+                child: Material(
+                  borderRadius: BorderRadius.circular(30.0),
+                  color: Color.fromRGBO(47, 109, 29, 1),
+                  child: MaterialButton(
+                    onPressed: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
+                    child: Text("Stundenraster", style: TextStyle(color: Colors.white),),
+                  ),
+                ),
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+              )
+          )
+        ],
+      );
+    });
   }
 
   @override
@@ -71,7 +76,7 @@ class UserState extends State<User> {
       child: Column(
         children: <Widget>[
           Row(children: <Widget>[
-            Text(username, style: TextStyle(fontSize: 30)),
+            Text(name, style: TextStyle(fontSize: 30)),
             MaterialButton(
               child: Text("Logout"),
               onPressed: logout,
