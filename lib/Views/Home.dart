@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'dart:async';
 
 import '../main.dart';
@@ -88,7 +91,37 @@ class HomeState extends State<Home> {
           ),
           Column(
             children: calendarEntries,
-          )
+          ),
+
+          //Moodle
+          Container(
+            child: Text("Atrium (Moodle)", style: titleStyle),
+            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            alignment: Alignment.centerLeft,
+          ),
+          Container(
+            child: Text("Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.", style: TextStyle(fontSize: 7)),
+            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            alignment: Alignment.centerLeft,
+          ),
+          Row(
+            children: <Widget>[
+              MaterialButton(
+                child: CachedNetworkImage(
+                    imageUrl: "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
+                    width: 75),
+                onPressed: () async {
+                  if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
+                    launch("moodlemobile://atrium.kag-langenfeld.de");
+                  } else {
+                    Scaffold.of(context).showSnackBar(new SnackBar(
+                      content: new Text("Bitte lade dir die Moodle App herunter."),
+                    ));
+                  }
+                },
+              )
+            ],
+          ),
         ],
       ),
     );
