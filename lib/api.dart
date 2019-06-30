@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:path_provider/path_provider.dart';
 
 enum APIAction {GET_USERNAME, GET_GROUPS, GET_CALENDAR, GET_RPLAN_TODAY, GET_RPLAN_TOMORROW, GET_RPLAN_DAYAFTERTOMMOROW, GET_USER_INFO}
 
@@ -284,5 +286,95 @@ class _APIRequest {
       return requestResponse;
     }
     return null;
+  }
+}
+
+class _CacheManager {
+  _CacheManager(this._action);
+  // Creating this at the loading of CacheManager to not cause weird errors with too little time left
+  int time = DateTime.now().millisecondsSinceEpoch;
+  APIAction _action;
+  String _type;
+  int _duration;
+  File _file;
+  String _contents;
+
+  ///
+  /// Initialize Cache
+  ///
+  /// Type: Specific type: e.g. the date for RPlan, nextEvents for nextEvents in Calender etc.
+  /// Cache Duration: If the standard Cache Duration should not be used. Eg. for Holiday Time
+  Future init(String type, {int cacheDuration}) async {
+    this._type = type;
+    this._duration = cacheDuration;
+    if (_duration == null) {
+      _duration = _getDuration();
+    }
+    _file = File((await getTemporaryDirectory()).path + "/" + _action.toString() + "/" + type + ".json");
+
+  }
+
+  ///
+  /// Check if Cache exists and is valid
+  ///
+  bool hasCache() {
+    if (_type == null) throw Exception("Cache has not been initialized.");
+    if (!(_file.existsSync())) return false;
+    if (_contents == null) _contents = _file.readAsStringSync();
+    return jsonDecode(_contents)['created'] + _duration > time;
+    
+  }
+
+  ///
+  /// Return Cache.
+  /// Warning: This will not check validity
+  ///
+  String getCache() {
+    if (_type == null) throw Exception("Cache has not been initialized.");
+    if (!(_file.existsSync())) return null;
+    if (_contents == null) _contents = _file.readAsStringSync();
+    return jsonDecode(_contents)['content'];
+  }
+
+  /// 
+  /// Set Cache.
+  /// 
+  void setCache(String content) {
+    if (_type == null) throw Exception("Cache has not been initialized.");
+    _file.createSync(recursive: true);
+    _contents = jsonEncode({"created": time, "content": content});
+    _file.writeAsStringSync(_contents, flush: true);
+  }
+  
+  /// 
+  /// Will delete the cache
+  /// 
+  void delete() {
+    if (_type == null) throw Exception("Cache has not been initialized.");
+    _file.deleteSync();
+  }
+
+  ///
+  /// Returning duration of cache
+  /// GET_USERNAME and GET_GROUPS will not be cached, due to more effort caching than actually getting.
+  ///
+  int _getDuration() {
+    switch(_action) {
+      case APIAction.GET_USERNAME:
+        return 0;
+      case APIAction.GET_GROUPS:
+        return 0;
+      case APIAction.GET_CALENDAR:
+        return 1000 * 60 * 60 * 24 * 3;
+      case APIAction.GET_RPLAN_TODAY:
+        return 1000 * 60 * 5;
+      case APIAction.GET_RPLAN_TOMORROW:
+        return 1000 * 60 * 20;
+      case APIAction.GET_RPLAN_DAYAFTERTOMMOROW:
+        return 1000 * 60 * 60;
+      case APIAction.GET_USER_INFO:
+        return 1000 * 60 * 60 * 24 * 7;
+    }
+    return 0;
   }
 }
