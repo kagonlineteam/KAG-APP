@@ -180,6 +180,7 @@ class _APIConnection {
 class _APIRequest {
   APIAction _endpoint;
   _User _user;
+  _CacheManager _cache;
   ///
   /// Handles Request, checks parameter etc.
   /// Login status should be already checked.
@@ -188,6 +189,7 @@ class _APIRequest {
   _APIRequest(APIAction endpoint, _User user) {
     _endpoint = endpoint;
     _user = user;
+    _cache = _CacheManager(endpoint);
   }
 
   ///
@@ -230,7 +232,13 @@ class _APIRequest {
   ///
   Future<String> getRAWCalendar(int start, int end) async {
     _actionExecution(APIAction.GET_CALENDAR);
-    return _APIConnection.getFromAPI("termine", start != null && end != null ? {"start%5B$start%5D": "gte", "end%5B$end%5B": "lte"} : null, _user.getJWT());
+    await _cache.init("$start-$end");
+    if (_cache.hasCache()) {
+      return _cache.getCache();
+    }
+    String response = await _APIConnection.getFromAPI("termine", start != null && end != null ? {"start%5B$start%5D": "gte", "end%5B$end%5B": "lte"} : null, _user.getJWT());
+    _cache.setCache(response);
+    return response;
   }
 
   ///
@@ -238,12 +246,36 @@ class _APIRequest {
   ///
   Future<Map<String, dynamic>> getNextCalendarEntry() async {
     _actionExecution(APIAction.GET_CALENDAR);
-    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "orderby%5Bstart%5D": "asc", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'][0];
+    await _cache.init("next", cacheDuration: 1000 * 60 * 60 * 24);
+    if (_cache.hasCache()) {
+      return jsonDecode(_cache.getCache())['entities'][0];
+    }
+    String response = await _APIConnection.getFromAPI("termine", {"limit": "1", "orderby%5Bstart%5D": "asc", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT());
+    _cache.setCache(response);
+    return jsonDecode(response)['entities'][0];
   }
 
+
+  ///
+  /// Returns Holiday Timestamp
+  ///
+  /// Note: Please do not use this as example how to use cache
+  ///
   Future<int> getHolidayUnixTimestamp() async {
     _actionExecution(APIAction.GET_CALENDAR);
-    return jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'][0]['start'];
+    await _cache.init("holiday");
+    String cached = _cache.getCache();
+    if (cached != null) {
+      int cachedI = int.parse(cached);
+      if (cachedI > new DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+        return cachedI;
+      } else {
+        _cache.delete();
+      }
+    }
+    String response = jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'][0]['start'].toString();
+    _cache.setCache(response);
+    return int.parse(response);
   }
 
   ///
@@ -260,7 +292,13 @@ class _APIRequest {
     if (teacher != null) {
       params["abbreviation"] = teacher;
     }
-    return _APIConnection.getFromAPI("vplan", params, _user.getJWT());
+    await _cache.init(params.toString());
+    if (_cache.hasCache()) {
+      return _cache.getCache();
+    }
+    String response = await _APIConnection.getFromAPI("vplan", params, _user.getJWT());
+    _cache.setCache(response);
+    return response;
   }
 
   ///
@@ -272,8 +310,15 @@ class _APIRequest {
   ///
   Future<Map<String, String>> getUserInfo(List<String> info) async {
     _actionExecution(APIAction.GET_USER_INFO);
-    String response = await _APIConnection.getFromAPI(
-        "users/${_user.getUsername()}", null, _user.getJWT());
+    await _cache.init("${_user.getUsername()}");
+    String response;
+    if (_cache.hasCache()) {
+      response = _cache.getCache();
+    } else {
+      response = await _APIConnection.getFromAPI(
+          "users/${_user.getUsername()}", null, _user.getJWT());
+      _cache.setCache(response);
+    }
     if (response != null) {
       final jResponse = jsonDecode(response);
       Map<String, String> requestResponse = {};
