@@ -244,15 +244,15 @@ class _APIRequest {
   ///
   /// Returns the next Calendar Entry
   ///
-  Future<Map<String, dynamic>> getNextCalendarEntry() async {
+  Future<List<dynamic>> getNextCalendarEntries() async {
     _actionExecution(APIAction.GET_CALENDAR);
     await _cache.init("next", cacheDuration: 1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
-      return jsonDecode(_cache.getCache())['entities'][0];
+      return jsonDecode(_cache.getCache())['entities'];
     }
-    String response = await _APIConnection.getFromAPI("termine", {"limit": "1", "orderby%5Bstart%5D": "asc", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT());
+    String response = await _APIConnection.getFromAPI("termine", {"limit": "3", "orderby%5Bstart%5D": "asc", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT());
     _cache.setCache(response);
-    return jsonDecode(response)['entities'][0];
+    return jsonDecode(response)['entities'];
   }
 
 

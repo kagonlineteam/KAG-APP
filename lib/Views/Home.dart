@@ -13,29 +13,34 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
+  static const TextStyle eventDate =
+      const TextStyle(fontSize: 35, color: Colors.white);
+  static const TextStyle eventTitle =
+      const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle eventDescriptionText = const TextStyle(fontSize: 18);
+
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
   int holiday;
   Timer timer;
 
+  List<Container> calendarEntries = [];
+
   @override
   Widget build(BuildContext context) {
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
-    TextStyle eventDate = new TextStyle(fontSize: 35, color: Colors.white);
-    TextStyle eventTitle = new TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-    TextStyle eventDescriptionText = new TextStyle(fontSize: 18);
-    TextStyle titleStyle = new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+    TextStyle titleStyle =
+        new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
     return new SafeArea(
       child: Column(
         children: <Widget>[
-
           //Holiday Countdown
           Container(
-          child: Text("Ferien-Countdown", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10,10,10,0),
+            child: Text("Ferien-Countdown", style: titleStyle),
+            margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
             alignment: Alignment.centerLeft,
-      ),
+          ),
           Container(
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -72,57 +77,17 @@ class HomeState extends State<Home> {
                 )
               ],
             ),
-              margin: EdgeInsets.fromLTRB(0,10,10,0),
+            margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
           ),
 
           //Appointments
           Container(
-          child: Text("Die nächsten Termine", style: titleStyle),
-          margin: EdgeInsets.fromLTRB(10,20,10,0),
-          alignment: Alignment.centerLeft,
+            child: Text("Die nächsten Termine", style: titleStyle),
+            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+            alignment: Alignment.centerLeft,
           ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Column(
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                      child: Material(
-                        child: RichText(text: TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(
-                              text: " ",
-                              style: TextStyle(fontSize: 25)
-                            ),
-                            TextSpan(
-                              text: date,
-                              style: eventDate
-                            ),
-                            TextSpan(
-                                text: " ",
-                                style: TextStyle(fontSize: 25)
-                            )
-                          ]
-                        ), //Text(" " + date + " ", style: eventDate)
-                        ),
-                        color: Color.fromRGBO(47, 109, 29, 1),
-                      ),
-                    ),
-                    Text(title, style: eventTitle)
-                  ],
-                ),
-                Row(
-                  children: <Widget>[
-                    Container(
-                      child: Text(description, style: eventDescriptionText),
-                      margin: EdgeInsets.fromLTRB(0,10,10,0)
-                    )
-                  ],
-                )
-              ],
-            ),
+          Column(
+            children: calendarEntries,
           )
         ],
       ),
@@ -130,17 +95,22 @@ class HomeState extends State<Home> {
   }
 
   Future _load() async {
-    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR)).getHolidayUnixTimestamp().then((timestamp) {
+    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
+        .getHolidayUnixTimestamp()
+        .then((timestamp) {
       holiday = timestamp;
       calculateTimer();
     });
-    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR)).getNextCalendarEntry().then((entry) {
-      setState(() {
-        date = formatDate(
-            new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
-            [dd, ".", mm]);
-        title = entry['title'];
-        description = entry['description'];
+    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
+        .getNextCalendarEntries()
+        .then((entries) {
+      entries.forEach((entry) {
+        addCalendarEntry(
+            formatDate(
+                new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
+                [dd, ".", mm]),
+            entry['title'],
+            entry['description']);
       });
     });
   }
@@ -169,11 +139,48 @@ class HomeState extends State<Home> {
     if (minutes < 0) minutes = 0;
     if (seconds < 0) seconds = 0;
     setState(() {
-      this.weeks    = betterNumber(weeks);
-      this.days     = betterNumber(days);
-      this.hours    = betterNumber(hours);
-      this.minutes  = betterNumber(minutes);
-      this.seconds  = betterNumber(seconds);
+      this.weeks = betterNumber(weeks);
+      this.days = betterNumber(days);
+      this.hours = betterNumber(hours);
+      this.minutes = betterNumber(minutes);
+      this.seconds = betterNumber(seconds);
+    });
+  }
+
+  void addCalendarEntry(String date, String title, String description) {
+    setState(() {
+      calendarEntries.add(Container(
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        child: Column(
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: Material(
+                    child: RichText(
+                      text: TextSpan(children: <TextSpan>[
+                        TextSpan(text: " ", style: TextStyle(fontSize: 25)),
+                        TextSpan(text: date, style: eventDate),
+                        TextSpan(text: " ", style: TextStyle(fontSize: 25))
+                      ]), //Text(" " + date + " ", style: eventDate)
+                    ),
+                    color: Color.fromRGBO(47, 109, 29, 1),
+                  ),
+                ),
+                Text(title, style: eventTitle)
+              ],
+            ),
+            Row(
+              children: <Widget>[
+                Container(
+                    child: Text(description, style: eventDescriptionText),
+                    margin: EdgeInsets.fromLTRB(0, 10, 10, 0))
+              ],
+            )
+          ],
+        ),
+      ));
     });
   }
 
