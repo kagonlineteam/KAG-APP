@@ -36,7 +36,7 @@ class HomeState extends State<Home> {
         new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
     return new SafeArea(
-      child: Column(
+      child: ListView(
         children: <Widget>[
           //Holiday Countdown
           Container(
