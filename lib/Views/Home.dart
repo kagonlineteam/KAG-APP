@@ -130,11 +130,10 @@ class HomeState extends State<Home> {
   }
 
   Future _load() async {
-    var request = await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR);
-    request.getHolidayUnixTimestamp().then((timestamp) {
+    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR)).getHolidayUnixTimestamp().then((timestamp) {
       holiday = timestamp;
     });
-    request.getNextCalendarEntry().then((entry) {
+    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR)).getNextCalendarEntry().then((entry) {
       setState(() {
         date = formatDate(
             new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
