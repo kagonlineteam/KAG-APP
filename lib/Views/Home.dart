@@ -150,7 +150,7 @@ class HomeState extends State<Home> {
   void addCalendarEntry(String date, String title, String description) {
     setState(() {
       calendarEntries.add(Container(
-        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
         child: Column(
           children: <Widget>[
             Row(
@@ -168,14 +168,18 @@ class HomeState extends State<Home> {
                     color: Color.fromRGBO(47, 109, 29, 1),
                   ),
                 ),
-                Text(title, style: eventTitle)
+                Expanded(
+                  child: Text(title, style: eventTitle, overflow: TextOverflow.ellipsis,),
+                )
               ],
             ),
             Row(
               children: <Widget>[
-                Container(
-                    child: Text(description, style: eventDescriptionText),
-                    margin: EdgeInsets.fromLTRB(0, 10, 10, 0))
+                Expanded(
+                  child: Container(
+                      child: Text(getSubString(description), style: eventDescriptionText),
+                      margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
+                )
               ],
             )
           ],
@@ -203,5 +207,19 @@ class HomeState extends State<Home> {
       return "0" + number.toString();
     }
     return number.toString();
+  }
+
+  String getSubString(String text) {
+    String returnText = "";
+    if (text.length > 50) {
+      returnText = text.substring(0,50);
+    } else {
+      returnText = text.substring(0, text.length-1);
+    }
+
+    if (returnText.compareTo(text) != 0) {
+      returnText += "...";
+    }
+    return returnText;
   }
 }
