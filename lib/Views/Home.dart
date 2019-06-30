@@ -38,6 +38,14 @@ class HomeState extends State<Home> {
     return new SafeArea(
       child: ListView(
         children: <Widget>[
+          //Logo
+          Container(
+            decoration: BoxDecoration(border: Border(
+                bottom: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
+            )),
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Image.asset("assets/logo.png"),
+          ),
           //Holiday Countdown
           Container(
             child: Text("Ferien-Countdown", style: titleStyle),
