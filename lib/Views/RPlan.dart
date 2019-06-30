@@ -14,6 +14,9 @@ class RPlanState extends State<RPlan> {
   var lessons = <Widget>[];
   APIAction requestDate = APIAction.GET_RPLAN_TODAY;
   static const textStyle = TextStyle(fontSize: 20);
+  TextStyle bigText = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  TextStyle placeholderStyle = TextStyle(fontSize: 15);
+  TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
   String dateText = "";
 
   Future _load() async {
@@ -34,32 +37,46 @@ class RPlanState extends State<RPlan> {
 
   Widget _loadLesson(lesson) {
     return new Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: GestureDetector(
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
-        child: Column(
-          children: <Widget>[
-            new Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  child: Text(lesson['klasse'], style: textStyle),
-                ),
-                Container(
-                  child: Text(lesson['fach'], style: textStyle),
-                ),
-                Container(
-                  child: Text(lesson['stunde'], style: textStyle),
-                ),
-              ],
-            ),
-            Container(
-              alignment: Alignment.topCenter,
-              child: Text(lesson['art'], style: textStyle),
-            ),
-          ],
-        ),
+        child: Container(
+          decoration: BoxDecoration(border: Border(
+            top: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
+          )),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  Text("", style: smallPlaceholderStyle), //Placeholder
+                  Text(lesson['klasse'], style: bigText),
+                  Text("", style: placeholderStyle,), //Placeholder
+                  Text("", style: textStyle), //Teacher
+                  Text("", style: smallPlaceholderStyle), //Placeholder
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  Text("", style: smallPlaceholderStyle), //Placeholder
+                  Text(lesson['fach'], style: bigText),
+                  Text("", style: placeholderStyle,), //Placeholder
+                  Text(lesson['art'], style: textStyle), //Nothing (if teacher is shown)
+                  Text("", style: smallPlaceholderStyle), //Placeholder
+                ],
+              ),
+              Column(
+                children: <Widget>[
+                  Text("", style: smallPlaceholderStyle), //Placeholder
+                  Text(lesson['stunde'], style: bigText),
+                  Text("", style: placeholderStyle,), //Placeholder
+                  Text("", style: textStyle), //Art (if teacher is shown)
+                  Text("", style: smallPlaceholderStyle), //Placeholder
+                ],
+              )
+            ],
+          ),
+        )
       ),
     );
   }

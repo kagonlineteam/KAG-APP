@@ -86,7 +86,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
       child: Scaffold(
         body: TabBarView(
             controller: KAGApp.tabs,
-            children: tabContents
+            children: tabContents,
+            physics: NeverScrollableScrollPhysics(),
         ),
         bottomNavigationBar: Container(
           color: Color.fromRGBO(244, 244, 244, 1),
