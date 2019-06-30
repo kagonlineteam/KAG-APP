@@ -263,24 +263,26 @@ class _APIRequest {
 
   ///
   /// Returns specified information of user
-  /// Info needs a LDAP field name
+  /// Info needs a LDAP field name(s)
   /// E.g. employeeNumber, givenName, sn etc.
   ///
   /// It directly returns the Information as String
   ///
-  Future<String> getUserInfo(String info) async {
+  Future<Map<String, String>> getUserInfo(List<String> info) async {
     _actionExecution(APIAction.GET_USER_INFO);
-    String response = await _APIConnection.getFromAPI("users/${_user.getUsername()}", null, _user.getJWT());
+    String response = await _APIConnection.getFromAPI(
+        "users/${_user.getUsername()}", null, _user.getJWT());
     if (response != null) {
       final jResponse = jsonDecode(response);
-      try {
-        return jResponse['entity']['attributes'][info][0];
-      } catch (e) {
-        return null;
-      }
+      Map<String, String> requestResponse = {};
+      info.forEach((attribute) {
+        if (jResponse['entity']['attributes'].containsKey(attribute)) {
+          requestResponse[attribute] =
+              jResponse['entity']['attributes'][attribute][0];
+        }
+      });
+      return requestResponse;
     }
     return null;
   }
-
-
 }
