@@ -283,7 +283,7 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
-  Future<String> getRAWRPlan(String teacher) async {
+  Future<String> getRAWRPlan(String teacher, {force: false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     if (_endpoint == APIAction.GET_RPLAN_TODAY) params["file"] = "heute";
@@ -293,6 +293,7 @@ class _APIRequest {
       params["abbreviation"] = teacher;
     }
     await _cache.init(params.toString());
+    if (force) _cache.delete();
     if (_cache.hasCache()) {
       return _cache.getCache();
     }

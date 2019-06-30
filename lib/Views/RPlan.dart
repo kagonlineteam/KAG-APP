@@ -19,10 +19,10 @@ class RPlanState extends State<RPlan> {
   TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
   String dateText = "";
 
-  Future _load() async {
+  Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
-      var rplan = jsonDecode(await rplanRequest.getRAWRPlan(null));
+      var rplan = jsonDecode(await rplanRequest.getRAWRPlan(null, force: force));
       if (rplan != null) {
         var newLessons = <Widget>[];
         await rplan['vertretungen']
@@ -120,7 +120,7 @@ class RPlanState extends State<RPlan> {
                     )
                   ],
                 ),
-                onRefresh: _load)));
+                onRefresh: () => _load(force: true))));
   }
 }
 
