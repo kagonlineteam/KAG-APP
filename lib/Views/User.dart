@@ -12,7 +12,7 @@ class User extends StatefulWidget {
   }
 }
 
-class UserState extends State<User> {
+class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
   var name = "";
   var timeTableButton = Row();
 
@@ -87,4 +87,7 @@ class UserState extends State<User> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

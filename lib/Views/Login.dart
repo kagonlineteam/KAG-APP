@@ -14,7 +14,7 @@ class Login extends StatefulWidget {
   }
 }
 
-class LoginState extends State<Login> {
+class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
   TextEditingController password = new TextEditingController(),
       username = new TextEditingController();
 
@@ -140,6 +140,9 @@ class LoginState extends State<Login> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class NotLoggedIn extends StatelessWidget {

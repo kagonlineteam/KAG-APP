@@ -10,7 +10,7 @@ class RPlan extends StatefulWidget {
   }
 }
 
-class RPlanState extends State<RPlan> {
+class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   var lessons = <Widget>[];
   APIAction requestDate = APIAction.GET_RPLAN_TODAY;
   static const textStyle = TextStyle(fontSize: 20);
@@ -122,6 +122,9 @@ class RPlanState extends State<RPlan> {
                 ),
                 onRefresh: () => _load(force: true))));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class RPlanDetail extends StatelessWidget {
