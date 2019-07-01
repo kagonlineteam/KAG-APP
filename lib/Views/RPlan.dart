@@ -18,6 +18,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   TextStyle placeholderStyle = TextStyle(fontSize: 15);
   TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
   String dateText = "";
+  bool switchingDays = false;
 
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
@@ -33,12 +34,20 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
         });
       }
     }
+    switchingDays = false;
   }
 
   Widget _loadLesson(lesson) {
     return new Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: GestureDetector(
+        onPanUpdate: (details) {
+          if (details.delta.dx > 0) {
+            switchToLastDay();
+          } else if (details.delta.dx < 0) {
+            switchToNextDay();
+          }
+        },
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
         child: Container(
           decoration: BoxDecoration(border: Border(
@@ -108,20 +117,43 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future switchToNextDay() async {
-    if (requestDate == APIAction.GET_RPLAN_TODAY) {
-      requestDate = APIAction.GET_RPLAN_TOMORROW;
-    } else if (requestDate == APIAction.GET_RPLAN_TOMORROW &&
-        ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-                .getGroups()
-                .contains("ROLE_TEACHER") ||
-            (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-                .getGroups()
-                .contains("ROLE_ADMINISTRATOR"))) {
-      requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
-    } else {
-      requestDate = APIAction.GET_RPLAN_TODAY;
+    if (!switchingDays) {
+      switchingDays = true;
+      if (requestDate == APIAction.GET_RPLAN_TODAY) {
+        requestDate = APIAction.GET_RPLAN_TOMORROW;
+      } else if (requestDate == APIAction.GET_RPLAN_TOMORROW &&
+          ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+              .getGroups()
+              .contains("ROLE_TEACHER") ||
+              (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+                  .getGroups()
+                  .contains("ROLE_ADMINISTRATOR"))) {
+        requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
+      } else {
+        requestDate = APIAction.GET_RPLAN_TODAY;
+      }
+      _load();
     }
-    _load();
+  }
+
+  Future switchToLastDay() async {
+    if (!switchingDays) {
+      switchingDays = true;
+      if (requestDate == APIAction.GET_RPLAN_TODAY &&
+          ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+              .getGroups()
+              .contains("ROLE_TEACHER") ||
+              (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+                  .getGroups()
+                  .contains("ROLE_ADMINISTRATOR"))) {
+        requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
+      } else if (requestDate == APIAction.GET_RPLAN_TODAY) {
+        requestDate = APIAction.GET_RPLAN_TOMORROW;
+      } else {
+        requestDate = APIAction.GET_RPLAN_TODAY;
+      }
+      _load();
+    }
   }
 
   @override
