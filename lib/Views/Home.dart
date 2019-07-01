@@ -35,6 +35,14 @@ class HomeState extends State<Home> {
     return new SafeArea(
       child: ListView(
         children: <Widget>[
+          //Logo
+          Container(
+            decoration: BoxDecoration(border: Border(
+                bottom: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
+            )),
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Image.asset("assets/logo.png"),
+          ),
           //Holiday Countdown
           Container(
             child: Text("Ferien-Countdown", style: titleStyle),
@@ -106,7 +114,9 @@ class HomeState extends State<Home> {
               MaterialButton(
                 child: CachedNetworkImage(
                     imageUrl: "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                    width: 75),
+                    width: 75,
+                  fadeInDuration: Duration(seconds: 0),
+                ),
                 onPressed: () async {
                   if (await canLaunch("moodle://atrium.kag-langenfeld.de")) {
                     launch("moodle://atrium.kag-langenfeld.de");
