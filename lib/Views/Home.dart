@@ -16,11 +16,10 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle eventDate =
-      const TextStyle(fontSize: 35, color: Colors.white);
-  static const TextStyle eventTitle =
-      const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle eventDate            = const TextStyle(fontSize: 35, color: Colors.white);
+  static const TextStyle eventTitle           = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const TextStyle eventDescriptionText = const TextStyle(fontSize: 18);
+  static const TextStyle titleStyle           = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
@@ -32,8 +31,6 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
-    TextStyle titleStyle =
-        new TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
     return new SafeArea(
       child: ListView(
@@ -111,8 +108,8 @@ class HomeState extends State<Home> {
                     imageUrl: "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
                     width: 75),
                 onPressed: () async {
-                  if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
-                    launch("moodlemobile://atrium.kag-langenfeld.de");
+                  if (await canLaunch("moodle://atrium.kag-langenfeld.de")) {
+                    launch("moodle://atrium.kag-langenfeld.de");
                   } else {
                     Scaffold.of(context).showSnackBar(new SnackBar(
                       content: new Text("Bitte lade dir die Moodle App herunter."),
@@ -202,7 +199,7 @@ class HomeState extends State<Home> {
                   ),
                 ),
                 Expanded(
-                  child: Text(title, style: eventTitle, overflow: TextOverflow.ellipsis,),
+                  child: Text(title, style: titleStyle, overflow: TextOverflow.ellipsis,),
                 )
               ],
             ),

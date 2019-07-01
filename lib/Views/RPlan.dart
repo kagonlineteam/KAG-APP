@@ -45,34 +45,54 @@ class RPlanState extends State<RPlan> {
             top: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
           )),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Text("", style: smallPlaceholderStyle), //Placeholder
-                  Text(lesson['klasse'], style: bigText),
-                  Text("", style: placeholderStyle,), //Placeholder
-                  Text("", style: textStyle), //Teacher
-                  Text("", style: smallPlaceholderStyle), //Placeholder
-                ],
+              Container(
+                color: Colors.red,
+                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.all(0),
+                child:
+                Column(
+                  children: <Widget>[
+                    Text("                                ", style: smallPlaceholderStyle), //Placeholder
+                    Text(lesson['klasse'], style: bigText),
+                    Text("", style: placeholderStyle,), //Placeholder
+                    Text("", style: textStyle), //Teacher
+                    Text("", style: smallPlaceholderStyle), //Placeholder
+                  ],
+                ),
               ),
-              Column(
-                children: <Widget>[
-                  Text("", style: smallPlaceholderStyle), //Placeholder
-                  Text(lesson['fach'], style: bigText),
-                  Text("", style: placeholderStyle,), //Placeholder
-                  Text(lesson['art'], style: textStyle), //Nothing (if teacher is shown)
-                  Text("", style: smallPlaceholderStyle), //Placeholder
-                ],
+              Container(
+                color: Colors.green,
+                alignment: Alignment.topCenter,
+                padding: EdgeInsets.all(0),
+                child:
+                Column(
+                  children: <Widget>[
+                    Text("                                ", style: smallPlaceholderStyle), //Placeholder
+                    Text(lesson['fach'], style: bigText),
+                    Text("", style: placeholderStyle,), //Placeholder
+                    Text(lesson['art'], style: textStyle), //Nothing (if teacher is shown)
+                    Text("", style: smallPlaceholderStyle), //Placeholder
+                  ],
+                ),
               ),
-              Column(
-                children: <Widget>[
-                  Text("", style: smallPlaceholderStyle), //Placeholder
-                  Text(lesson['stunde'], style: bigText),
-                  Text("", style: placeholderStyle,), //Placeholder
-                  Text("", style: textStyle), //Art (if teacher is shown)
-                  Text("", style: smallPlaceholderStyle), //Placeholder
-                ],
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                color: Colors.blue,
+                alignment: Alignment.topRight,
+                padding: EdgeInsets.all(0),
+                child:
+                Column(
+                  children: <Widget>[
+                    Text("                                ", style: smallPlaceholderStyle), //Placeholder
+                    Text(lesson['stunde'], style: bigText),
+                    Text("", style: placeholderStyle,), //Placeholder
+                    Text("", style: textStyle), //Art (if teacher is shown)
+                    Text("", style: smallPlaceholderStyle), //Placeholder
+                  ],
+                ),
               )
             ],
           ),
