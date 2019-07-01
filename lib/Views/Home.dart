@@ -117,7 +117,9 @@ class HomeState extends State<Home> {
               MaterialButton(
                 child: CachedNetworkImage(
                     imageUrl: "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                    width: 75),
+                    width: 75,
+                  fadeInDuration: Duration(seconds: 0),
+                ),
                 onPressed: () async {
                   if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
                     launch("moodlemobile://atrium.kag-langenfeld.de");
