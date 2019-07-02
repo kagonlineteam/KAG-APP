@@ -14,11 +14,14 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   var lessons = <Widget>[];
   APIAction requestDate = APIAction.GET_RPLAN_TODAY;
   static const textStyle = TextStyle(fontSize: 20);
+  static const dotActive = TextStyle(fontSize: 40);
+  static const dotInactive = TextStyle(fontSize: 40, color: Colors.grey);
   TextStyle bigText = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   TextStyle placeholderStyle = TextStyle(fontSize: 15);
   TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
   String dateText = "";
   bool switchingDays = false;
+  Row points = Row();
 
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
@@ -32,6 +35,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
           lessons = newLessons;
           dateText = rplan['date'];
         });
+        _createDots(requestDate);
       }
     }
     switchingDays = false;
@@ -113,6 +117,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   @override
   void initState() {
     super.initState();
+    _createDots(APIAction.GET_RPLAN_TODAY);
     _load();
   }
 
@@ -156,6 +161,34 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
     }
   }
 
+  Future _createDots(APIAction request) async {
+    if ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+        .getGroups()
+        .contains("ROLE_TEACHER") ||
+        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+            .getGroups()
+            .contains("ROLE_ADMINISTRATOR")) {
+      setState(() {
+        points = Row(
+          children: <Widget>[
+            Text(".", style: request == APIAction.GET_RPLAN_TODAY ? dotActive : dotInactive),
+        Text(".", style: request == APIAction.GET_RPLAN_TOMORROW ? dotActive : dotInactive),
+        Text(".", style: request == APIAction.GET_RPLAN_DAYAFTERTOMMOROW ? dotActive : dotInactive)
+        ],
+        );
+      });
+    } else {
+      setState(() {
+        points = Row(
+          children: <Widget>[
+            Text(".", style: request == APIAction.GET_RPLAN_TODAY ? dotActive : dotInactive),
+            Text(".", style: request == APIAction.GET_RPLAN_TOMORROW ? dotActive : dotInactive)
+          ]
+      );
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new SafeArea(
@@ -169,6 +202,12 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
                       child: ListView(
                         children: lessons,
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        points
+                      ],
                     )
                   ],
                 ),
