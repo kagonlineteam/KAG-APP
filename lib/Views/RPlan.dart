@@ -154,8 +154,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
         requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
       } else if (requestDate == APIAction.GET_RPLAN_TODAY) {
         requestDate = APIAction.GET_RPLAN_TOMORROW;
-      } else {
+      } else if (requestDate == APIAction.GET_RPLAN_TOMORROW ){
         requestDate = APIAction.GET_RPLAN_TODAY;
+      } else {
+        requestDate = APIAction.GET_RPLAN_TOMORROW;
       }
       _load();
     }
