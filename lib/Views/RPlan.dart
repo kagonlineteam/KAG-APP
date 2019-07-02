@@ -191,6 +191,51 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
     }
   }
 
+  Future _showChooseDialog() async {
+    final isTeacher = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+        .getGroups()
+        .contains("ROLE_TEACHER") ||
+        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+            .getGroups()
+            .contains("ROLE_ADMINISTRATOR"));
+    showDialog(
+        context: context,
+        child: new Dialog(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Material(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(30.0),
+                child: MaterialButton(onPressed: () {
+                  requestDate = APIAction.GET_RPLAN_TODAY;
+                  _load();
+                  Navigator.pop(context);
+                }, child: Text("Heute")),
+              ),
+              Material(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(30.0),
+                child: MaterialButton(onPressed: () {
+                  requestDate = APIAction.GET_RPLAN_TOMORROW;
+                  _load();
+                  Navigator.pop(context);
+                }, child: Text("Morgen")),
+              ),
+              isTeacher ? Material(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(30.0),
+                child: MaterialButton(onPressed: () {
+                  requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
+                  _load();
+                  Navigator.pop(context);
+                }, child: Text("Übermorgen")),
+              ) : Row()
+            ],
+          ),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return new SafeArea(
@@ -199,7 +244,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
             child: RefreshIndicator(
                 child: Column(
                   children: <Widget>[
-                    Text(dateText, style: TextStyle(fontSize: 30)),
+                    GestureDetector(
+                      child: Text(dateText, style: TextStyle(fontSize: 30)),
+                      onLongPress: _showChooseDialog,
+                    ),
                     Expanded(
                       child: ListView(
                         children: lessons,
