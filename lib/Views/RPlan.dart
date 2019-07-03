@@ -20,13 +20,14 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   TextStyle placeholderStyle = TextStyle(fontSize: 15);
   TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
   String dateText = "";
+  String searchedTeacher;
   bool switchingDays = false;
   Row points = Row();
 
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
-      var rplan = jsonDecode(await rplanRequest.getRAWRPlan(null, force: force));
+      var rplan = jsonDecode(await rplanRequest.getRAWRPlan(searchedTeacher, force: force));
       if (rplan != null) {
         var newLessons = <Widget>[];
         await rplan['vertretungen']
@@ -189,11 +190,13 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future _showFilterOptions() async {
+    TextEditingController teacher = TextEditingController(text: searchedTeacher);
     showDialog(
         context: context,
         child: SimpleDialog(
               children: <Widget>[
                 TextField(
+                  controller: teacher,
                   autocorrect: false,
                   enabled: true,
                   maxLines: 1,
@@ -203,8 +206,22 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
-                    Text("Abbrechen"),
-                    Text("Anwenden")
+                    MaterialButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text("Abbrechen"),
+                    ),
+                    MaterialButton(
+                      onPressed: () {
+                        if (teacher.text == "") {
+                          searchedTeacher = null;
+                        } else {
+                          searchedTeacher = teacher.text;
+                        }
+                        _load();
+                        Navigator.pop(context);
+                      },
+                      child: Text("Anwenden"),
+                    )
                   ],
                 )
               ],
