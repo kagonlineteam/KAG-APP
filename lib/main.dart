@@ -30,7 +30,21 @@ class KAGApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.green,
+        primarySwatch: MaterialColor(
+          0xFF2f6d1d,
+          <int, Color>{
+            50:  Color.fromRGBO(47, 109, 29, 1),
+            100: Color.fromRGBO(47, 109, 29, 1),
+            200: Color.fromRGBO(47, 109, 29, 1),
+            300: Color.fromRGBO(47, 109, 29, 1),
+            400: Color.fromRGBO(47, 109, 29, 1),
+            500: Color.fromRGBO(47, 109, 29, 1),
+            600: Color.fromRGBO(47, 109, 29, 1),
+            700: Color.fromRGBO(47, 109, 29, 1),
+            800: Color.fromRGBO(47, 109, 29, 1),
+            900: Color.fromRGBO(47, 109, 29, 1),
+          },
+        ),
       ),
       home: HomePage(),
       debugShowCheckedModeBanner: false,

@@ -45,71 +45,68 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
     return new Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: GestureDetector(
-        onPanUpdate: (details) {
-          if (details.delta.dx > 0) {
-            switchToLastDay();
-          } else if (details.delta.dx < 0) {
-            switchToNextDay();
-          }
-        },
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
-        child: Container(
-          decoration: BoxDecoration(border: Border(
-            top: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
-          )),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                color: Colors.red,
-                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.all(0),
-                child:
-                Column(
-                  children: <Widget>[
-                    Text("                                ", style: smallPlaceholderStyle), //Placeholder
-                    Text(lesson['klasse'], style: bigText),
-                    Text("", style: placeholderStyle,), //Placeholder
-                    Text("", style: textStyle), //Teacher
-                    Text("", style: smallPlaceholderStyle), //Placeholder
-                  ],
+          onPanUpdate: (details) {
+            if (details.delta.dx > 0) {
+              switchToLastDay();
+            } else if (details.delta.dx < 0) {
+              switchToNextDay();
+            }
+          },
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
+          child: Container(
+            decoration: BoxDecoration(border: Border(
+                top: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
+            )),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(0),
+                  child:
+                  Column(
+                    children: <Widget>[
+                      Text("                                ", style: smallPlaceholderStyle), //Placeholder
+                      Text(lesson['klasse'], style: bigText),
+                      Text("", style: placeholderStyle,), //Placeholder
+                      Text("", style: textStyle), //Teacher
+                      Text("", style: smallPlaceholderStyle), //Placeholder
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                color: Colors.green,
-                alignment: Alignment.topCenter,
-                padding: EdgeInsets.all(0),
-                child:
-                Column(
-                  children: <Widget>[
-                    Text("                                ", style: smallPlaceholderStyle), //Placeholder
-                    Text(lesson['fach'], style: bigText),
-                    Text("", style: placeholderStyle,), //Placeholder
-                    Text(lesson['art'], style: textStyle), //Nothing (if teacher is shown)
-                    Text("", style: smallPlaceholderStyle), //Placeholder
-                  ],
+                Container(
+                  alignment: Alignment.topCenter,
+                  padding: EdgeInsets.all(0),
+                  child:
+                  Column(
+                    children: <Widget>[
+                      Text("                                ", style: smallPlaceholderStyle, overflow: TextOverflow.fade,), //Placeholder
+                      Text(lesson['fach'], style: bigText),
+                      Text("", style: placeholderStyle,), //Placeholder
+                      Text(lesson['art'], style: textStyle), //Nothing (if teacher is shown)
+                      Text("", style: smallPlaceholderStyle), //Placeholder
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                color: Colors.blue,
-                alignment: Alignment.topRight,
-                padding: EdgeInsets.all(0),
-                child:
-                Column(
-                  children: <Widget>[
-                    Text("                                ", style: smallPlaceholderStyle), //Placeholder
-                    Text(lesson['stunde'], style: bigText),
-                    Text("", style: placeholderStyle,), //Placeholder
-                    Text("", style: textStyle), //Art (if teacher is shown)
-                    Text("", style: smallPlaceholderStyle), //Placeholder
-                  ],
-                ),
-              )
-            ],
-          ),
-        )
+                Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  alignment: Alignment.topRight,
+                  padding: EdgeInsets.all(0),
+                  child:
+                  Column(
+                    children: <Widget>[
+                      Text("                                ", style: smallPlaceholderStyle), //Placeholder
+                      Text(lesson['stunde'], style: bigText),
+                      Text("", style: placeholderStyle,), //Placeholder
+                      Text("", style: textStyle), //Art (if teacher is shown)
+                      Text("", style: smallPlaceholderStyle), //Placeholder
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
       ),
     );
   }
@@ -174,21 +171,48 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
         points = Row(
           children: <Widget>[
             Text(".", style: request == APIAction.GET_RPLAN_TODAY ? dotActive : dotInactive),
-        Text(".", style: request == APIAction.GET_RPLAN_TOMORROW ? dotActive : dotInactive),
-        Text(".", style: request == APIAction.GET_RPLAN_DAYAFTERTOMMOROW ? dotActive : dotInactive)
-        ],
+            Text(".", style: request == APIAction.GET_RPLAN_TOMORROW ? dotActive : dotInactive),
+            Text(".", style: request == APIAction.GET_RPLAN_DAYAFTERTOMMOROW ? dotActive : dotInactive)
+          ],
         );
       });
     } else {
       setState(() {
         points = Row(
-          children: <Widget>[
-            Text(".", style: request == APIAction.GET_RPLAN_TODAY ? dotActive : dotInactive),
-            Text(".", style: request == APIAction.GET_RPLAN_TOMORROW ? dotActive : dotInactive)
-          ]
-      );
+            children: <Widget>[
+              Text(".", style: request == APIAction.GET_RPLAN_TODAY ? dotActive : dotInactive),
+              Text(".", style: request == APIAction.GET_RPLAN_TOMORROW ? dotActive : dotInactive)
+            ]
+        );
       });
     }
+  }
+
+  Future _showFilterOptions() async {
+    showDialog(
+        context: context,
+        child: Dialog(
+            child:
+            Column(
+              children: <Widget>[
+                TextField(
+                  autocorrect: false,
+                  enabled: true,
+                  maxLines: 1,
+                ),
+                Text("Der Vertretungsplan wird nach diesem Filter gefiltert", style: TextStyle(fontSize: 10),
+                ),
+                Row(
+                  children: <Widget>[
+                    Text("Abbrechen"),
+                    Text("Anwenden")
+                  ],
+                )
+              ],
+            )
+
+        )
+    );
   }
 
   Future _showChooseDialog() async {
@@ -240,14 +264,27 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   Widget build(BuildContext context) {
     return new SafeArea(
         child: GestureDetector(
-            onDoubleTap: switchToNextDay,
             child: RefreshIndicator(
                 child: Column(
                   children: <Widget>[
-                    GestureDetector(
-                      child: Text(dateText, style: TextStyle(fontSize: 30)),
-                      onLongPress: _showChooseDialog,
+                    Container(
+                        child: Row(
+                          children: <Widget>[
+                            GestureDetector(
+                              child: Text(dateText, style: TextStyle(fontSize: 30)),
+                              onLongPress: _showChooseDialog,
+                            ),
+                            GestureDetector(
+                                onTap: _showFilterOptions,
+                                child: Container(
+                                  child: Text("Filtern", style: TextStyle(fontSize: 20, color: Colors.blue)),
+                                  margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                )
+                            )
+                          ],
+                        )
                     ),
+
                     Expanded(
                       child: ListView(
                         children: lessons,
@@ -273,6 +310,7 @@ class RPlanDetail extends StatelessWidget {
 
   final lesson;
   static const TextStyle textStyle = const TextStyle(fontSize: 30);
+  static const TextStyle titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
@@ -281,48 +319,94 @@ class RPlanDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(lesson['klasse'] + " " + lesson['fach']),
+        title: Text(lesson['klasse'] + " - " + lesson['fach']),
         backgroundColor: Color.fromRGBO(47, 109, 29, 1),
       ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            Container(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Text(lesson['klasse'], style: textStyle),
-                  Text(lesson['stunde'], style: textStyle)
-                ],
-              ),
-              margin: EdgeInsets.fromLTRB(0, 20, 0, 40),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+            Text(lesson['art'], style: textStyle),
+
+            Column(
               children: <Widget>[
-                Text(lesson['fach'], style: textStyle),
-                Text(lesson['v_fach'], style: textStyle)
+                Container(
+                  child: Text("Allgemein", style: titleStyle),
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(lesson['klasse'], style: textStyle),
+                    Text(lesson['stunde'], style: textStyle)
+                  ],
+                ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+            Column(
               children: <Widget>[
-                Text(lesson['raum'], style: textStyle),
-                Text(lesson['v_raum'], style: textStyle)
+                Container(
+                  child: Text("Fach", style: titleStyle),
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(lesson['fach'], style: textStyle),
+                    Text(lesson['v_fach'], style: textStyle)
+                  ],
+                ),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+            Column(
               children: <Widget>[
-                Text(lesson['lehrer'], style: textStyle),
-                Text(lesson['v_lehrer'], style: textStyle)
+                Container(
+                  child: Text("Raum", style: titleStyle),
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(lesson['raum'], style: textStyle),
+                    Text(lesson['v_raum'], style: textStyle)
+                  ],
+                ),
               ],
             ),
-            Text(lesson['art'], style: textStyle)
+
+            Column(
+              children: <Widget>[
+                Container(
+                  child: Text(getTeacherText(lesson['lehrer'], lesson['v_lehrer']), style: titleStyle),
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    Text(lesson['lehrer'], style: textStyle),
+                    Text(lesson['v_lehrer'], style: textStyle)
+                  ],
+                ),
+              ],
+            ),
+
           ],
         ),
       ),
     );
+  }
+
+  String getTeacherText(String teacher, String v_teacher) {
+    if (teacher.isEmpty && v_teacher.isEmpty) {
+      return "";
+    }
+    return "Lehrer";
   }
 }
