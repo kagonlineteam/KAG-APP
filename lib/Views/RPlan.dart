@@ -191,9 +191,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   Future _showFilterOptions() async {
     showDialog(
         context: context,
-        child: Dialog(
-            child:
-            Column(
+        child: SimpleDialog(
               children: <Widget>[
                 TextField(
                   autocorrect: false,
@@ -203,14 +201,13 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
                 Text("Der Vertretungsplan wird nach diesem Filter gefiltert", style: TextStyle(fontSize: 10),
                 ),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: <Widget>[
                     Text("Abbrechen"),
                     Text("Anwenden")
                   ],
                 )
               ],
-            )
-
         )
     );
   }
@@ -269,6 +266,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
                   children: <Widget>[
                     Container(
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
                             GestureDetector(
                               child: Text(dateText, style: TextStyle(fontSize: 30)),
