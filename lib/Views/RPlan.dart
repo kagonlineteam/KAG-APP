@@ -190,41 +190,69 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future _showFilterOptions() async {
-    TextEditingController teacher = TextEditingController(text: searchedTeacher);
+    TextEditingController teacher = TextEditingController(
+        text: searchedTeacher);
     showDialog(
         context: context,
         child: SimpleDialog(
+          contentPadding: EdgeInsets.all(0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+
+          ),
+          children: <Widget>[
+            Container(
+              child: TextField(
+                controller: teacher,
+                autocorrect: false,
+                enabled: true,
+                maxLines: 1,
+                decoration: InputDecoration(
+                    hintText: "Filter"
+                ),
+              ),
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            ),
+            Container(
+              child: Text(
+                "Der Vertretungsplan wird nach diesem Filter gefiltert",
+                style: TextStyle(fontSize: 10),),
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                TextField(
-                  controller: teacher,
-                  autocorrect: false,
-                  enabled: true,
-                  maxLines: 1,
-                ),
-                Text("Der Vertretungsplan wird nach diesem Filter gefiltert", style: TextStyle(fontSize: 10),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    MaterialButton(
-                      onPressed: () => Navigator.pop(context),
+                Container(
+                  child: MaterialButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Container(
                       child: Text("Abbrechen"),
                     ),
-                    MaterialButton(
-                      onPressed: () {
-                        if (teacher.text == "") {
-                          searchedTeacher = null;
-                        } else {
-                          searchedTeacher = teacher.text;
-                        }
-                        _load();
-                        Navigator.pop(context);
-                      },
+                  ),
+                  alignment: Alignment.bottomLeft,
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                ),
+                Container(
+                  child: MaterialButton(
+                    onPressed: () {
+                      if (teacher.text == "") {
+                        searchedTeacher = null;
+                      } else {
+                        searchedTeacher = teacher.text;
+                      }
+                      _load();
+                      Navigator.pop(context);
+                    },
+                    child: Container(
                       child: Text("Anwenden"),
-                    )
-                  ],
+                    ),
+                  ),
+                  alignment: Alignment.bottomRight,
                 )
               ],
+            )
+          ],
         )
     );
   }
@@ -276,44 +304,60 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
 
   @override
   Widget build(BuildContext context) {
-    return new SafeArea(
-        child: GestureDetector(
-            child: RefreshIndicator(
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            GestureDetector(
-                              child: Text(dateText, style: TextStyle(fontSize: 30)),
-                              onLongPress: _showChooseDialog,
-                            ),
-                            GestureDetector(
-                                onTap: _showFilterOptions,
-                                child: Container(
-                                  child: Text("Filtern", style: TextStyle(fontSize: 20, color: Colors.blue)),
-                                  margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                                )
-                            )
-                          ],
-                        )
-                    ),
-
-                    Expanded(
-                      child: ListView(
-                        children: lessons,
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[
-                        points
-                      ],
-                    )
-                  ],
+    return new Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(47, 109, 29, 1),
+        actions: <Widget>[
+          Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                GestureDetector(
+                  child: Container(
+                    child: Text("3.7.17", style: TextStyle(fontSize: 30),),
+                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  onLongPress: _showChooseDialog,
                 ),
-                onRefresh: () => _load(force: true))));
+                GestureDetector(
+                    onTap: _showFilterOptions,
+                    child: Container(
+                      child: Text("Filtern",
+                          style: TextStyle(fontSize: 20, color: Colors.blue)),
+                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      alignment: Alignment.centerRight,
+                    )
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+      body: SafeArea(
+          child: GestureDetector(
+              child: RefreshIndicator(
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: ListView(
+                          children: lessons,
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          points
+                        ],
+                      )
+                    ],
+                  ),
+                  onRefresh: () => _load(force: true)))),
+    );
   }
 
   @override
