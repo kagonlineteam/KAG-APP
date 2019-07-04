@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../main.dart';
 import '../api.dart';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 
 class RPlan extends StatefulWidget {
   @override
@@ -226,71 +227,84 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future _showFilterOptions() async {
+    /*
+    Column(
+              children: <Widget>[
+                Container(
+                  child: TextField(
+                    controller: teacher,
+                    autocorrect: false,
+                    enabled: true,
+                    maxLines: 1,
+                    decoration: InputDecoration(
+                        hintText: "Filter"
+                    ),
+                  ),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                ),
+                Container(
+                  child: Text(
+                    "Der Vertretungsplan wird nach diesem Filter gefiltert",
+                    style: TextStyle(fontSize: 10),),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                ),
+              ],
+            )
+     */
+
     TextEditingController teacher = TextEditingController(
         text: searchedTeacher);
     showDialog(
         context: context,
         // ignore: deprecated_member_use
-        child: SimpleDialog(
-          contentPadding: EdgeInsets.all(0),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-
-          ),
-          children: <Widget>[
-            Container(
-              child: TextField(
-                controller: teacher,
-                autocorrect: false,
-                enabled: true,
-                maxLines: 1,
-                decoration: InputDecoration(
-                    hintText: "Filter"
-                ),
-              ),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-            ),
-            Container(
-              child: Text(
-                "Der Vertretungsplan wird nach diesem Filter gefiltert",
-                style: TextStyle(fontSize: 10),),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-            ),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: CupertinoAlertDialog(
+            content: Column(
               children: <Widget>[
                 Container(
-                  child: MaterialButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Container(
-                      child: Text("Abbrechen"),
+                  child: CupertinoTextField(
+                    placeholder: "Filter",
+                    placeholderStyle: TextStyle(color: Color.fromRGBO(150, 150, 150, 1)),
+                    controller: teacher,
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: Color.fromRGBO(47, 109, 29, 1))
+                      )
                     ),
+
                   ),
-                  alignment: Alignment.bottomLeft,
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
                 ),
                 Container(
-                  child: MaterialButton(
-                    onPressed: () {
-                      if (teacher.text == "") {
-                        searchedTeacher = null;
-                      } else {
-                        searchedTeacher = teacher.text;
-                      }
-                      _load();
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      child: Text("Anwenden"),
+                  child: Text(
+                    "Der Vertretungsplan wird nach diesem Filter gefiltert",
                     ),
-                  ),
-                  alignment: Alignment.bottomRight,
-                )
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                ),
               ],
-            )
-          ],
+            ),
+            actions: <Widget>[
+              MaterialButton(
+                onPressed: () => Navigator.pop(context),
+                child: Container(
+                  child: Text("Abbrechen", style: TextStyle(color: CupertinoColors.activeBlue)),
+                ),
+              ),
+              MaterialButton(
+                onPressed: () {
+                  if (teacher.text == "") {
+                    searchedTeacher = null;
+                  } else {
+                    searchedTeacher = teacher.text;
+                  }
+                  _load();
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  child: Text("Anwenden", style: TextStyle(color: CupertinoColors.activeBlue),),
+                ),
+              ),
+            ],
         )
+
     );
   }
 
@@ -367,7 +381,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
                     onTap: _showFilterOptions,
                     child: Container(
                       child: Text("Filtern",
-                          style: TextStyle(fontSize: 20, color: Colors.blue)),
+                          style: TextStyle(fontSize: 20, color: CupertinoColors.activeBlue)),
                       margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       alignment: Alignment.centerRight,
                     )
