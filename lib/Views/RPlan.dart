@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 import '../api.dart';
 import 'dart:convert';
@@ -12,6 +13,8 @@ class RPlan extends StatefulWidget {
 }
 
 class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
+  static const SP_FILTER = "RPlan_filter";
+
   var lessons = <Widget>[];
   APIAction requestDate = APIAction.GET_RPLAN_TODAY;
   static const textStyle = TextStyle(fontSize: 20);
@@ -22,12 +25,14 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
   String dateText = "";
   String searchedTeacher;
+  bool isTeacher = false;
   bool switchingDays = false;
   Row points = Row();
 
   @override
   void initState() {
     super.initState();
+    _preLoad();
     _createDots(APIAction.GET_RPLAN_TODAY);
     _load();
   }
@@ -138,6 +143,21 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
     );
   }
 
+  Future _preLoad() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    // Load searched Teacher
+    if (preferences.containsKey(SP_FILTER)) {
+      searchedTeacher = preferences.getString(SP_FILTER);
+    }
+    // Load is Teacher
+    isTeacher = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+        .getGroups()
+        .contains("ROLE_TEACHER") ||
+        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+            .getGroups()
+            .contains("ROLE_ADMINISTRATOR"));
+  }
+
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
@@ -161,13 +181,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
       switchingDays = true;
       if (requestDate == APIAction.GET_RPLAN_TODAY) {
         requestDate = APIAction.GET_RPLAN_TOMORROW;
-      } else if (requestDate == APIAction.GET_RPLAN_TOMORROW &&
-          ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-              .getGroups()
-              .contains("ROLE_TEACHER") ||
-              (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-                  .getGroups()
-                  .contains("ROLE_ADMINISTRATOR"))) {
+      } else if (requestDate == APIAction.GET_RPLAN_TOMORROW && isTeacher) {
         requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
       } else {
         requestDate = APIAction.GET_RPLAN_TODAY;
@@ -179,13 +193,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   Future switchToLastDay() async {
     if (!switchingDays) {
       switchingDays = true;
-      if (requestDate == APIAction.GET_RPLAN_TODAY &&
-          ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-              .getGroups()
-              .contains("ROLE_TEACHER") ||
-              (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-                  .getGroups()
-                  .contains("ROLE_ADMINISTRATOR"))) {
+      if (isTeacher) {
         requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
       } else if (requestDate == APIAction.GET_RPLAN_TODAY) {
         requestDate = APIAction.GET_RPLAN_TOMORROW;
@@ -199,12 +207,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future _createDots(APIAction request) async {
-    if ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-        .getGroups()
-        .contains("ROLE_TEACHER") ||
-        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-            .getGroups()
-            .contains("ROLE_ADMINISTRATOR")) {
+    if (isTeacher) {
       setState(() {
         points = Row(
           children: <Widget>[
@@ -265,13 +268,18 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
               ),
               MaterialButton(
                 onPressed: () {
-                  if (teacher.text == "") {
-                    searchedTeacher = null;
-                  } else {
-                    searchedTeacher = teacher.text;
-                  }
-                  _load();
-                  Navigator.pop(context);
+    async {
+    SharedPreferences preferences = await SharedPreferences
+        .getInstance();
+    if (teacher.text == "") {
+    searchedTeacher = null;
+    preferences.remove(SP_FILTER);
+    } else {
+    searchedTeacher = teacher.text;
+    preferences.setString(SP_FILTER, searchedTeacher);
+    }
+    _load();
+    Navigator.pop(context);
                 },
                 child: Container(
                   child: Text("Anwenden", style: TextStyle(color: CupertinoColors.activeBlue),),
@@ -284,12 +292,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future _showChooseDialog() async {
-    final isTeacher = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-        .getGroups()
-        .contains("ROLE_TEACHER") ||
-        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-            .getGroups()
-            .contains("ROLE_ADMINISTRATOR"));
     showDialog(
         context: context,
         // ignore: deprecated_member_use
