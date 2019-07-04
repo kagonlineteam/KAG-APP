@@ -78,7 +78,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
           Row(children: <Widget>[
             Text(name, style: TextStyle(fontSize: 30)),
             MaterialButton(
-              child: Text("Logout"),
+              child: Text("Abmelden"),
               onPressed: logout,
             )
           ], mainAxisAlignment: MainAxisAlignment.spaceAround),

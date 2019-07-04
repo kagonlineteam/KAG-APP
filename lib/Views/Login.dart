@@ -27,7 +27,7 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
           mainAxisSize: MainAxisSize.min,
           children: [
             new CircularProgressIndicator(),
-            new Text("Logging in..."),
+            new Text("Anmelden"),
           ],
         ),
       ),
@@ -62,50 +62,62 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
 
   @override
   Widget build(BuildContext context) {
-    TextStyle textStyle = new TextStyle(
-        fontFamily: 'Montserrat', fontSize: 20.0, color: Colors.white);
+    TextStyle textStyle = new TextStyle(color: Colors.white);
     TextStyle hintTextStyle = new TextStyle(
-        fontFamily: 'Montserrat',
-        fontSize: 20.0,
-        color: new Color.fromRGBO(200, 200, 200, 1));
+        color: new Color.fromRGBO(150, 150, 150, 1));
 
-    final usernameField = TextField(
-      controller: username,
-      style: textStyle,
-      decoration: InputDecoration(
-        contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        hintText: "Username",
-        hintStyle: hintTextStyle,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(32.0),
+    final usernameField = Container(
+      child: Container(
+        margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
+        child: TextField(
+          controller: username,
+          decoration: InputDecoration.collapsed(
+              hintText: "Benutzername",
+              hintStyle: hintTextStyle
+          ),
+          style: textStyle,
         ),
+      ),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.white)
+          )
       ),
     );
 
-    final passwordField = TextField(
-      controller: password,
-      style: textStyle,
-      obscureText: true,
-      decoration: InputDecoration(
-          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-          hintText: "Password",
-          hintStyle: hintTextStyle,
-          border:
-              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
+    final passwordField = Container(
+      child: Container(
+        margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
+        child: TextField(
+          controller: password,
+          obscureText: true,
+          decoration: InputDecoration.collapsed(
+            hintText: "Passwort",
+            hintStyle: hintTextStyle,
+          ),
+          style: textStyle,
+        ),
+      ),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.white)
+          )
+      ),
     );
 
     final loginButton = Material(
-      elevation: 5.0,
-      borderRadius: BorderRadius.circular(30.0),
-      color: Color.fromRGBO(0, 84, 1, 1),
+      borderRadius: BorderRadius.circular(30),
+      color: Color.fromRGBO(47, 109, 29, 1),
       child: MaterialButton(
-        minWidth: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-        onPressed: login,
-        child: Text("Login",
-            textAlign: TextAlign.center,
-            style: textStyle.copyWith(
-                color: Colors.white, fontWeight: FontWeight.bold)),
+          onPressed: login,
+          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+          minWidth: MediaQuery
+              .of(context)
+              .size
+              .width,
+          child: Container(
+            child: Text("Anmelden", style: textStyle),
+          )
       ),
     );
 
@@ -115,7 +127,8 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage("assets/background.png"),
-                  fit: BoxFit.cover)),
+                  fit: BoxFit.cover)
+          ),
           child: Padding(
             padding: const EdgeInsets.all(36.0),
             child: Column(
@@ -126,13 +139,9 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
                 usernameField,
                 SizedBox(height: 25.0),
                 passwordField,
-                SizedBox(
-                  height: 35.0,
-                ),
+                SizedBox(height: 35.0),
                 loginButton,
-                SizedBox(
-                  height: 15.0,
-                ),
+                SizedBox(height: 15.0),
               ],
             ),
           ),

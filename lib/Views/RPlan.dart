@@ -227,31 +227,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   Future _showFilterOptions() async {
-    /*
-    Column(
-              children: <Widget>[
-                Container(
-                  child: TextField(
-                    controller: teacher,
-                    autocorrect: false,
-                    enabled: true,
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                        hintText: "Filter"
-                    ),
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                ),
-                Container(
-                  child: Text(
-                    "Der Vertretungsplan wird nach diesem Filter gefiltert",
-                    style: TextStyle(fontSize: 10),),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                ),
-              ],
-            )
-     */
-
     TextEditingController teacher = TextEditingController(
         text: searchedTeacher);
     showDialog(
@@ -371,7 +346,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
               children: <Widget>[
                 GestureDetector(
                   child: Container(
-                    child: Text("3.7.17", style: TextStyle(fontSize: 30),),
+                    child: Text(dateText, style: TextStyle(fontSize: 30),),
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     alignment: Alignment.centerLeft,
                   ),
