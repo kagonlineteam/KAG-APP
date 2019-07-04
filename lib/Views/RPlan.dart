@@ -396,98 +396,164 @@ class RPlanDetail extends StatelessWidget {
   RPlanDetail(this.lesson);
 
   final lesson;
-  static const TextStyle textStyle = const TextStyle(fontSize: 30);
-  static const TextStyle titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+  static const TextStyle textStyle = const TextStyle(fontSize: 25);
+  static const TextStyle titleStyle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  double width;
 
   @override
   Widget build(BuildContext context) {
     if (lesson['lehrer'] == null) lesson['lehrer'] = "";
     if (lesson['v_lehrer'] == null) lesson['v_lehrer'] = "";
+    width = MediaQuery.of(context).size.width;
+
+
+
+    final a = Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+
+        Text(lesson['art'], style: textStyle),
+
+        Column(
+          children: <Widget>[
+            Container(
+              child: Text("Allgemein", style: titleStyle),
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['klasse'], style: textStyle),
+                Text(lesson['stunde'], style: textStyle)
+              ],
+            ),
+          ],
+        ),
+
+        Column(
+          children: <Widget>[
+            Container(
+              child: Text("Fach", style: titleStyle),
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['fach'], style: textStyle),
+                Text(lesson['v_fach'], style: textStyle)
+              ],
+            ),
+          ],
+        ),
+
+        Column(
+          children: <Widget>[
+            Container(
+              child: Text("Raum", style: titleStyle),
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['raum'], style: textStyle),
+                Text(lesson['v_raum'], style: textStyle)
+              ],
+            ),
+          ],
+        ),
+
+        Column(
+          children: <Widget>[
+            Container(
+              child: Text(getTeacherText(lesson['lehrer'], lesson['v_lehrer']), style: titleStyle),
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                Text(lesson['lehrer'], style: textStyle),
+                Text(lesson['v_lehrer'], style: textStyle)
+              ],
+            ),
+          ],
+        ),
+
+      ],
+    );
+    List<Widget> widgets = [
+      element("Art", lesson['art'], ""),
+      element("Stunde", lesson['stunde'], ""),
+      element("Fach"  , lesson['fach'], lesson['v_fach']),
+      element("Raum"  , lesson['raum'], lesson['v_raum']),
+      element("Infos", lesson['infos'], ""),
+    ];
+
+    if (getTeacherText(lesson['lehrer'], lesson['v_lehrer']).compareTo("") != 0) {
+      widgets.insert(1, element(getTeacherText(lesson['lehrer'], lesson['v_lehrer']), lesson['lehrer'], lesson['v_lehrer']));
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(lesson['klasse'] + " - " + lesson['fach']),
-        backgroundColor: Color.fromRGBO(47, 109, 29, 1),
       ),
       body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: <Widget>[
-
-            Text(lesson['art'], style: textStyle),
-
-            Column(
-              children: <Widget>[
-                Container(
-                  child: Text("Allgemein", style: titleStyle),
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(lesson['klasse'], style: textStyle),
-                    Text(lesson['stunde'], style: textStyle)
-                  ],
-                ),
-              ],
-            ),
-
-            Column(
-              children: <Widget>[
-                Container(
-                  child: Text("Fach", style: titleStyle),
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(lesson['fach'], style: textStyle),
-                    Text(lesson['v_fach'], style: textStyle)
-                  ],
-                ),
-              ],
-            ),
-
-            Column(
-              children: <Widget>[
-                Container(
-                  child: Text("Raum", style: titleStyle),
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(lesson['raum'], style: textStyle),
-                    Text(lesson['v_raum'], style: textStyle)
-                  ],
-                ),
-              ],
-            ),
-
-            Column(
-              children: <Widget>[
-                Container(
-                  child: Text(getTeacherText(lesson['lehrer'], lesson['v_lehrer']), style: titleStyle),
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: <Widget>[
-                    Text(lesson['lehrer'], style: textStyle),
-                    Text(lesson['v_lehrer'], style: textStyle)
-                  ],
-                ),
-              ],
-            ),
-
-          ],
-        ),
+          children: widgets
+        )
       ),
     );
+  }
+
+  Container element(String title, String first, String second) {
+
+    if (first.compareTo("") == 0 && second.compareTo("") == 0) {
+      return(Container());
+    }
+
+    String arrow = second.compareTo("") == 0 ? "":"->";
+
+    final container = Container(
+      margin: EdgeInsets.fromLTRB(20, 15, 20, 15),
+      //color: Colors.pink,
+      child: Column(
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                child: Text(title, style: titleStyle,),
+                width: width-40,
+                height: 30,
+              )
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Container(
+                child: Text(first, style: textStyle,textAlign: TextAlign.left,),
+                width: (width-70)/2,
+                height: 30,
+              ),
+              Container(
+                child: Text(arrow, style: textStyle,textAlign: TextAlign.center,),
+                width: 30,
+                height: 30,
+              ),
+              Container(
+                child: Text(second, style: textStyle,textAlign: TextAlign.right,),
+                width: (width-70)/2,
+                height: 30,
+              )
+            ],
+          )
+        ],
+      ),
+    );
+    return container;
   }
 
   String getTeacherText(String teacher, String v_teacher) {
