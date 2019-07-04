@@ -24,6 +24,119 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   bool switchingDays = false;
   Row points = Row();
 
+  @override
+  void initState() {
+    super.initState();
+    _createDots(APIAction.GET_RPLAN_TODAY);
+    _load();
+  }
+
+  Widget _loadLesson(lesson) {
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    double elementWidth = (width - 60) / 3;
+    double elementHeight = 25;
+
+    return new Container(
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+      child: GestureDetector(
+          onPanUpdate: (details) {
+            if (details.delta.dx > 0) {
+              switchToLastDay();
+            } else if (details.delta.dx < 0) {
+              switchToNextDay();
+            }
+          },
+          onTap: () =>
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
+          child: Container(
+            decoration: BoxDecoration(border: Border(
+                top: BorderSide(color: Color.fromRGBO(235, 235, 235, 1))
+            )),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Container(
+                  width: elementWidth,
+                  child:
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        width: elementWidth,
+                        height: elementHeight,
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Text(lesson['klasse'], style: bigText,
+                            textAlign: TextAlign.left),
+                      ),
+                      Container(
+                        width: elementWidth,
+                        height: elementHeight,
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Text("", style: textStyle,
+                            textAlign: TextAlign.left), //Teacher
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: elementWidth,
+                  child:
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        width: elementWidth,
+                        height: elementHeight,
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Text(lesson['fach'], style: bigText,
+                            textAlign: TextAlign.center),
+                      ),
+                      Container(
+                        width: elementWidth,
+                        height: elementHeight,
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Text(lesson['art'], style: textStyle,
+                            textAlign: TextAlign
+                                .center), //Nothing (if teacher is shown)
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: elementWidth,
+                  child:
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(
+                        width: elementWidth,
+                        height: elementHeight,
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Text(lesson['stunde'], style: bigText,
+                            textAlign: TextAlign.right),
+                      ),
+                      Container(
+                        width: elementWidth,
+                        height: elementHeight,
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                        child: Text("", style: textStyle,
+                            textAlign: TextAlign
+                                .right), //Art (if teacher is shown)
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+      ),
+    );
+  }
+
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
@@ -40,83 +153,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
       }
     }
     switchingDays = false;
-  }
-
-  Widget _loadLesson(lesson) {
-    return new Container(
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: GestureDetector(
-          onPanUpdate: (details) {
-            if (details.delta.dx > 0) {
-              switchToLastDay();
-            } else if (details.delta.dx < 0) {
-              switchToNextDay();
-            }
-          },
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
-          child: Container(
-            decoration: BoxDecoration(border: Border(
-                top: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
-            )),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  alignment: Alignment.topLeft,
-                  padding: EdgeInsets.all(0),
-                  child:
-                  Column(
-                    children: <Widget>[
-                      Text("                                ", style: smallPlaceholderStyle), //Placeholder
-                      Text(lesson['klasse'], style: bigText),
-                      Text("", style: placeholderStyle,), //Placeholder
-                      Text("", style: textStyle), //Teacher
-                      Text("", style: smallPlaceholderStyle), //Placeholder
-                    ],
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.topCenter,
-                  padding: EdgeInsets.all(0),
-                  child:
-                  Column(
-                    children: <Widget>[
-                      Text("                                ", style: smallPlaceholderStyle, overflow: TextOverflow.fade,), //Placeholder
-                      Text(lesson['fach'], style: bigText),
-                      Text("", style: placeholderStyle,), //Placeholder
-                      Text(lesson['art'], style: textStyle), //Nothing (if teacher is shown)
-                      Text("", style: smallPlaceholderStyle), //Placeholder
-                    ],
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                  alignment: Alignment.topRight,
-                  padding: EdgeInsets.all(0),
-                  child:
-                  Column(
-                    children: <Widget>[
-                      Text("                                ", style: smallPlaceholderStyle), //Placeholder
-                      Text(lesson['stunde'], style: bigText),
-                      Text("", style: placeholderStyle,), //Placeholder
-                      Text("", style: textStyle), //Art (if teacher is shown)
-                      Text("", style: smallPlaceholderStyle), //Placeholder
-                    ],
-                  ),
-                )
-              ],
-            ),
-          )
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _createDots(APIAction.GET_RPLAN_TODAY);
-    _load();
   }
 
   Future switchToNextDay() async {
@@ -194,6 +230,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
         text: searchedTeacher);
     showDialog(
         context: context,
+        // ignore: deprecated_member_use
         child: SimpleDialog(
           contentPadding: EdgeInsets.all(0),
           shape: RoundedRectangleBorder(
@@ -266,6 +303,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
             .contains("ROLE_ADMINISTRATOR"));
     showDialog(
         context: context,
+        // ignore: deprecated_member_use
         child: new Dialog(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -303,6 +341,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>{
   }
 
   @override
+  // ignore: must_call_super
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(
