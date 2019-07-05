@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
@@ -14,7 +15,7 @@ class User extends StatefulWidget {
 
 class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
   var name = "";
-  var timeTableButton = Row();
+  Widget timeTable = Row();
 
   void logout() {
     KAGApp.api.setLoginCredentials(null, null);
@@ -44,22 +45,10 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
 
   void _setTimeTable(employeeNumber) {
     setState(() {
-      timeTableButton = Row(
-        children: <Widget>[
-          Expanded(
-              child: Container(
-                child: Material(
-                  borderRadius: BorderRadius.circular(30.0),
-                  color: Color.fromRGBO(47, 109, 29, 1),
-                  child: MaterialButton(
-                    onPressed: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
-                    child: Text("Stundenraster", style: TextStyle(color: Colors.white),),
-                  ),
-                ),
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-              )
-          )
-        ],
+      timeTable = GestureDetector(
+        onTap: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
+        child: Image.network("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
+        ),
       );
     });
   }
@@ -82,7 +71,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
               onPressed: logout,
             )
           ], mainAxisAlignment: MainAxisAlignment.spaceAround),
-          timeTableButton
+          timeTable
         ],
       ),
     );
