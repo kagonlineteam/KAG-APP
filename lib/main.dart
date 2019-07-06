@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'api.dart';
 
@@ -15,6 +16,36 @@ class KAGApp extends StatelessWidget {
   static final API api = new API();
   static TabController tabs;
   static _HomePageState app;
+  static FlutterLocalNotificationsPlugin notificationsPlugin;
+
+  static Future _holidayNotification() async {
+    notificationsPlugin = FlutterLocalNotificationsPlugin();
+    var initializationSettingsAndroid =
+    new AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = new IOSInitializationSettings(
+        onDidReceiveLocalNotification: (param, param1, param2, param3) {});
+    var initializationSettings = new InitializationSettings(
+        initializationSettingsAndroid, initializationSettingsIOS);
+    notificationsPlugin.initialize(initializationSettings,
+        onSelectNotification: (param) {});
+    var scheduledNotificationDateTime = new DateTime.fromMillisecondsSinceEpoch((await ((await api.getAPIRequest(APIAction.GET_CALENDAR)).getHolidayUnixTimestamp())) * 1000);
+    var androidPlatformChannelSpecifics =
+    new AndroidNotificationDetails('holidayKAG',
+        'KAG Holiday Channel', 'KAG will send you a Holiday Notification.');
+    var iOSPlatformChannelSpecifics =
+    new IOSNotificationDetails();
+    NotificationDetails platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    await notificationsPlugin.cancelAll();
+    await notificationsPlugin.schedule(
+        0,
+        'Ferien',
+        'Viel Spaß in den Ferien!',
+        scheduledNotificationDateTime,
+        platformChannelSpecifics);
+  }
+
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -50,6 +81,7 @@ class KAGApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
     );
   }
+
 }
 
 class HomePage extends StatefulWidget {
@@ -57,6 +89,7 @@ class HomePage extends StatefulWidget {
 
   @override
   _HomePageState createState() {
+    KAGApp._holidayNotification();
     KAGApp.app = _HomePageState();
     return KAGApp.app;
   }

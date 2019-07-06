@@ -77,7 +77,7 @@ packages:
     source: hosted
     version: "1.0.0"
   flutter_local_notifications:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_local_notifications
       url: "https://pub.dartlang.org"
