@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../main.dart';
 import '../api.dart';
+import '../main.dart';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 
@@ -13,46 +13,110 @@ class RPlan extends StatefulWidget {
 }
 
 class RPlanState extends State<RPlan>
-    with AutomaticKeepAliveClientMixin<RPlan> {
-  static const SP_FILTER = "RPlan_filter";
+    with AutomaticKeepAliveClientMixin<RPlan>, SingleTickerProviderStateMixin {
 
-  var lessons = <Widget>[];
-  APIAction requestDate = APIAction.GET_RPLAN_TODAY;
-  static const textStyle = TextStyle(fontSize: 20);
-  static const dotActive = TextStyle(fontSize: 40);
-  static const dotInactive = TextStyle(fontSize: 40, color: Colors.grey);
-  TextStyle bigText = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
-  TextStyle placeholderStyle = TextStyle(fontSize: 15);
-  TextStyle smallPlaceholderStyle = TextStyle(fontSize: 10);
-  String dateText = "";
+  DefaultTabController tabBar;
+  TabController controller;
+
+  bool canSeeAllDays = false;
   String searchedTeacher;
-  bool isTeacher = false;
-  bool switchingDays = false;
-  Row points = Row();
+  List<String> dateTexts = ["", "", ""];
+  int selectedDay;
 
-  @override
-  void initState() {
-    super.initState();
-    _preLoad();
-    _createDots(APIAction.GET_RPLAN_TODAY);
-    _load();
+  var lessonsToday = <Widget>[];
+  var lessonsTomorrow = <Widget>[];
+  var lessonsDayAfterTomorrow = <Widget>[];
+
+  Column todayWidget;
+  Column tomorrowWidget;
+  Column dayAfterTomorrowWidget;
+
+  static const normalText = TextStyle(fontSize: 20);
+  static const bigText = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+
+  Future _loadDay(APIAction action, {force: false}) async {
+    var rplanRequest = await KAGApp.api.getAPIRequest(action);
+    if (rplanRequest != null) {
+      var rPlan = jsonDecode(
+          await rplanRequest.getRAWRPlan(searchedTeacher, force: force)
+      );
+      if (rPlan != null) {
+        var newLessons = <Widget>[];
+        await rPlan['vertretungen']
+            .forEach((lesson) => newLessons.add(_createLesson(lesson)));
+        setState(() {
+          if (action == APIAction.GET_RPLAN_TODAY) {
+            lessonsToday = newLessons;
+            dateTexts[0] = rPlan['date'];
+          } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+            lessonsTomorrow = newLessons;
+            dateTexts[1] = rPlan['date'];
+          } else if (action == APIAction.GET_RPLAN_DAYAFTERTOMMOROW) {
+            lessonsDayAfterTomorrow = newLessons;
+            dateTexts[2] = rPlan['date'];
+          }
+        });
+      }
+    }
   }
 
-  Widget _loadLesson(lesson) {
+  void _loadAllDays({force: false}) {
+    _loadDay(APIAction.GET_RPLAN_TODAY, force: force);
+    _loadDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+    if (canSeeAllDays) {
+      _loadDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
+    }
+
+  }
+
+  void _createColumnFromList() {
+    todayWidget = Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView(
+            children: lessonsToday,
+          ),
+        )
+      ],
+    );
+    tomorrowWidget = Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView(
+            children: lessonsTomorrow,
+          ),
+        )
+      ],
+    );
+    dayAfterTomorrowWidget = Column(
+      children: <Widget>[
+        Expanded(
+          child: ListView(
+            children: lessonsDayAfterTomorrow,
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _createLesson(lesson) {
     double width = MediaQuery.of(context).size.width;
     double elementWidth = (width - 60) / 3;
     double elementHeight = 25;
 
+    var bottomLeftText = "";
+    var bottomCenterText = lesson['art'];
+    var bottomRightText = "";
+
+    if (canSeeAllDays) {
+      bottomLeftText = lesson['lehrer'] + "->" + lesson['v_lehrer'];
+      bottomCenterText = "";
+      bottomRightText = lesson['art'];
+    }
+
     return new Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: GestureDetector(
-          onPanUpdate: (details) {
-            if (details.delta.dx > 0) {
-              switchToLastDay();
-            } else if (details.delta.dx < 0) {
-              switchToNextDay();
-            }
-          },
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
           child: Container(
@@ -78,9 +142,9 @@ class RPlanState extends State<RPlan>
                         width: elementWidth,
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text("",
-                            style: textStyle,
-                            textAlign: TextAlign.left), //Teacher
+                        child: Text(bottomLeftText,
+                            style: normalText,
+                            textAlign: TextAlign.left),
                       ),
                     ],
                   ),
@@ -101,10 +165,10 @@ class RPlanState extends State<RPlan>
                         width: elementWidth,
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(lesson['art'],
-                            style: textStyle,
+                        child: Text(bottomCenterText,
+                            style: normalText,
                             textAlign: TextAlign
-                                .center), //Nothing (if teacher is shown)
+                                .center),
                       ),
                     ],
                   ),
@@ -125,10 +189,10 @@ class RPlanState extends State<RPlan>
                         width: elementWidth,
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text("",
-                            style: textStyle,
+                        child: Text(bottomRightText,
+                            style: normalText,
                             textAlign:
-                                TextAlign.right), //Art (if teacher is shown)
+                            TextAlign.right),
                       ),
                     ],
                   ),
@@ -139,106 +203,118 @@ class RPlanState extends State<RPlan>
     );
   }
 
-  Future _preLoad() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    // Load searched Teacher
-    if (preferences.containsKey(SP_FILTER)) {
-      searchedTeacher = preferences.getString(SP_FILTER);
-    }
-    // Load is Teacher
-    isTeacher = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-            .getGroups()
-            .contains("ROLE_TEACHER") ||
-        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-            .getGroups()
-            .contains("ROLE_ADMINISTRATOR"));
-  }
-
-  Future _load({force: false}) async {
-    var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
-    if (rplanRequest != null) {
-      var rplan = jsonDecode(
-          await rplanRequest.getRAWRPlan(searchedTeacher, force: force));
-      if (rplan != null) {
-        var newLessons = <Widget>[];
-        await rplan['vertretungen']
-            .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
-        setState(() {
-          lessons = newLessons;
-          dateText = rplan['date'];
-        });
-        _createDots(requestDate);
-      }
-    }
-    switchingDays = false;
-  }
-
-  Future switchToNextDay() async {
-    if (!switchingDays) {
-      switchingDays = true;
-      if (requestDate == APIAction.GET_RPLAN_TODAY) {
-        requestDate = APIAction.GET_RPLAN_TOMORROW;
-      } else if (requestDate == APIAction.GET_RPLAN_TOMORROW && isTeacher) {
-        requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
-      } else {
-        requestDate = APIAction.GET_RPLAN_TODAY;
-      }
-      _load();
-    }
-  }
-
-  Future switchToLastDay() async {
-    if (!switchingDays) {
-      switchingDays = true;
-      if (isTeacher) {
-        requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
-      } else if (requestDate == APIAction.GET_RPLAN_TODAY) {
-        requestDate = APIAction.GET_RPLAN_TOMORROW;
-      } else if (requestDate == APIAction.GET_RPLAN_TOMORROW) {
-        requestDate = APIAction.GET_RPLAN_TODAY;
-      } else {
-        requestDate = APIAction.GET_RPLAN_TOMORROW;
-      }
-      _load();
-    }
-  }
-
-  Future _createDots(APIAction request) async {
-    if (isTeacher) {
-      setState(() {
-        points = Row(
-          children: <Widget>[
-            Text(".",
-                style: request == APIAction.GET_RPLAN_TODAY
-                    ? dotActive
-                    : dotInactive),
-            Text(".",
-                style: request == APIAction.GET_RPLAN_TOMORROW
-                    ? dotActive
-                    : dotInactive),
-            Text(".",
-                style: request == APIAction.GET_RPLAN_DAYAFTERTOMMOROW
-                    ? dotActive
-                    : dotInactive)
-          ],
-        );
-      });
+  void _createTabBar() {
+    List<Widget> children;
+    if (canSeeAllDays) {
+      children = [todayWidget, tomorrowWidget, dayAfterTomorrowWidget];
     } else {
-      setState(() {
-        points = Row(children: <Widget>[
-          Text(".",
-              style: request == APIAction.GET_RPLAN_TODAY
-                  ? dotActive
-                  : dotInactive),
-          Text(".",
-              style: request == APIAction.GET_RPLAN_TOMORROW
-                  ? dotActive
-                  : dotInactive)
-        ]);
-      });
+      children = [todayWidget, tomorrowWidget];
     }
+
+    var tabs = <Widget>[Tab(text: ".",), Tab(text: ".",)];
+    if (canSeeAllDays) {
+      tabs.add(Tab(text: ".",));
+    }
+
+    int length = canSeeAllDays ? 3 : 2;
+
+    controller = new TabController(vsync: this, length: length);
+    tabBar = new DefaultTabController(
+      length: length,
+      child: Scaffold(
+        body: TabBarView(
+          controller: controller,
+          children: children,
+        ),
+        bottomNavigationBar: Container(
+          child: TabBar(
+            //controller: tabController,
+            tabs: tabs,
+            unselectedLabelColor: Colors.grey,
+            labelStyle: TextStyle(fontSize: 30),
+            indicatorColor: Colors.transparent,
+            labelColor: Colors.black,
+            labelPadding: EdgeInsets.only(right: 10.0, left: 10.0),
+
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+      ),
+    );
   }
 
+  Future _showChooseDialog() {
+
+  }
+
+  Future _showFilterOptions() {
+
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAllDays();
+    _createColumnFromList();
+    _createTabBar();
+    selectedDay = controller.index;
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(47, 109, 29, 1),
+        actions: <Widget>[
+          Container(
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                GestureDetector(
+                  child: Container(
+                    child: Text(
+                      dateTexts[selectedDay],
+                      style: TextStyle(fontSize: 30),
+                    ),
+                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  onLongPress: _showChooseDialog,
+                ),
+                GestureDetector(
+                    onTap: _showFilterOptions,
+                    child: Container(
+                      child: Text("Filtern",
+                          style: TextStyle(
+                              fontSize: 20, color: CupertinoColors.activeBlue)),
+                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      alignment: Alignment.centerRight,
+                    ))
+              ],
+            ),
+          )
+        ],
+      ),
+      body: tabBar,
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+
+/*
   Future _showFilterOptions() async {
     TextEditingController teacher =
         TextEditingController(text: searchedTeacher);
@@ -300,114 +376,7 @@ class RPlanState extends State<RPlan>
           ],
         ));
   }
-
-  Future _showChooseDialog() async {
-    showDialog(
-        context: context,
-        // ignore: deprecated_member_use
-        child: new Dialog(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Material(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                    onPressed: () {
-                      requestDate = APIAction.GET_RPLAN_TODAY;
-                      _load();
-                      Navigator.pop(context);
-                    },
-                    child: Text("Heute")),
-              ),
-              Material(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                    onPressed: () {
-                      requestDate = APIAction.GET_RPLAN_TOMORROW;
-                      _load();
-                      Navigator.pop(context);
-                    },
-                    child: Text("Morgen")),
-              ),
-              isTeacher
-                  ? Material(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(30.0),
-                      child: MaterialButton(
-                          onPressed: () {
-                            requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
-                            _load();
-                            Navigator.pop(context);
-                          },
-                          child: Text("Übermorgen")),
-                    )
-                  : Row()
-            ],
-          ),
-        ));
-  }
-
-  @override
-  // ignore: must_call_super
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromRGBO(47, 109, 29, 1),
-        actions: <Widget>[
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                GestureDetector(
-                  child: Container(
-                    child: Text(
-                      dateText,
-                      style: TextStyle(fontSize: 30),
-                    ),
-                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  onLongPress: _showChooseDialog,
-                ),
-                GestureDetector(
-                    onTap: _showFilterOptions,
-                    child: Container(
-                      child: Text("Filtern",
-                          style: TextStyle(
-                              fontSize: 20, color: CupertinoColors.activeBlue)),
-                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      alignment: Alignment.centerRight,
-                    ))
-              ],
-            ),
-          )
-        ],
-      ),
-      body: SafeArea(
-          child: GestureDetector(
-              child: RefreshIndicator(
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: ListView(
-                          children: lessons,
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: <Widget>[points],
-                      )
-                    ],
-                  ),
-                  onRefresh: () => _load(force: true)))),
-    );
-  }
-
-  @override
-  bool get wantKeepAlive => true;
+   */
 }
 
 class RPlanDetail extends StatelessWidget {
@@ -416,7 +385,7 @@ class RPlanDetail extends StatelessWidget {
   final lesson;
   static const TextStyle textStyle = const TextStyle(fontSize: 25);
   static const TextStyle titleStyle =
-      const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
   double width;
 
   @override
