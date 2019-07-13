@@ -28,21 +28,24 @@ class KAGApp extends StatelessWidget {
         initializationSettingsAndroid, initializationSettingsIOS);
     notificationsPlugin.initialize(initializationSettings,
         onSelectNotification: (param) {});
-    var scheduledNotificationDateTime = new DateTime.fromMillisecondsSinceEpoch((await ((await api.getAPIRequest(APIAction.GET_CALENDAR)).getHolidayUnixTimestamp())) * 1000);
-    var androidPlatformChannelSpecifics =
-    new AndroidNotificationDetails('holidayKAG',
-        'KAG Holiday Channel', 'KAG will send you a Holiday Notification.');
-    var iOSPlatformChannelSpecifics =
-    new IOSNotificationDetails();
-    NotificationDetails platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    await notificationsPlugin.cancelAll();
-    await notificationsPlugin.schedule(
-        0,
-        'Ferien',
-        'Viel Spaß in den Ferien!',
-        scheduledNotificationDateTime,
-        platformChannelSpecifics);
+    var time = (await ((await api.getAPIRequest(APIAction.GET_CALENDAR)).getHolidayUnixTimestamp())) * 1000;
+    if (time > DateTime.now().millisecondsSinceEpoch) {
+      var scheduledNotificationDateTime = new DateTime.fromMillisecondsSinceEpoch(time);
+      var androidPlatformChannelSpecifics =
+      new AndroidNotificationDetails('holidayKAG',
+          'KAG Holiday Channel', 'KAG will send you a Holiday Notification.');
+      var iOSPlatformChannelSpecifics =
+      new IOSNotificationDetails();
+      NotificationDetails platformChannelSpecifics = new NotificationDetails(
+          androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      await notificationsPlugin.cancelAll();
+      await notificationsPlugin.schedule(
+          0,
+          'Ferien',
+          'Viel Spaß in den Ferien!',
+          scheduledNotificationDateTime,
+          platformChannelSpecifics);
+    }
   }
 
 

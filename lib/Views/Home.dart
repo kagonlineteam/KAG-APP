@@ -157,6 +157,16 @@ class HomeState extends State<Home> {
 
   void calculateTimer() {
     if (holiday == null) return;
+    if (holiday <= new DateTime.now().millisecondsSinceEpoch ~/ 1000) {
+      setState(() {
+        this.weeks = betterNumber(0);
+        this.days = betterNumber(0);
+        this.hours = betterNumber(0);
+        this.minutes = betterNumber(0);
+        this.seconds = betterNumber(0);
+      });
+      return;
+    }
     int secondsNow = new DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int weeks = (holiday - secondsNow) ~/ 604800;
     int days = (holiday - secondsNow - (weeks * 604800)) ~/ 86400;

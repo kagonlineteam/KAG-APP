@@ -273,9 +273,13 @@ class _APIRequest {
         _cache.delete();
       }
     }
-    String response = jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'][0]['start'].toString();
-    _cache.setCache(response);
-    return int.parse(response);
+    var jsonResponse = jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'];
+    if (jsonResponse.length > 0) {
+      String response = jsonResponse[0]['start'].toString();
+      _cache.setCache(response);
+      return int.parse(response);
+    }
+    return 0;
   }
 
   ///
