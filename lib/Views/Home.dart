@@ -118,12 +118,10 @@ class HomeState extends State<Home> {
                   fadeInDuration: Duration(seconds: 0),
                 ),
                 onPressed: () async {
-                  if (await canLaunch("moodle://atrium.kag-langenfeld.de")) {
-                    launch("moodle://atrium.kag-langenfeld.de");
+                  if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
+                    launch("moodlemobile://atrium.kag-langenfeld.de");
                   } else {
-                    Scaffold.of(context).showSnackBar(new SnackBar(
-                      content: new Text("Bitte lade dir die Moodle App herunter."),
-                    ));
+                    launch("https://atrium.kag-langenfeld.de");
                   }
                 },
               )
