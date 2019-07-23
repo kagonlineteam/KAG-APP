@@ -47,8 +47,11 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
     setState(() {
       timeTable = GestureDetector(
         onTap: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
-        child: Image.network("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
-        ),
+        child: OrientationBuilder(builder: (context, orientation) {
+          return Image.network("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
+            height: MediaQuery.of(context).size.height - 150,
+          );
+        }),
       );
     });
   }
