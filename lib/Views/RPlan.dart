@@ -302,51 +302,82 @@ class RPlanState extends State<RPlan>
   }
 
   Future _showChooseDialog() async {
+    /*TODO:
+      * Make text dynamic (as in the iOS App
+      * Spacing to horizontal border
+     */
+
+
     showDialog(
         context: context,
         // ignore: deprecated_member_use
-        child: new Dialog(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              Material(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                    onPressed: () {
-                      requestDate = APIAction.GET_RPLAN_TODAY;
-                      _load();
-                      Navigator.pop(context);
-                    },
-                    child: Text("Heute")),
-              ),
-              Material(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(30.0),
-                child: MaterialButton(
-                    onPressed: () {
-                      requestDate = APIAction.GET_RPLAN_TOMORROW;
-                      _load();
-                      Navigator.pop(context);
-                    },
-                    child: Text("Morgen")),
-              ),
-              isTeacher
-                  ? Material(
-                      color: Colors.blue,
-                      borderRadius: BorderRadius.circular(30.0),
-                      child: MaterialButton(
-                          onPressed: () {
-                            requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
-                            _load();
-                            Navigator.pop(context);
-                          },
-                          child: Text("Übermorgen")),
-                    )
-                  : Row()
-            ],
-          ),
-        ));
+        child: CupertinoAlertDialog(
+          actions: <Widget>[
+            Container(
+              height: 20,
+            ),
+            Material(
+              color: Color.fromRGBO(0, 0, 255, 1),
+              borderRadius: BorderRadius.circular(30.0),
+              child: MaterialButton(
+                  onPressed: () {
+                    requestDate = APIAction.GET_RPLAN_TODAY;
+                    _load();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Heute",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal
+                      ))),
+            ),
+            Container(
+              height: 20,
+            ),
+            Material(
+              color: Color.fromRGBO(0, 0, 255, 1),
+              borderRadius: BorderRadius.circular(30.0),
+              child: MaterialButton(
+                  onPressed: () {
+                    requestDate = APIAction.GET_RPLAN_TOMORROW;
+                    _load();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Morgen",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal
+                      ))),
+            ),
+            isTeacher ? Container(
+              height: 20,
+            ) : Row(),
+            isTeacher ? Material(
+              color: Color.fromRGBO(0, 0, 255, 1),
+              borderRadius: BorderRadius.circular(30.0),
+              child: MaterialButton(
+                  onPressed: () {
+                    requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
+                    _load();
+                    Navigator.pop(context);
+                  },
+                  child: Text("Übermorgen",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.normal
+                      ))),
+            ) : Row(),
+            Container(
+              height: 20,
+            )
+          ],
+        )
+    );
+  }
+
+  Future _changeToNextDay() async {
+    //TODO: Change to the next day
+    //(Did not work for me)
   }
 
   @override
@@ -371,13 +402,14 @@ class RPlanState extends State<RPlan>
                     alignment: Alignment.centerLeft,
                   ),
                   onLongPress: _showChooseDialog,
+                  onTap: _changeToNextDay,
                 ),
                 GestureDetector(
                     onTap: _showFilterOptions,
                     child: Container(
                       child: Text("Filtern",
-                          style: TextStyle(
-                              fontSize: 20, color: CupertinoColors.activeBlue)),
+                          style: TextStyle(fontSize: 20)
+                      ),
                       margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       alignment: Alignment.centerRight,
                     ))
