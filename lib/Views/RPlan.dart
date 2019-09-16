@@ -404,15 +404,15 @@ class RPlanState extends State<RPlan>
                   onLongPress: _showChooseDialog,
                   onTap: _changeToNextDay,
                 ),
-                GestureDetector(
-                    onTap: _showFilterOptions,
-                    child: Container(
-                      child: Text("Filtern",
-                          style: TextStyle(fontSize: 20)
-                      ),
-                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      alignment: Alignment.centerRight,
-                    ))
+                isTeacher ? GestureDetector(
+                        onTap: _showFilterOptions,
+                        child: Container(
+                          child: Text("Filtern",
+                              style: TextStyle(fontSize: 20)
+                          ),
+                          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          alignment: Alignment.centerRight,
+                        )) : Container()
               ],
             ),
           )
