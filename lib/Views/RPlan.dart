@@ -29,6 +29,7 @@ class RPlanState extends State<RPlan>
   bool isTeacher = false;
   bool switchingDays = false;
   Row points = Row();
+  static const normalText = TextStyle(fontSize: 20);
 
   @override
   void initState() {
@@ -43,9 +44,21 @@ class RPlanState extends State<RPlan>
     double elementWidth = (width - 60) / 3;
     double elementHeight = 25;
 
+    var bottomLeftText = "";
+    var bottomCenterText = lesson['art'];
+    var bottomRightText = "";
+
+    if (isTeacher) {
+      bottomLeftText = lesson['lehrer'] + " -> " + lesson['v_lehrer'];
+      bottomCenterText = "";
+      bottomRightText = lesson['art'];
+    }
+
     return new Container(
       margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
       child: GestureDetector(
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
           onPanUpdate: (details) {
             if (details.delta.dx > 0) {
               switchToLastDay();
@@ -53,8 +66,6 @@ class RPlanState extends State<RPlan>
               switchToNextDay();
             }
           },
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
           child: Container(
             decoration: BoxDecoration(
                 border: Border(
@@ -78,9 +89,9 @@ class RPlanState extends State<RPlan>
                         width: elementWidth,
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text("",
-                            style: textStyle,
-                            textAlign: TextAlign.left), //Teacher
+                        child: Text(bottomLeftText,
+                            style: normalText,
+                            textAlign: TextAlign.left),
                       ),
                     ],
                   ),
@@ -101,10 +112,10 @@ class RPlanState extends State<RPlan>
                         width: elementWidth,
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(lesson['art'],
-                            style: textStyle,
+                        child: Text(bottomCenterText,
+                            style: normalText,
                             textAlign: TextAlign
-                                .center), //Nothing (if teacher is shown)
+                                .center),
                       ),
                     ],
                   ),
@@ -125,10 +136,10 @@ class RPlanState extends State<RPlan>
                         width: elementWidth,
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text("",
-                            style: textStyle,
+                        child: Text(bottomRightText,
+                            style: normalText,
                             textAlign:
-                                TextAlign.right), //Art (if teacher is shown)
+                            TextAlign.right),
                       ),
                     ],
                   ),
