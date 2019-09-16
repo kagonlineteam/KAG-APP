@@ -375,11 +375,6 @@ class RPlanState extends State<RPlan>
     );
   }
 
-  Future _changeToNextDay() async {
-    //TODO: Change to the next day
-    //(Did not work for me)
-  }
-
   @override
   // ignore: must_call_super
   Widget build(BuildContext context) {
@@ -402,7 +397,7 @@ class RPlanState extends State<RPlan>
                     alignment: Alignment.centerLeft,
                   ),
                   onLongPress: _showChooseDialog,
-                  onTap: _changeToNextDay,
+                  onTap: switchToNextDay,
                 ),
                 isTeacher ? GestureDetector(
                         onTap: _showFilterOptions,
