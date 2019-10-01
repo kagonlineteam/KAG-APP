@@ -158,7 +158,7 @@ class NotLoggedIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: MaterialButton(onPressed: () => KAGApp.tabs.animateTo(4), child: Text("Bitte logge dich ein!")),
+      child: MaterialButton(onPressed: () => KAGApp.tabs.animateTo(4), child: Text("Bitte melde dich an!")),
     );
   }
 }
