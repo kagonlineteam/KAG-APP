@@ -402,7 +402,7 @@ class RPlanState extends State<RPlan>
                   child: Container(
                     child: Text(
                       dateText,
-                      style: TextStyle(fontSize: 30),
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: 2),
                     ),
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     alignment: Alignment.centerLeft,
