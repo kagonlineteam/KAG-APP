@@ -69,7 +69,12 @@ class RPlanState extends State<RPlan>
           child: Container(
             decoration: BoxDecoration(
                 border: Border(
-                    top: BorderSide(color: Color.fromRGBO(235, 235, 235, 1)))),
+                    bottom: BorderSide(
+                        color: Color.fromRGBO(235, 235, 235, 1),
+                        width: 2
+                    )
+                )
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
