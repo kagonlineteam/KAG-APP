@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class Calendar extends StatelessWidget {
 
   static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold);
+  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   var usableWidth = 0.0;
 
@@ -75,18 +75,18 @@ class Calendar extends StatelessWidget {
             color: Color.fromRGBO(47, 109, 29, 1),
             margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
             width: 100,
-            height: 120,
+            height: 100,
             child: Column(
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                   child: Text(dateOneText, style: dateStyle),
                 ),
                 Container(
                   child: Image.asset("assets/arrow.png"),
                 ),
                 Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                   child: Text(dateTwoText, style: dateStyle),
                 )
               ],
@@ -94,7 +94,7 @@ class Calendar extends StatelessWidget {
 
           ),
           Container(
-            height: 120,
+            height: 100,
             width: usableWidth,
             margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
             child: Column(
@@ -108,10 +108,10 @@ class Calendar extends StatelessWidget {
                   child: Text(descriptionText,
                       style: descriptionStyle,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 4
+                      maxLines: 2
                   ),
                   alignment: Alignment.topLeft,
-                  height: 70,
+                  height: 50,
                 )
               ],
             ),
