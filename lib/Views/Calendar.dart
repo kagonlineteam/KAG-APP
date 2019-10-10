@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 
 class Calendar extends StatelessWidget {
 
+  static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
+  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold);
+  static const descriptionStyle = const TextStyle(fontSize: 15);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,18 +47,39 @@ class Calendar extends StatelessWidget {
                     children: <Widget>[
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text("1"),
+                        child: Text("10.10", style: dateStyle),
                       ),
                       Container(
                         child: Image.asset("assets/arrow.png"),
                       ),
                       Container(
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text("2"),
+                        child: Text("11.10", style: dateStyle),
                       )
                     ],
                   ),
 
+                ),
+                Container(
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: Text("Title", style: titleStyle),
+                        decoration: BoxDecoration(
+                          border: Border.all(width: 1.0, color: Colors.black)
+                        ),
+                      ),
+                      Container(
+                        child: Text("Description", style: descriptionStyle),
+                        decoration: BoxDecoration(
+                            border: Border.all(width: 1.0, color: Colors.blue)
+                        ),
+                      )
+                    ],
+                  ),
+                  decoration: BoxDecoration(
+                      border: Border.all(width: 2.0, color: Colors.green)
+                  ),
                 )
               ],
             )
