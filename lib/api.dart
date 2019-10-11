@@ -250,7 +250,22 @@ class _APIRequest {
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
-    String response = await _APIConnection.getFromAPI("termine", {"limit": "3", "orderby%5Bstart%5D": "asc", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT());
+    String response = await _APIConnection.getFromAPI("termine", {"limit": "3"}, _user.getJWT());
+    _cache.setCache(response);
+    return jsonDecode(response)['entities'];
+  }
+
+
+  ///
+  /// Returns calendar entries which occur "soon"
+  ///
+  Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
+    _actionExecution(APIAction.GET_CALENDAR);
+    await _cache.init("soon" + page.toString(), cacheDuration: 1000 * 60 * 60 * 24);
+    if (_cache.hasCache()) {
+      return jsonDecode(_cache.getCache())['entities'];
+    }
+    String response = await _APIConnection.getFromAPI("termine", {"limit": "20", "offset": (page * 20).toString()}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }

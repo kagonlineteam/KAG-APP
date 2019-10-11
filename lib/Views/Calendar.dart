@@ -1,11 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:kag/api.dart';
 
-class Calendar extends StatelessWidget {
+import '../main.dart';
+
+class Calendar extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return CalendarState();
+  }
+
+}
+
+
+class CalendarState extends State {
 
   static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
   static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   var usableWidth = 0.0;
+  var page = 0;
+  var rows = <Widget>[];
 
   @override
   Widget build(BuildContext context) {
@@ -43,22 +57,17 @@ class Calendar extends StatelessWidget {
         ),
         body: SafeArea(
             child: ListView(
-              children: <Widget>[
-                _generateRow(),
-                _generateRow(),
-                _generateRow()
-              ],
+              children: rows,
             )
         )
     );
   }
 
-  Widget _generateRow() {
-    //Placeholder
-    var dateOneText     = "10.11";
-    var dateTwoText     = "11.11";
-    var titleText       = "Title";
-    var descriptionText = "Description";
+  Widget _generateRow(int start, int end, String titleText, String descriptionText) {
+    var dateOne         = new DateTime.fromMillisecondsSinceEpoch(start * 1000);
+    var dateTwo         = new DateTime.fromMillisecondsSinceEpoch(end * 1000);
+    var dateOneText     = "${dateOne.day}.${dateOne.month}";
+    var dateTwoText     = "${dateTwo.day}.${dateTwo.month}";
 
     return Container(
       decoration: BoxDecoration(
@@ -120,5 +129,38 @@ class Calendar extends StatelessWidget {
       ),
     );
   }
+
+  Future loadEntries() async {
+    var entriesRequest = await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR);
+    if (entriesRequest != null) {
+      final entries = await entriesRequest.getCalendarEntriesSoon(page);
+      var entryRows = List<Widget>.from(rows);
+      entries.forEach((entry) => entryRows.add(_generateRow(entry['start'], entry['end'], entry['title'], getShortedDescription(entry['description']))));
+      setState(() {
+        rows = entryRows;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadEntries();
+  }
+
+  String getShortedDescription(String text) {
+    String returnText = "";
+    if (text.length > 300) {
+      returnText = text.substring(0,300);
+    } else {
+      returnText = text.substring(0, text.length-1);
+    }
+
+    if (returnText.compareTo(text) != 0) {
+      returnText += "...";
+    }
+    return returnText;
+  }
+
 
 }
