@@ -135,7 +135,7 @@ class CalendarState extends State {
     if (entriesRequest != null) {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
-      entries.forEach((entry) => entryRows.add(_generateRow(entry['start'], entry['end'], entry['title'], getShortedDescription(entry['description']))));
+      entries.forEach((entry) => entryRows.add(_generateRow(entry['start'], entry['end'], entry['title'], getShortedLongDescription(entry['description']))));
       setState(() {
         rows = entryRows;
       });
@@ -148,19 +148,12 @@ class CalendarState extends State {
     loadEntries();
   }
 
-  String getShortedDescription(String text) {
-    String returnText = "";
+  String getShortedLongDescription(String text) {
     if (text.length > 300) {
-      returnText = text.substring(0,300);
+      return text.substring(0,300) + "...";
     } else {
-      returnText = text.substring(0, text.length-1);
+      return text;
     }
-
-    if (returnText.compareTo(text) != 0) {
-      returnText += "...";
-    }
-    return returnText;
   }
-
 
 }

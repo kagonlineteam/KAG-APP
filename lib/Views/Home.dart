@@ -225,7 +225,7 @@ class HomeState extends State<Home> {
               children: <Widget>[
                 Expanded(
                   child: Container(
-                      child: Text(getSubString(description), style: eventDescriptionText),
+                      child: Text(getShortedDescription(description), style: eventDescriptionText),
                       margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
                 )
               ],
@@ -257,17 +257,11 @@ class HomeState extends State<Home> {
     return number.toString();
   }
 
-  String getSubString(String text) {
-    String returnText = "";
+  String getShortedDescription(String text) {
     if (text.length > 50) {
-      returnText = text.substring(0,50);
+      return text.substring(0,50) + "...";
     } else {
-      returnText = text.substring(0, text.length-1);
+      return text;
     }
-
-    if (returnText.compareTo(text) != 0) {
-      returnText += "...";
-    }
-    return returnText;
   }
 }
