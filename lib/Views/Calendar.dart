@@ -157,3 +157,138 @@ class CalendarState extends State {
   }
 
 }
+
+class CalendarDetail extends StatelessWidget {
+  CalendarDetail(this.entry);
+
+  final entry;
+  static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
+  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const tagStyle = const TextStyle(fontSize: 16, color: Colors.white);
+  static const timeStyle = const TextStyle(fontSize: 16, color: Colors.white);
+  static const descriptionStyle = const TextStyle(fontSize: 16);
+
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    var title = "Title";
+
+    var dateOne = "21.10";
+    var timeOne = "10:25 Uhr";
+    var dateTwo = "22.10";
+    var timeTwo = "12:30 Uhr";
+
+    var description = "Description";
+    var tagStrings = ["Tag1", "Tag2", "Tag3"];
+
+    var creationDate = "Erstellt am: 11.10.19";
+    var editDate = "Geändert am: 12.10.19";
+    var createdBy = "Erstellt von: RJipps";
+
+    List<Widget> tags = [];
+    for (String tagString in tagStrings) {
+      tags.add(createTag(tagString));
+    }
+
+    return Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                Container(
+                  child: Text(title, style: titleStyle,),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  alignment: Alignment.centerLeft,
+                ),
+
+                Container(
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        child: Column(
+                          children: <Widget>[
+                            Text(dateOne, style: dateStyle,),
+                            Text(timeOne, style: timeStyle,)
+                          ],
+                        ),
+                        margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
+                      ),
+                      Container(
+                        child: Image.asset("assets/arrow_horizontal.png"),
+                      ),
+                      Container(
+                        child: Column(
+                          children: <Widget>[
+                            Text(dateTwo, style: dateStyle,),
+                            Text(timeTwo, style: timeStyle,)
+                          ],
+                        ),
+                        margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
+                      )
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  height: 70,
+                  color: Color.fromRGBO(47, 109, 29, 1),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                ),
+
+                Container(
+                  child: Row(
+                    children: tags,
+                  ),
+                  margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
+                ),
+
+                Container(
+                  child: Text(description, style: descriptionStyle, maxLines: 5,),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  alignment: Alignment.topLeft,
+                ),
+              ],
+            ),
+
+            Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Text(creationDate),
+                    alignment: Alignment.centerLeft,
+                  ),
+
+                  Container(
+                    child: Text(editDate),
+                    alignment: Alignment.centerLeft,
+                  ),
+
+                  Container(
+                    child: Text(createdBy),
+                    alignment: Alignment.centerLeft,
+                  ),
+                ],
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ),
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+            )
+          ],
+        )
+    );
+  }
+
+  Widget createTag(String title) {
+    return Container(
+      child: Container(
+        child: Text(title, style: tagStyle,),
+        margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
+      ),
+      margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
+      decoration: BoxDecoration(
+          color: Color.fromRGBO(47, 109, 29, 1),
+          borderRadius: BorderRadius.all(Radius.circular(20))
+      ),
+    );
+  }
+}
