@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kag/api.dart';
-
 import '../main.dart';
 
 class Calendar extends StatefulWidget {
@@ -63,9 +62,9 @@ class CalendarState extends State {
     );
   }
 
-  Widget _generateRow(int start, int end, String titleText, String descriptionText) {
-    var dateOne         = new DateTime.fromMillisecondsSinceEpoch(start * 1000);
-    var dateTwo         = new DateTime.fromMillisecondsSinceEpoch(end * 1000);
+  Widget _generateRow(entry) {
+    var dateOne         = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    var dateTwo         = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
     var dateOneText     = "${dateOne.day}.${dateOne.month}";
     var dateTwoText     = "${dateTwo.day}.${dateTwo.month}";
 
@@ -78,7 +77,7 @@ class CalendarState extends State {
               )
           )
       ),
-      child: Row(
+      child: GestureDetector(child: Row(
         children: <Widget>[
           Container(
             color: Color.fromRGBO(47, 109, 29, 1),
@@ -109,12 +108,12 @@ class CalendarState extends State {
             child: Column(
               children: <Widget>[
                 Container(
-                  child: Text(titleText, style: titleStyle),
+                  child: Text(entry['title'], style: titleStyle),
                   alignment: Alignment.topLeft,
                   height: 40,
                 ),
                 Container(
-                  child: Text(descriptionText,
+                  child: Text(getShortedLongDescription(entry['description']),
                       style: descriptionStyle,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2
@@ -127,6 +126,8 @@ class CalendarState extends State {
           )
         ],
       ),
+      onTap: () => Navigator.push(context,
+          MaterialPageRoute(builder: (context) => CalendarDetail(entry))),),
     );
   }
 
@@ -135,7 +136,7 @@ class CalendarState extends State {
     if (entriesRequest != null) {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
-      entries.forEach((entry) => entryRows.add(_generateRow(entry['start'], entry['end'], entry['title'], getShortedLongDescription(entry['description']))));
+      entries.forEach((entry) => entryRows.add(_generateRow(entry)));
       setState(() {
         rows = entryRows;
       });
@@ -172,20 +173,25 @@ class CalendarDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var title = entry['title'];
 
-    var title = "Title";
+    DateTime dateObjectOne = DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
 
-    var dateOne = "21.10";
-    var timeOne = "10:25 Uhr";
-    var dateTwo = "22.10";
-    var timeTwo = "12:30 Uhr";
+    var dateOne = "${dateObjectOne.day}.${dateObjectOne.month}";
+    var dateTwo = "${dateObjectTwo.day}.${dateObjectTwo.month}";
+    var timeOne = "${dateObjectOne.hour}:${dateObjectOne.minute} Uhr";
+    var timeTwo = "${dateObjectTwo.hour}:${dateObjectTwo.minute} Uhr";
 
-    var description = "Description";
-    var tagStrings = ["Tag1", "Tag2", "Tag3"];
+    var description = entry['description'];
+    var tagStrings = entry['tags'];
 
-    var creationDate = "Erstellt am: 11.10.19";
-    var editDate = "Geändert am: 12.10.19";
-    var createdBy = "Erstellt von: RJipps";
+    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(entry['created']);
+    DateTime changeObjectDate = DateTime.fromMillisecondsSinceEpoch(entry['changed']);
+    
+    var creationDate = "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
+    var editDate = "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
+    var createdBy = "Erstellt von: ${entry['author']}";
 
     List<Widget> tags = [];
     for (String tagString in tagStrings) {
