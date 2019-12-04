@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:date_format/date_format.dart';
+import 'package:kag/Views/Calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -7,6 +8,7 @@ import 'dart:async';
 
 import '../main.dart';
 import '../api.dart';
+import 'Calendar.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -148,7 +150,7 @@ class HomeState extends State<Home> {
                 new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
                 [dd, ".", mm]),
             entry['title'],
-            entry['description']);
+            entry['description'], entry);
       });
     });
   }
@@ -195,43 +197,48 @@ class HomeState extends State<Home> {
     });
   }
 
-  void addCalendarEntry(String date, String title, String description) {
+  void addCalendarEntry(String date, String title, String description, entry) {
     setState(() {
       calendarEntries.add(Container(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                  child: Material(
-                    child: RichText(
-                      text: TextSpan(children: <TextSpan>[
-                        TextSpan(text: " ", style: TextStyle(fontSize: 25)),
-                        TextSpan(text: date, style: eventDate),
-                        TextSpan(text: " ", style: TextStyle(fontSize: 25))
-                      ]), //Text(" " + date + " ", style: eventDate)
+        child: GestureDetector(
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Material(
+                      child: RichText(
+                        text: TextSpan(children: <TextSpan>[
+                          TextSpan(text: " ", style: TextStyle(fontSize: 25)),
+                          TextSpan(text: date, style: eventDate),
+                          TextSpan(text: " ", style: TextStyle(fontSize: 25))
+                        ]), //Text(" " + date + " ", style: eventDate)
+                      ),
+                      color: Color.fromRGBO(47, 109, 29, 1),
                     ),
-                    color: Color.fromRGBO(47, 109, 29, 1),
                   ),
-                ),
-                Expanded(
-                  child: Text(title, style: titleStyle, overflow: TextOverflow.ellipsis,),
-                )
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: Container(
-                      child: Text(getShortedDescription(description), style: eventDescriptionText),
-                      margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
-                )
-              ],
-            )
-          ],
+                  Expanded(
+                    child: Text(title, style: titleStyle, overflow: TextOverflow.ellipsis,),
+                  )
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                        child: Text(getShortedDescription(description), style: eventDescriptionText),
+                        margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
+                  )
+                ],
+              )
+            ],
+          ),
+          onTap: () => Navigator.push(context,
+              MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
         ),
+
       ));
     });
   }
