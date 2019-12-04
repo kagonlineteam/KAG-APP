@@ -1,11 +1,7 @@
-import 'dart:io';
-
-import '../main.dart';
-import '../api.dart';
-
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../main.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -14,7 +10,8 @@ class Login extends StatefulWidget {
   }
 }
 
-class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
+class LoginState extends State<Login>
+    with AutomaticKeepAliveClientMixin<Login> {
   TextEditingController password = new TextEditingController(),
       username = new TextEditingController();
 
@@ -22,6 +19,7 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
     showDialog(
       context: context,
       barrierDismissible: false,
+      // ignore: deprecated_member_use
       child: new Dialog(
         child: new Row(
           mainAxisSize: MainAxisSize.min,
@@ -40,6 +38,7 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
     } else {
       showDialog(
           context: context,
+          // ignore: deprecated_member_use
           child: new SimpleDialog(
             title: Text("Login nicht möglich"),
             children: <Widget>[
@@ -48,7 +47,8 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
                     "Konnte Login nicht durchführen. Ist dein Benutzername oder Passwort falsch?"),
               ),
               MaterialButton(
-                onPressed: () => launch('https://kag-langenfeld.de/user/password'),
+                onPressed: () =>
+                    launch('https://kag-langenfeld.de/user/password'),
                 child: Text("Passwort vergessen?"),
               ),
               MaterialButton(
@@ -62,9 +62,10 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     TextStyle textStyle = new TextStyle(color: Colors.white);
-    TextStyle hintTextStyle = new TextStyle(
-        color: new Color.fromRGBO(150, 150, 150, 1));
+    TextStyle hintTextStyle =
+        new TextStyle(color: new Color.fromRGBO(150, 150, 150, 1));
 
     final usernameField = Container(
       child: Container(
@@ -72,17 +73,12 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
         child: TextField(
           controller: username,
           decoration: InputDecoration.collapsed(
-              hintText: "Benutzername",
-              hintStyle: hintTextStyle
-          ),
+              hintText: "Benutzername", hintStyle: hintTextStyle),
           style: textStyle,
         ),
       ),
       decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.white)
-          )
-      ),
+          border: Border(bottom: BorderSide(color: Colors.white))),
     );
 
     final passwordField = Container(
@@ -99,10 +95,7 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
         ),
       ),
       decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.white)
-          )
-      ),
+          border: Border(bottom: BorderSide(color: Colors.white))),
     );
 
     final loginButton = Material(
@@ -111,14 +104,10 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
       child: MaterialButton(
           onPressed: login,
           padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          minWidth: MediaQuery
-              .of(context)
-              .size
-              .width,
+          minWidth: MediaQuery.of(context).size.width,
           child: Container(
             child: Text("Anmelden", style: textStyle),
-          )
-      ),
+          )),
     );
 
     return Container(
@@ -127,8 +116,7 @@ class LoginState extends State<Login> with AutomaticKeepAliveClientMixin<Login>{
           decoration: BoxDecoration(
               image: DecorationImage(
                   image: AssetImage("assets/background.png"),
-                  fit: BoxFit.cover)
-          ),
+                  fit: BoxFit.cover)),
           child: Padding(
             padding: const EdgeInsets.all(36.0),
             child: Column(
@@ -158,7 +146,9 @@ class NotLoggedIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: MaterialButton(onPressed: () => KAGApp.tabs.animateTo(4), child: Text("Bitte melde dich an!")),
+      child: MaterialButton(
+          onPressed: () => KAGApp.tabs.animateTo(4),
+          child: Text("Bitte melde dich an!")),
     );
   }
 }

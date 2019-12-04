@@ -1,9 +1,11 @@
+import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../main.dart';
+
 import '../api.dart';
-import 'dart:convert';
-import 'package:flutter/cupertino.dart';
+import '../main.dart';
 
 class RPlan extends StatefulWidget {
   @override
@@ -70,11 +72,7 @@ class RPlanState extends State<RPlan>
             decoration: BoxDecoration(
                 border: Border(
                     bottom: BorderSide(
-                        color: Color.fromRGBO(235, 235, 235, 1),
-                        width: 2
-                    )
-                )
-            ),
+                        color: Color.fromRGBO(235, 235, 235, 1), width: 2))),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -95,8 +93,7 @@ class RPlanState extends State<RPlan>
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Text(bottomLeftText,
-                            style: normalText,
-                            textAlign: TextAlign.left),
+                            style: normalText, textAlign: TextAlign.left),
                       ),
                     ],
                   ),
@@ -118,9 +115,7 @@ class RPlanState extends State<RPlan>
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Text(bottomCenterText,
-                            style: normalText,
-                            textAlign: TextAlign
-                                .center),
+                            style: normalText, textAlign: TextAlign.center),
                       ),
                     ],
                   ),
@@ -142,9 +137,7 @@ class RPlanState extends State<RPlan>
                         height: elementHeight,
                         margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                         child: Text(bottomRightText,
-                            style: normalText,
-                            textAlign:
-                            TextAlign.right),
+                            style: normalText, textAlign: TextAlign.right),
                       ),
                     ],
                   ),
@@ -323,7 +316,6 @@ class RPlanState extends State<RPlan>
       * Spacing to horizontal border
      */
 
-
     showDialog(
         context: context,
         // ignore: deprecated_member_use
@@ -343,9 +335,7 @@ class RPlanState extends State<RPlan>
                   },
                   child: Text("Heute",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal
-                      ))),
+                          color: Colors.white, fontWeight: FontWeight.normal))),
             ),
             Container(
               height: 20,
@@ -361,34 +351,34 @@ class RPlanState extends State<RPlan>
                   },
                   child: Text("Morgen",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal
-                      ))),
+                          color: Colors.white, fontWeight: FontWeight.normal))),
             ),
-            isTeacher ? Container(
-              height: 20,
-            ) : Row(),
-            isTeacher ? Material(
-              color: Color.fromRGBO(0, 0, 255, 1),
-              borderRadius: BorderRadius.circular(30.0),
-              child: MaterialButton(
-                  onPressed: () {
-                    requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
-                    _load();
-                    Navigator.pop(context);
-                  },
-                  child: Text("Übermorgen",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.normal
-                      ))),
-            ) : Row(),
+            isTeacher
+                ? Container(
+                    height: 20,
+                  )
+                : Row(),
+            isTeacher
+                ? Material(
+                    color: Color.fromRGBO(0, 0, 255, 1),
+                    borderRadius: BorderRadius.circular(30.0),
+                    child: MaterialButton(
+                        onPressed: () {
+                          requestDate = APIAction.GET_RPLAN_DAYAFTERTOMMOROW;
+                          _load();
+                          Navigator.pop(context);
+                        },
+                        child: Text("Übermorgen",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.normal))),
+                  )
+                : Row(),
             Container(
               height: 20,
             )
           ],
-        )
-    );
+        ));
   }
 
   @override
@@ -407,7 +397,10 @@ class RPlanState extends State<RPlan>
                   child: Container(
                     child: Text(
                       dateText,
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, letterSpacing: 2),
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2),
                     ),
                     margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                     alignment: Alignment.centerLeft,
@@ -415,15 +408,16 @@ class RPlanState extends State<RPlan>
                   onLongPress: _showChooseDialog,
                   onTap: switchToNextDay,
                 ),
-                isTeacher ? GestureDetector(
+                isTeacher
+                    ? GestureDetector(
                         onTap: _showFilterOptions,
                         child: Container(
-                          child: Text("Filtern",
-                              style: TextStyle(fontSize: 20)
-                          ),
+                          child:
+                              Text("Filtern", style: TextStyle(fontSize: 20)),
                           margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                           alignment: Alignment.centerRight,
-                        )) : Container()
+                        ))
+                    : Container()
               ],
             ),
           )
@@ -453,6 +447,7 @@ class RPlanState extends State<RPlan>
   bool get wantKeepAlive => true;
 }
 
+// ignore: must_be_immutable
 class RPlanDetail extends StatelessWidget {
   RPlanDetail(this.lesson);
 
@@ -468,7 +463,7 @@ class RPlanDetail extends StatelessWidget {
     if (lesson['v_lehrer'] == null) lesson['v_lehrer'] = "";
     width = MediaQuery.of(context).size.width;
 
-    final a = Column(
+    /*final a = Column(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
         Text(lesson['art'], style: textStyle),
@@ -538,7 +533,7 @@ class RPlanDetail extends StatelessWidget {
           ],
         ),
       ],
-    );
+    );*/
     List<Widget> widgets = [
       element("Art", lesson['art'], ""),
       element("Stunde", lesson['stunde'], ""),
@@ -625,8 +620,8 @@ class RPlanDetail extends StatelessWidget {
     return container;
   }
 
-  String getTeacherText(String teacher, String v_teacher) {
-    if (teacher.isEmpty && v_teacher.isEmpty) {
+  String getTeacherText(String teacher, String vTeacher) {
+    if (teacher.isEmpty && vTeacher.isEmpty) {
       return "";
     }
     return "Lehrer";

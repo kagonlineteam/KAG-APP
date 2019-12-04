@@ -1,13 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:date_format/date_format.dart';
-import 'package:kag/Views/Calendar.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-
 import 'dart:async';
 
-import '../main.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
+import 'package:kag/Views/Calendar.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../api.dart';
+import '../main.dart';
 import 'Calendar.dart';
 
 class Home extends StatefulWidget {
@@ -18,10 +18,13 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle eventDate            = const TextStyle(fontSize: 35, color: Colors.white);
-  static const TextStyle eventTitle           = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle eventDate =
+      const TextStyle(fontSize: 35, color: Colors.white);
+  static const TextStyle eventTitle =
+      const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const TextStyle eventDescriptionText = const TextStyle(fontSize: 18);
-  static const TextStyle titleStyle           = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+  static const TextStyle titleStyle =
+      const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
@@ -39,9 +42,10 @@ class HomeState extends State<Home> {
         children: <Widget>[
           //Logo
           Container(
-            decoration: BoxDecoration(border: Border(
-                bottom: BorderSide( color: Color.fromRGBO(235, 235, 235, 1))
-            )),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom:
+                        BorderSide(color: Color.fromRGBO(235, 235, 235, 1)))),
             padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
             child: Image.asset("assets/logo.png"),
           ),
@@ -107,7 +111,9 @@ class HomeState extends State<Home> {
             alignment: Alignment.centerLeft,
           ),
           Container(
-            child: Text("Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.", style: TextStyle(fontSize: 7)),
+            child: Text(
+                "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
+                style: TextStyle(fontSize: 7)),
             margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
             alignment: Alignment.centerLeft,
           ),
@@ -115,12 +121,14 @@ class HomeState extends State<Home> {
             children: <Widget>[
               MaterialButton(
                 child: CachedNetworkImage(
-                    imageUrl: "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                    width: 75,
+                  imageUrl:
+                      "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
+                  width: 75,
                   fadeInDuration: Duration(seconds: 0),
                 ),
                 onPressed: () async {
-                  if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
+                  if (await canLaunch(
+                      "moodlemobile://atrium.kag-langenfeld.de")) {
                     launch("moodlemobile://atrium.kag-langenfeld.de");
                   } else {
                     launch("https://atrium.kag-langenfeld.de");
@@ -150,7 +158,8 @@ class HomeState extends State<Home> {
                 new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
                 [dd, ".", mm]),
             entry['title'],
-            entry['description'], entry);
+            entry['description'],
+            entry);
       });
     });
   }
@@ -220,7 +229,11 @@ class HomeState extends State<Home> {
                     ),
                   ),
                   Expanded(
-                    child: Text(title, style: titleStyle, overflow: TextOverflow.ellipsis,),
+                    child: Text(
+                      title,
+                      style: titleStyle,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   )
                 ],
               ),
@@ -228,7 +241,8 @@ class HomeState extends State<Home> {
                 children: <Widget>[
                   Expanded(
                     child: Container(
-                        child: Text(getShortedDescription(description), style: eventDescriptionText),
+                        child: Text(getShortedDescription(description),
+                            style: eventDescriptionText),
                         margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
                   )
                 ],
@@ -238,7 +252,6 @@ class HomeState extends State<Home> {
           onTap: () => Navigator.push(context,
               MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
         ),
-
       ));
     });
   }
@@ -266,7 +279,7 @@ class HomeState extends State<Home> {
 
   String getShortedDescription(String text) {
     if (text.length > 50) {
-      return text.substring(0,50) + "...";
+      return text.substring(0, 50) + "...";
     } else {
       return text;
     }

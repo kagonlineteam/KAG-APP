@@ -1,10 +1,19 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
 
-enum APIAction {GET_USERNAME, GET_GROUPS, GET_CALENDAR, GET_RPLAN_TODAY, GET_RPLAN_TOMORROW, GET_RPLAN_DAYAFTERTOMMOROW, GET_USER_INFO}
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+enum APIAction {
+  GET_USERNAME,
+  GET_GROUPS,
+  GET_CALENDAR,
+  GET_RPLAN_TODAY,
+  GET_RPLAN_TOMORROW,
+  GET_RPLAN_DAYAFTERTOMMOROW,
+  GET_USER_INFO
+}
 
 class API {
   _User _user;
@@ -50,7 +59,6 @@ class API {
     return new _APIRequest(action, _user);
   }
 
-
   ///
   /// Calls setLoginCredentials in User
   ///
@@ -58,8 +66,6 @@ class API {
     _user.setLoginCredentials(username, password);
     return await _user.login();
   }
-
-
 }
 
 class _User {
@@ -70,7 +76,9 @@ class _User {
   /// Does check if log in is valid, too
   ///
   bool isLoggedIn() {
-    if (_jwt != null && getDecodedJWT()['exp'] < (new DateTime.now().millisecondsSinceEpoch / 1000)) {
+    if (_jwt != null &&
+        getDecodedJWT()['exp'] <
+            (new DateTime.now().millisecondsSinceEpoch / 1000)) {
       return true;
     }
     return false;
@@ -95,7 +103,8 @@ class _User {
   ///
   Future<bool> login() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _jwt = await _APIConnection.getJWTFromLogin(prefs.getString("username"), prefs.getString("password"));
+    _jwt = await _APIConnection.getJWTFromLogin(
+        prefs.getString("username"), prefs.getString("password"));
     if (_jwt == null) return false;
     return true;
   }
@@ -106,8 +115,7 @@ class _User {
   ///
   List<dynamic> getGroups() {
     return getDecodedJWT()['roles'];
-}
-
+  }
 
   ///
   /// Read Username from jwt if exists
@@ -124,7 +132,8 @@ class _User {
   }
 
   getDecodedJWT() {
-    String output = _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
+    String output =
+        _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
     switch (output.length % 4) {
       case 0:
         break;
@@ -148,9 +157,11 @@ class _APIConnection {
   /// Makes Login request.
   /// Return JWT if successful else null
   ///
-  static Future<String> getJWTFromLogin(String username, String password) async {
+  static Future<String> getJWTFromLogin(
+      String username, String password) async {
     var loginBody = jsonEncode({"username": username, "password": password});
-    var response = await http.post(API + "login", body: loginBody, headers: {"Content-Type": "application/json"});
+    var response = await http.post(API + "login",
+        body: loginBody, headers: {"Content-Type": "application/json"});
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['token'];
     }
@@ -163,7 +174,8 @@ class _APIConnection {
   /// If not successful returns null
   /// Will not send authorization header if jwt is null
   ///
-  static Future<String> getFromAPI(String path, Map<String, String> params, String jwt) async {
+  static Future<String> getFromAPI(
+      String path, Map<String, String> params, String jwt) async {
     String query = "";
     if (params != null) {
       query = "?";
@@ -172,15 +184,17 @@ class _APIConnection {
         query += "$name=$value";
       });
     }
-    return (await http.get("${API}v1/$path$query", headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null)).body;
+    return (await http.get("${API}v1/$path$query",
+            headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
+        .body;
   }
-
 }
 
 class _APIRequest {
   APIAction _endpoint;
   _User _user;
   _CacheManager _cache;
+
   ///
   /// Handles Request, checks parameter etc.
   /// Login status should be already checked.
@@ -203,11 +217,14 @@ class _APIRequest {
   /// Check if action is specified action else throw exception
   ///
   void _actionExecution(APIAction action) {
-    if (!(_endpoint == action || (_endpoint == APIAction.GET_RPLAN_TOMORROW && action == APIAction.GET_RPLAN_TODAY) || (_endpoint == APIAction.GET_RPLAN_DAYAFTERTOMMOROW && action == APIAction.GET_RPLAN_TODAY))) {
+    if (!(_endpoint == action ||
+        (_endpoint == APIAction.GET_RPLAN_TOMORROW &&
+            action == APIAction.GET_RPLAN_TODAY) ||
+        (_endpoint == APIAction.GET_RPLAN_DAYAFTERTOMMOROW &&
+            action == APIAction.GET_RPLAN_TODAY))) {
       throw Exception("Not configured Action called.");
     }
   }
-
 
   ///
   /// Returns username
@@ -236,7 +253,12 @@ class _APIRequest {
     if (_cache.hasCache()) {
       return _cache.getCache();
     }
-    String response = await _APIConnection.getFromAPI("termine", start != null && end != null ? {"start%5B$start%5D": "gte", "end%5B$end%5B": "lte"} : null, _user.getJWT());
+    String response = await _APIConnection.getFromAPI(
+        "termine",
+        start != null && end != null
+            ? {"start%5B$start%5D": "gte", "end%5B$end%5B": "lte"}
+            : null,
+        _user.getJWT());
     _cache.setCache(response);
     return response;
   }
@@ -250,26 +272,27 @@ class _APIRequest {
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
-    String response = await _APIConnection.getFromAPI("termine", {"limit": "3"}, _user.getJWT());
+    String response = await _APIConnection.getFromAPI(
+        "termine", {"limit": "3"}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
-
 
   ///
   /// Returns calendar entries which occur "soon"
   ///
   Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
     _actionExecution(APIAction.GET_CALENDAR);
-    await _cache.init("soon" + page.toString(), cacheDuration: 1000 * 60 * 60 * 24);
+    await _cache.init("soon" + page.toString(),
+        cacheDuration: 1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
-    String response = await _APIConnection.getFromAPI("termine", {"limit": "20", "offset": (page * 20).toString()}, _user.getJWT());
+    String response = await _APIConnection.getFromAPI("termine",
+        {"limit": "20", "offset": (page * 20).toString()}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
-
 
   ///
   /// Returns Holiday Timestamp
@@ -288,7 +311,15 @@ class _APIRequest {
         _cache.delete();
       }
     }
-    var jsonResponse = jsonDecode(await _APIConnection.getFromAPI("termine", {"limit": "1", "tags%5Bferien%5D": "like", "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D": "gte"}, _user.getJWT()))['entities'];
+    var jsonResponse = jsonDecode(await _APIConnection.getFromAPI(
+        "termine",
+        {
+          "limit": "1",
+          "tags%5Bferien%5D": "like",
+          "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D":
+              "gte"
+        },
+        _user.getJWT()))['entities'];
     if (jsonResponse.length > 0) {
       String response = jsonResponse[0]['start'].toString();
       _cache.setCache(response);
@@ -307,7 +338,8 @@ class _APIRequest {
     Map<String, String> params = {};
     if (_endpoint == APIAction.GET_RPLAN_TODAY) params["file"] = "heute";
     if (_endpoint == APIAction.GET_RPLAN_TOMORROW) params["file"] = "morgen";
-    if (_endpoint == APIAction.GET_RPLAN_DAYAFTERTOMMOROW) params["file"] = "uebermorgen";
+    if (_endpoint == APIAction.GET_RPLAN_DAYAFTERTOMMOROW)
+      params["file"] = "uebermorgen";
     if (teacher != null) {
       params["abbreviation"] = teacher;
     }
@@ -316,7 +348,8 @@ class _APIRequest {
     if (_cache.hasCache()) {
       return _cache.getCache();
     }
-    String response = await _APIConnection.getFromAPI("vplan", params, _user.getJWT());
+    String response =
+        await _APIConnection.getFromAPI("vplan", params, _user.getJWT());
     _cache.setCache(response);
     return response;
   }
@@ -356,6 +389,7 @@ class _APIRequest {
 
 class _CacheManager {
   _CacheManager(this._action);
+
   // Creating this at the loading of CacheManager to not cause weird errors with too little time left
   int time = DateTime.now().millisecondsSinceEpoch;
   APIAction _action;
@@ -375,8 +409,12 @@ class _CacheManager {
     if (_duration == null) {
       _duration = _getDuration();
     }
-    _file = File((await getTemporaryDirectory()).path + "/" + _action.toString() + "/" + type + ".json");
-
+    _file = File((await getTemporaryDirectory()).path +
+        "/" +
+        _action.toString() +
+        "/" +
+        type +
+        ".json");
   }
 
   ///
@@ -387,7 +425,6 @@ class _CacheManager {
     if (!(_file.existsSync())) return false;
     if (_contents == null) _contents = _file.readAsStringSync();
     return jsonDecode(_contents)['created'] + _duration > time;
-    
   }
 
   ///
@@ -401,19 +438,19 @@ class _CacheManager {
     return jsonDecode(_contents)['content'];
   }
 
-  /// 
+  ///
   /// Set Cache.
-  /// 
+  ///
   void setCache(String content) {
     if (_type == null) throw Exception("Cache has not been initialized.");
     _file.createSync(recursive: true);
     _contents = jsonEncode({"created": time, "content": content});
     _file.writeAsStringSync(_contents, flush: true);
   }
-  
-  /// 
+
+  ///
   /// Will delete the cache
-  /// 
+  ///
   void delete() {
     if (_type == null) throw Exception("Cache has not been initialized.");
     _file.deleteSync();
@@ -424,7 +461,7 @@ class _CacheManager {
   /// GET_USERNAME and GET_GROUPS will not be cached, due to more effort caching than actually getting.
   ///
   int _getDuration() {
-    switch(_action) {
+    switch (_action) {
       case APIAction.GET_USERNAME:
         return 0;
       case APIAction.GET_GROUPS:

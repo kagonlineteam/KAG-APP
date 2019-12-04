@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import 'api.dart';
-
-import './Views/Home.dart' as Home;
-import './Views/RPlan.dart' as RPlan;
 import './Views/Calendar.dart' as Calendar;
-import './Views/News.dart' as News;
-import './Views/User.dart' as User;
+import './Views/Home.dart' as Home;
 import './Views/Login.dart' as Login;
+import './Views/RPlan.dart' as RPlan;
+import './Views/User.dart' as User;
+import 'api.dart';
 
 void main() => runApp(KAGApp());
 
@@ -21,21 +19,26 @@ class KAGApp extends StatelessWidget {
   static Future _holidayNotification() async {
     notificationsPlugin = FlutterLocalNotificationsPlugin();
     var initializationSettingsAndroid =
-    new AndroidInitializationSettings('app_icon');
+        new AndroidInitializationSettings('app_icon');
     var initializationSettingsIOS = new IOSInitializationSettings(
+        // ignore: missing_return
         onDidReceiveLocalNotification: (param, param1, param2, param3) {});
     var initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
     notificationsPlugin.initialize(initializationSettings,
+        // ignore: missing_return
         onSelectNotification: (param) {});
-    var time = (await ((await api.getAPIRequest(APIAction.GET_CALENDAR)).getHolidayUnixTimestamp())) * 1000;
+    var time = (await ((await api.getAPIRequest(APIAction.GET_CALENDAR))
+            .getHolidayUnixTimestamp())) *
+        1000;
     if (time > DateTime.now().millisecondsSinceEpoch) {
-      var scheduledNotificationDateTime = new DateTime.fromMillisecondsSinceEpoch(time);
-      var androidPlatformChannelSpecifics =
-      new AndroidNotificationDetails('holidayKAG',
-          'KAG Holiday Channel', 'KAG will send you a Holiday Notification.');
-      var iOSPlatformChannelSpecifics =
-      new IOSNotificationDetails();
+      var scheduledNotificationDateTime =
+          new DateTime.fromMillisecondsSinceEpoch(time);
+      var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+          'holidayKAG',
+          'KAG Holiday Channel',
+          'KAG will send you a Holiday Notification.');
+      var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
       NotificationDetails platformChannelSpecifics = new NotificationDetails(
           androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
       await notificationsPlugin.cancelAll();
@@ -47,7 +50,6 @@ class KAGApp extends StatelessWidget {
           platformChannelSpecifics);
     }
   }
-
 
   // This widget is the root of your application.
   @override
@@ -67,7 +69,7 @@ class KAGApp extends StatelessWidget {
         primarySwatch: MaterialColor(
           0xFF2f6d1d,
           <int, Color>{
-            50:  Color.fromRGBO(47, 109, 29, 1),
+            50: Color.fromRGBO(47, 109, 29, 1),
             100: Color.fromRGBO(47, 109, 29, 1),
             200: Color.fromRGBO(47, 109, 29, 1),
             300: Color.fromRGBO(47, 109, 29, 1),
@@ -84,7 +86,6 @@ class KAGApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
     );
   }
-
 }
 
 class HomePage extends StatefulWidget {
@@ -98,8 +99,7 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
-
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   var tabContents;
 
   Future setLoggedIn() async {
@@ -130,37 +130,49 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    KAGApp.tabs = new TabController(length: 5-1, vsync: this);
+    KAGApp.tabs = new TabController(length: 5 - 1, vsync: this);
     return DefaultTabController(
-      length: 5-1,
+      length: 5 - 1,
       child: Scaffold(
-        body: TabBarView(
+          body: TabBarView(
             controller: KAGApp.tabs,
             children: tabContents,
             physics: NeverScrollableScrollPhysics(),
-        ),
-        bottomNavigationBar: Container(
-          color: Color.fromRGBO(244, 244, 244, 1),
-          child: TabBar(
-            controller: KAGApp.tabs,
-            tabs: <Widget>[
-              Tab(text: "Home", icon: Icon(Icons.home),),
-              Tab(text: "VPlan", icon: Icon(Icons.compare_arrows),),
-              Tab(text: "Termine", icon: Icon(Icons.event),),
-              //Tab(text: "Aktuelles", icon: Icon(Icons.public),),
-              Tab(text: "User", icon: Icon(Icons.person),),
-            ],
-            isScrollable: false,
-            labelColor: Color.fromRGBO(47, 109, 29, 1),
-            unselectedLabelColor: Colors.grey,
-            indicatorColor: Colors.transparent,
-            labelStyle: TextStyle(
-                fontSize: 10,
-            ),
           ),
-        )
-        //backgroundColor: Colors.green,
-      ),
+          bottomNavigationBar: Container(
+            color: Color.fromRGBO(244, 244, 244, 1),
+            child: TabBar(
+              controller: KAGApp.tabs,
+              tabs: <Widget>[
+                Tab(
+                  text: "Home",
+                  icon: Icon(Icons.home),
+                ),
+                Tab(
+                  text: "VPlan",
+                  icon: Icon(Icons.compare_arrows),
+                ),
+                Tab(
+                  text: "Termine",
+                  icon: Icon(Icons.event),
+                ),
+                //Tab(text: "Aktuelles", icon: Icon(Icons.public),),
+                Tab(
+                  text: "User",
+                  icon: Icon(Icons.person),
+                ),
+              ],
+              isScrollable: false,
+              labelColor: Color.fromRGBO(47, 109, 29, 1),
+              unselectedLabelColor: Colors.grey,
+              indicatorColor: Colors.transparent,
+              labelStyle: TextStyle(
+                fontSize: 10,
+              ),
+            ),
+          )
+          //backgroundColor: Colors.green,
+          ),
     );
   }
 
@@ -176,6 +188,4 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
     setLoggedIn();
     checkLogin();
   }
-
-
 }

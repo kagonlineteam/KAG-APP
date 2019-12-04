@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
-import '../main.dart';
 import '../api.dart';
+import '../main.dart';
 
 class User extends StatefulWidget {
   @override
@@ -13,7 +11,7 @@ class User extends StatefulWidget {
   }
 }
 
-class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
+class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
   var name = "";
   Widget timeTable = Row();
 
@@ -25,10 +23,14 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
 
   Future _load() async {
     KAGApp.api.getAPIRequest(APIAction.GET_USER_INFO).then((request) async {
-      Map<String, String> userInfo = await request.getUserInfo(["sn", "givenName", "employeeNumber"]);
+      Map<String, String> userInfo =
+          await request.getUserInfo(["sn", "givenName", "employeeNumber"]);
 
       // Set Timetable
-      if (userInfo.containsKey("employeeNumber") && (userInfo['employeeNumber'] == "EF" || userInfo['employeeNumber'] == "Q1" || userInfo['employeeNumber'] == "Q2")){
+      if (userInfo.containsKey("employeeNumber") &&
+          (userInfo['employeeNumber'] == "EF" ||
+              userInfo['employeeNumber'] == "Q1" ||
+              userInfo['employeeNumber'] == "Q2")) {
         _setTimeTable(userInfo['employeeNumber']);
       }
 
@@ -46,9 +48,11 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
   void _setTimeTable(employeeNumber) {
     setState(() {
       timeTable = GestureDetector(
-        onTap: () => launch("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
+        onTap: () => launch(
+            "https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
         child: OrientationBuilder(builder: (context, orientation) {
-          return Image.network("https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
+          return Image.network(
+            "https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
             height: MediaQuery.of(context).size.height - 150,
           );
         }),
@@ -64,6 +68,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User>{
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return new SafeArea(
       child: Column(
         children: <Widget>[

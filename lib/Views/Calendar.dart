@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kag/api.dart';
+
 import '../main.dart';
 
 class Calendar extends StatefulWidget {
@@ -53,8 +54,8 @@ class CalendarState extends State {
   }
 
   Widget _generateRow(entry) {
-    var dateOne = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    var dateTwo = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
+    var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
     var dateOneText = "${dateOne.day}.${dateOne.month}";
     var dateTwoText = "${dateTwo.day}.${dateTwo.month}";
 
@@ -123,9 +124,10 @@ class CalendarState extends State {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
       entries.forEach((entry) => entryRows.add(_generateRow(entry)));
-      setState(() {
-        rows = entryRows;
-      });
+        setState(() {
+          rows = entryRows;
+        }
+      );
     }
   }
 
@@ -148,46 +150,36 @@ class CalendarDetail extends StatelessWidget {
   CalendarDetail(this.entry);
 
   final entry;
-  static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(
-      fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
-  static const tagStyle = const TextStyle(fontSize: 16, color: Colors.white);
-  static const timeStyle = const TextStyle(fontSize: 16, color: Colors.white);
+  static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
+  static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const tagStyle         = const TextStyle(fontSize: 16, color: Colors.white);
+  static const timeStyle        = const TextStyle(fontSize: 16, color: Colors.white);
   static const descriptionStyle = const TextStyle(fontSize: 16);
 
   @override
   Widget build(BuildContext context) {
     var title = entry['title'];
 
-    DateTime dateObjectOne =
-        DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    DateTime dateObjectTwo =
-        DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
+    DateTime dateObjectOne = DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
 
-    var dateOne =
-        "${betterNumbers(dateObjectOne.day)}.${betterNumbers(dateObjectOne.month)}";
-    var dateTwo =
-        "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(dateObjectTwo.month)}";
-    var timeOne =
-        "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
-    var timeTwo =
-        "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
+    var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(dateObjectOne.month)}";
+    var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(dateObjectTwo.month)}";
+    var timeOne = "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
+    var timeTwo = "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
 
     var description = entry['description'];
-    var tagStrings = entry['tags'];
+    var tagStrings  = entry['tags'];
 
-    DateTime creationObjectDate =
-        DateTime.fromMillisecondsSinceEpoch(entry['created']);
-    DateTime changeObjectDate =
-        DateTime.fromMillisecondsSinceEpoch(entry['changed']);
+    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(entry['created']);
+    DateTime changeObjectDate   = DateTime.fromMillisecondsSinceEpoch(entry['changed']);
 
-    var creationDate =
-        "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
-    var editDate =
-        "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
-    var createdBy = "Erstellt von: ${entry['author']}";
+    var creationDate  = "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
+    var editDate      = "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
+    var createdBy     = "Erstellt von: ${entry['author']}";
 
     List<Widget> tags = [];
+
     for (String tagString in tagStrings) {
       tags.add(createTag(tagString));
     }
@@ -313,8 +305,8 @@ class CalendarDetail extends StatelessWidget {
 
   String betterNumbers(int originalNumber) {
     if (originalNumber < 10) {
-      return "0${originalNumber}";
+      return "0$originalNumber";
     }
-    return "${originalNumber}";
+    return "$originalNumber";
   }
 }
