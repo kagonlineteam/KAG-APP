@@ -51,7 +51,9 @@ class RPlanState extends State<RPlan>
     var bottomRightText = "";
 
     if (isTeacher) {
-      bottomLeftText = lesson['lehrer'] + " -> " + lesson['v_lehrer'];
+      if (lesson['lehrer'] != null && lesson['v_lehrer'] != null) {
+        bottomLeftText = lesson['lehrer'] + " -> " + lesson['v_lehrer'];
+      }
       bottomCenterText = "";
       bottomRightText = lesson['art'];
     }
@@ -170,11 +172,15 @@ class RPlanState extends State<RPlan>
           await rplanRequest.getRAWRPlan(searchedTeacher, force: force));
       if (rplan != null) {
         var newLessons = <Widget>[];
-        await rplan['vertretungen']
+        await rplan['entities']
             .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
         setState(() {
           lessons = newLessons;
-          dateText = rplan['date'];
+          String a = rplan['entities'][0]['vplan'];
+          int b = int.parse(a);
+          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
+          dateText = "${dateTime.day}.${dateTime
+              .month}."; //rplan['vplan']; //Format to date
         });
         _createDots(requestDate);
       }

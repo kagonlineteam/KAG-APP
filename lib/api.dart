@@ -157,13 +157,14 @@ class _APIConnection {
   /// Makes Login request.
   /// Return JWT if successful else null
   ///
-  static Future<String> getJWTFromLogin(
-      String username, String password) async {
-    var loginBody = jsonEncode({"username": username, "password": password});
-    var response = await http.post(API + "login",
-        body: loginBody, headers: {"Content-Type": "application/json"});
+  static Future<String> getJWTFromLogin(String username,
+      String password) async {
+    var loginBody = jsonEncode(
+        {"username": username, "password": password, "client": "appclient"});
+    var response = await http.post(API + "login", body: loginBody,
+        headers: {"Content-Type": "application/json"});
     if (response.statusCode == 200) {
-      return jsonDecode(response.body)['token'];
+      return jsonDecode(response.body)['access_token'];
     }
     return null;
   }
@@ -174,8 +175,8 @@ class _APIConnection {
   /// If not successful returns null
   /// Will not send authorization header if jwt is null
   ///
-  static Future<String> getFromAPI(
-      String path, Map<String, String> params, String jwt) async {
+  static Future<String> getFromAPI(String path, Map<String, String> params,
+      String jwt) async {
     String query = "";
     if (params != null) {
       query = "?";
@@ -184,7 +185,7 @@ class _APIConnection {
         query += "$name=$value";
       });
     }
-    return (await http.get("${API}v1/$path$query",
+    return (await http.get("${API}$path$query",
             headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
         .body;
   }
@@ -273,7 +274,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI(
-        "termine", {"limit": "3"}, _user.getJWT());
+        "termine", {"limit": "3", "view": "canonical"}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -336,10 +337,7 @@ class _APIRequest {
   Future<String> getRAWRPlan(String teacher, {force: false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
-    if (_endpoint == APIAction.GET_RPLAN_TODAY) params["file"] = "heute";
-    if (_endpoint == APIAction.GET_RPLAN_TOMORROW) params["file"] = "morgen";
-    if (_endpoint == APIAction.GET_RPLAN_DAYAFTERTOMMOROW)
-      params["file"] = "uebermorgen";
+    var day = await getIDForRPlanDay(_endpoint);
     if (teacher != null) {
       params["abbreviation"] = teacher;
     }
@@ -348,10 +346,27 @@ class _APIRequest {
     if (_cache.hasCache()) {
       return _cache.getCache();
     }
-    String response =
-        await _APIConnection.getFromAPI("vplan", params, _user.getJWT());
+
+    params["vplan"] = "eq-" + day;
+    params["view"] = "canonical";
+    String response = await _APIConnection.getFromAPI(
+        "vertretungen", params, _user.getJWT());
     _cache.setCache(response);
     return response;
+  }
+
+  Future <String> getIDForRPlanDay(APIAction action) async {
+    String response = await _APIConnection.getFromAPI(
+        "vplans", null, _user.getJWT());
+    var jsonResponse = jsonDecode(response)["entities"];
+    print(jsonResponse.length);
+    if (action == APIAction.GET_RPLAN_TODAY) {
+      return jsonResponse[0]["id"];
+    } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+      return jsonResponse[1]["id"];
+    } else {
+      return jsonResponse[2]["id"];
+    }
   }
 
   ///
