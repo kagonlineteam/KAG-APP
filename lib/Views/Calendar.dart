@@ -11,8 +11,7 @@ class Calendar extends StatefulWidget {
 
 class CalendarState extends State {
   static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(
-      fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   var usableWidth = 0.0;
   var page = 0;
@@ -54,8 +53,7 @@ class CalendarState extends State {
   }
 
   Widget _generateRow(entry) {
-    var dateOne =
-        new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    var dateOne = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
     var dateTwo = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
     var dateOneText = "${dateOne.day}.${dateOne.month}";
     var dateTwoText = "${dateTwo.day}.${dateTwo.month}";
