@@ -12,7 +12,8 @@ enum APIAction {
   GET_RPLAN_TODAY,
   GET_RPLAN_TOMORROW,
   GET_RPLAN_DAYAFTERTOMMOROW,
-  GET_USER_INFO
+  GET_USER_INFO,
+  GET_ARTICLES
 }
 
 class API {
@@ -42,6 +43,8 @@ class API {
         return true;
       case APIAction.GET_USER_INFO:
         return true;
+      case APIAction.GET_ARTICLES:
+        return false;
     }
     return true;
   }
@@ -133,7 +136,7 @@ class _User {
 
   getDecodedJWT() {
     String output =
-        _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
+    _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
     switch (output.length % 4) {
       case 0:
         break;
@@ -151,7 +154,7 @@ class _User {
 }
 
 class _APIConnection {
-  static const API = "https://api.kag-langenfeld.de/";
+  static const API = "https://habicht.kag-langenfeld.de/";
 
   ///
   /// Makes Login request.
@@ -186,7 +189,7 @@ class _APIConnection {
       });
     }
     return (await http.get("${API}$path$query",
-            headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
+        headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
         .body;
   }
 }
@@ -269,7 +272,7 @@ class _APIRequest {
   ///
   Future<List<dynamic>> getNextCalendarEntries() async {
     _actionExecution(APIAction.GET_CALENDAR);
-    await _cache.init("next", cacheDuration: 1000 * 60 * 60 * 24);
+    await _cache.init("next", cacheDuration: 10);//1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
@@ -285,12 +288,12 @@ class _APIRequest {
   Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
     _actionExecution(APIAction.GET_CALENDAR);
     await _cache.init("soon" + page.toString(),
-        cacheDuration: 1000 * 60 * 60 * 24);
+        cacheDuration: 10);//1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString()}, _user.getJWT());
+        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical"}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -318,7 +321,7 @@ class _APIRequest {
           "limit": "1",
           "tags%5Bferien%5D": "like",
           "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D":
-              "gte"
+          "gte"
         },
         _user.getJWT()))['entities'];
     if (jsonResponse.length > 0) {
@@ -339,7 +342,7 @@ class _APIRequest {
     Map<String, String> params = {};
     var day = await getIDForRPlanDay(_endpoint);
     if (teacher != null) {
-      params["abbreviation"] = teacher;
+      params["v_lehrer"] = "eq-"+teacher;
     }
     await _cache.init(params.toString());
     if (force) _cache.delete();
@@ -359,7 +362,6 @@ class _APIRequest {
     String response = await _APIConnection.getFromAPI(
         "vplans", null, _user.getJWT());
     var jsonResponse = jsonDecode(response)["entities"];
-    print(jsonResponse.length);
     if (action == APIAction.GET_RPLAN_TODAY) {
       return jsonResponse[0]["id"];
     } else if (action == APIAction.GET_RPLAN_TOMORROW) {
@@ -393,13 +395,27 @@ class _APIRequest {
       info.forEach((attribute) {
         if (jResponse['entity']['attributes'].containsKey(attribute)) {
           requestResponse[attribute] =
-              jResponse['entity']['attributes'][attribute][0];
+          jResponse['entity']['attributes'][attribute][0];
         }
       });
       return requestResponse;
     }
     return null;
   }
+
+  Future <String> getArticles() async {
+    _actionExecution(APIAction.GET_ARTICLES);
+    Map<String, String> params = {};
+    params['view'] = "canonical";
+
+    String response = await _APIConnection.getFromAPI("articles", params, null);
+    if (response != null) {
+      return response;
+    }
+    return "";
+  }
+
+
 }
 
 class _CacheManager {
@@ -491,6 +507,8 @@ class _CacheManager {
         return 1000 * 60 * 60;
       case APIAction.GET_USER_INFO:
         return 1000 * 60 * 60 * 24 * 7;
+      case APIAction.GET_ARTICLES:
+        return 0;
     }
     return 0;
   }

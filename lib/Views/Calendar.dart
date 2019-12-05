@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:kag/api.dart';
 
@@ -140,6 +142,7 @@ class CalendarState extends State {
   }
 
   String getShortedLongDescription(String text) {
+    if (text == null) return "";
     if (text.length > 300) {
       return text.substring(0, 300) + "...";
     } else {

@@ -179,8 +179,7 @@ class RPlanState extends State<RPlan>
           String a = rplan['entities'][0]['vplan'];
           int b = int.parse(a);
           DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
-          dateText = "${dateTime.day}.${dateTime
-              .month}."; //rplan['vplan']; //Format to date
+          dateText = "${dateTime.day}.${dateTime.month}.";
         });
         _createDots(requestDate);
       }

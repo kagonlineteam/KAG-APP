@@ -1,13 +1,45 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
-// ignore: must_be_immutable
-class News extends StatelessWidget {
-  static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(
-      fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+import '../api.dart';
+import '../main.dart';
+
+
+class News extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return NewsState();
+  }
+}
+
+class NewsState extends State<News> {
+  static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
+  static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
-  static const subTextStyle = const TextStyle(fontSize: 10);
-  var usableWidth = 0.0;
+  static const subTextStyle     = const TextStyle(fontSize: 10);
+  var usableWidth               = 0.0;
+
+  List<Widget> articles = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future _load() async {
+    var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLES);
+    var response = await request.getArticles();
+    if (response == null) return;
+    List<Widget> newArticles = [];
+    var entries = jsonDecode(response)['entities'];
+    entries.forEach((article) => newArticles.add(_generateRow(article)));
+    setState(() {
+      articles = newArticles;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -40,16 +72,18 @@ class News extends StatelessWidget {
         ),
         body: SafeArea(
             child: ListView(
-          children: <Widget>[_generateRow(), _generateRow(), _generateRow()],
-        )));
+          children: articles,
+        )
+        )
+    );
   }
 
-  Widget _generateRow() {
-    var title = "Title";
-    var descriptionText =
-        "Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description Description ";
-    var date = "30.10.19";
-    var author = "RJipps";
+  Widget _generateRow(article) {
+    var title = article['title'];
+    var descriptionText = article['preview'];
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(article['created'] * 1000);
+    var date = "${dateTime.day}.${dateTime.month}.${dateTime.year}";
+    var author = article['author'];
 
     return Container(
       decoration: BoxDecoration(
@@ -61,16 +95,16 @@ class News extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Container(
+              /*Container(
                 color: Color.fromRGBO(200, 200, 200, 1),
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
                 width: 100,
                 height: 100,
-              ),
+              ),*/
               Container(
                 height: 100,
                 width: usableWidth,
-                margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                 child: Column(
                   children: <Widget>[
                     Container(
@@ -106,7 +140,13 @@ class News extends StatelessWidget {
             margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
           )
         ],
-      )),
+      ),
+        //onTap:
+      ),
     );
   }
+}
+
+class ArticleDetail {
+
 }
