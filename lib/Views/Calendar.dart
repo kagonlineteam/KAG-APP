@@ -60,63 +60,68 @@ class CalendarState extends State {
     var dateTwo = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
     var dateOneText = "${dateOne.day}.${dateOne.month}";
     var dateTwoText = "${dateTwo.day}.${dateTwo.month}";
-
+ //data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
     return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  color: Color.fromRGBO(235, 235, 235, 1), width: 2))),
-      child: GestureDetector(
-        child: Row(
-          children: <Widget>[
-            Container(
-              color: Color.fromRGBO(47, 109, 29, 1),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              width: 100,
-              height: 100,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    child: Text(dateOneText, style: dateStyle),
+      child: MediaQuery(
+        child: Container(
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      color: Color.fromRGBO(235, 235, 235, 1), width: 2))),
+          child: GestureDetector(
+            child: Row(
+              children: <Widget>[
+                Container(
+                  color: Color.fromRGBO(47, 109, 29, 1),
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  width: 100,
+                  height: 100,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: Text(dateOneText, style: dateStyle),
+                      ),
+                      Container(
+                        child: Image.asset("assets/arrow.png"),
+                      ),
+                      Container(
+                        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                        child: Text(dateTwoText, style: dateStyle),
+                      )
+                    ],
                   ),
-                  Container(
-                    child: Image.asset("assets/arrow.png"),
+                ),
+                Container(
+                  height: 100,
+                  width: usableWidth,
+                  margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: Text(entry['title'], style: titleStyle),
+                        alignment: Alignment.topLeft,
+                        height: 40,
+                      ),
+                      Container(
+                        child: Text(getShortedLongDescription(entry['description']),
+                            style: descriptionStyle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2),
+                        alignment: Alignment.topLeft,
+                        height: 50,
+                      )
+                    ],
                   ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                    child: Text(dateTwoText, style: dateStyle),
-                  )
-                ],
-              ),
+                )
+              ],
             ),
-            Container(
-              height: 100,
-              width: usableWidth,
-              margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    child: Text(entry['title'], style: titleStyle),
-                    alignment: Alignment.topLeft,
-                    height: 40,
-                  ),
-                  Container(
-                    child: Text(getShortedLongDescription(entry['description']),
-                        style: descriptionStyle,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2),
-                    alignment: Alignment.topLeft,
-                    height: 50,
-                  )
-                ],
-              ),
-            )
-          ],
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
+          ),
         ),
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
-      ),
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+      )
     );
   }
 
@@ -152,8 +157,7 @@ class CalendarDetail extends StatelessWidget {
 
   final entry;
   static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(
-      fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const tagStyle = const TextStyle(fontSize: 16, color: Colors.white);
   static const timeStyle = const TextStyle(fontSize: 16, color: Colors.white);
   static const descriptionStyle = const TextStyle(fontSize: 16);
