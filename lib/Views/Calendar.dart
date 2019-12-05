@@ -162,32 +162,32 @@ class CalendarDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     var title = entry['title'];
 
-    DateTime dateObjectOne =
-        DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    DateTime dateObjectTwo =
-        DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
+    DateTime dateObjectOne = DateTime.fromMillisecondsSinceEpoch(
+        entry['start'] * 1000);
+    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(
+        entry['end'] * 1000);
 
-    var dateOne =
-        "${betterNumbers(dateObjectOne.day)}.${betterNumbers(dateObjectOne.month)}";
-    var dateTwo =
-        "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(dateObjectTwo.month)}";
-    var timeOne =
-        "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
-    var timeTwo =
-        "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
+    var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(
+        dateObjectOne.month)}.";
+    var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(
+        dateObjectTwo.month)}.";
+    var timeOne = "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(
+        dateObjectOne.minute)} Uhr";
+    var timeTwo = "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(
+        dateObjectTwo.minute)} Uhr";
 
     var description = entry['description'];
     var tagStrings = entry['tags'];
 
-    DateTime creationObjectDate =
-        DateTime.fromMillisecondsSinceEpoch(entry['created']);
-    DateTime changeObjectDate =
-        DateTime.fromMillisecondsSinceEpoch(entry['changed']);
+    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(
+        entry['created']);
+    DateTime changeObjectDate = DateTime.fromMillisecondsSinceEpoch(
+        entry['changed']);
 
-    var creationDate =
-        "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
-    var editDate =
-        "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
+    var creationDate = "Erstellt am: ${creationObjectDate
+        .day}.${creationObjectDate.month}.${creationObjectDate.year}";
+    var editDate = "Geändert am: ${changeObjectDate.day}.${changeObjectDate
+        .month}.${changeObjectDate.year}";
     var createdBy = "Erstellt von: ${entry['author']}";
 
     List<Widget> tags = [];
@@ -199,23 +199,24 @@ class CalendarDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: SafeArea(
-          child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    title,
-                    style: titleStyle,
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  alignment: Alignment.centerLeft,
-                ),
-                Container(
-                  child: Row(
+          child: MediaQuery(
+            child: Container(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Column(
                     children: <Widget>[
+                      Container(
+                        child: Text(
+                          title,
+                          style: titleStyle,
+                        ),
+                        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      Container(
+                        child: Row(
+                          children: <Widget>[
 
                             Container(
                               child: Column(
@@ -226,6 +227,7 @@ class CalendarDetail extends StatelessWidget {
                                         Text(
                                           dateOne,
                                           style: dateStyle,
+
                                         ),
                                       ],
                                     ),
@@ -234,24 +236,24 @@ class CalendarDetail extends StatelessWidget {
                                   Container(
                                     child: Column(
                                       children: <Widget>[
-                                  Text(
-                                    timeOne,
-                                    style: timeStyle,
+                                        Text(
+                                          timeOne,
+                                          style: timeStyle,
+                                        ),
+                                      ],
+                                    ),
+                                    height: 20,
                                   ),
                                 ],
                               ),
-                              height: 20,
+                              margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
                             ),
-                          ],
-                        ),
-                        margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
-                      ),
-                      Container(
-                        child: Image.asset("assets/arrow_horizontal.png"),
-                      ),
-                      Container(
-                        child: Column(
-                          children: <Widget>[
+                            Container(
+                              child: Image.asset("assets/arrow_horizontal.png"),
+                            ),
+                            Container(
+                              child: Column(
+                                children: <Widget>[
 
                                   Container(
                                     child: Column(
@@ -265,68 +267,71 @@ class CalendarDetail extends StatelessWidget {
                                     ),
                                     height: 30,
                                   ),
-                            Container(
-                              child: Column(
-                                children: <Widget>[
-                                  Text(
-                                    timeTwo,
-                                    style: timeStyle,
+                                  Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          timeTwo,
+                                          style: timeStyle,
+                                        ),
+                                      ],
+                                    ),
+                                    height: 20,
                                   ),
                                 ],
                               ),
-                              height: 20,
+                              margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
                             ),
                           ],
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         ),
-                        margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
+                        height: 70,
+                        color: Color.fromRGBO(47, 109, 29, 1),
+                        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      ),
+                      Container(
+                        child: Row(
+                          children: tags,
+                        ),
+                        margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
+                      ),
+                      Container(
+                        child: Text(
+                          description,
+                          style: descriptionStyle,
+                          maxLines: 5,
+                        ),
+                        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        alignment: Alignment.topLeft,
                       ),
                     ],
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  ),
-                  height: 70,
-                  color: Color.fromRGBO(47, 109, 29, 1),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                ),
-                Container(
-                  child: Row(
-                    children: tags,
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
-                ),
-                Container(
-                  child: Text(
-                    description,
-                    style: descriptionStyle,
-                    maxLines: 5,
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  alignment: Alignment.topLeft,
-                ),
-              ],
-            ),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    child: Text(creationDate, style: descriptionStyle),
-                    alignment: Alignment.centerLeft,
                   ),
                   Container(
-                    child: Text(editDate, style: descriptionStyle),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  Container(
-                    child: Text(createdBy, style: descriptionStyle),
-                    alignment: Alignment.centerLeft,
-                  ),
+                    child: Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text(creationDate, style: descriptionStyle),
+                          alignment: Alignment.centerLeft,
+                        ),
+                        Container(
+                          child: Text(editDate, style: descriptionStyle),
+                          alignment: Alignment.centerLeft,
+                        ),
+                        Container(
+                          child: Text(createdBy, style: descriptionStyle),
+                          alignment: Alignment.centerLeft,
+                        ),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                  )
                 ],
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
               ),
-              margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-            )
-          ],
-        ),
-      )),
+            ),
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          )
+      ),
     );
   }
 
