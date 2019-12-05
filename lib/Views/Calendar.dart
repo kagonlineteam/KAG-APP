@@ -12,7 +12,8 @@ class Calendar extends StatefulWidget {
 
 class CalendarState extends State {
   static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const titleStyle = const TextStyle(
+      fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   var usableWidth = 0.0;
   var page = 0;
@@ -54,8 +55,9 @@ class CalendarState extends State {
   }
 
   Widget _generateRow(entry) {
-    var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
+    var dateOne =
+        new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    var dateTwo = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
     var dateOneText = "${dateOne.day}.${dateOne.month}";
     var dateTwoText = "${dateTwo.day}.${dateTwo.month}";
 
@@ -124,10 +126,9 @@ class CalendarState extends State {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
       entries.forEach((entry) => entryRows.add(_generateRow(entry)));
-        setState(() {
-          rows = entryRows;
-        }
-      );
+      setState(() {
+        rows = entryRows;
+      });
     }
   }
 
@@ -150,33 +151,44 @@ class CalendarDetail extends StatelessWidget {
   CalendarDetail(this.entry);
 
   final entry;
-  static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
-  static const tagStyle         = const TextStyle(fontSize: 16, color: Colors.white);
-  static const timeStyle        = const TextStyle(fontSize: 16, color: Colors.white);
+  static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
+  static const titleStyle = const TextStyle(
+      fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const tagStyle = const TextStyle(fontSize: 16, color: Colors.white);
+  static const timeStyle = const TextStyle(fontSize: 16, color: Colors.white);
   static const descriptionStyle = const TextStyle(fontSize: 16);
 
   @override
   Widget build(BuildContext context) {
     var title = entry['title'];
 
-    DateTime dateObjectOne = DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
+    DateTime dateObjectOne =
+        DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
+    DateTime dateObjectTwo =
+        DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
 
-    var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(dateObjectOne.month)}";
-    var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(dateObjectTwo.month)}";
-    var timeOne = "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
-    var timeTwo = "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
+    var dateOne =
+        "${betterNumbers(dateObjectOne.day)}.${betterNumbers(dateObjectOne.month)}";
+    var dateTwo =
+        "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(dateObjectTwo.month)}";
+    var timeOne =
+        "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
+    var timeTwo =
+        "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
 
     var description = entry['description'];
-    var tagStrings  = entry['tags'];
+    var tagStrings = entry['tags'];
 
-    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(entry['created']);
-    DateTime changeObjectDate   = DateTime.fromMillisecondsSinceEpoch(entry['changed']);
+    DateTime creationObjectDate =
+        DateTime.fromMillisecondsSinceEpoch(entry['created']);
+    DateTime changeObjectDate =
+        DateTime.fromMillisecondsSinceEpoch(entry['changed']);
 
-    var creationDate  = "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
-    var editDate      = "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
-    var createdBy     = "Erstellt von: ${entry['author']}";
+    var creationDate =
+        "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
+    var editDate =
+        "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
+    var createdBy = "Erstellt von: ${entry['author']}";
 
     List<Widget> tags = [];
 
@@ -204,17 +216,32 @@ class CalendarDetail extends StatelessWidget {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      Container(
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              dateOne,
-                              style: dateStyle,
+
+                            Container(
+                              child: Column(
+                                children: <Widget>[
+                                  Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          dateOne,
+                                          style: dateStyle,
+                                        ),
+                                      ],
+                                    ),
+                                    height: 30,
+                                  ),
+                                  Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                  Text(
+                                    timeOne,
+                                    style: timeStyle,
+                                  ),
+                                ],
+                              ),
+                              height: 20,
                             ),
-                            Text(
-                              timeOne,
-                              style: timeStyle,
-                            )
                           ],
                         ),
                         margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
@@ -225,18 +252,34 @@ class CalendarDetail extends StatelessWidget {
                       Container(
                         child: Column(
                           children: <Widget>[
-                            Text(
-                              dateTwo,
-                              style: dateStyle,
+
+                                  Container(
+                                    child: Column(
+                                      children: <Widget>[
+                                        Text(
+                                          dateTwo,
+                                          style: dateStyle,
+
+                                        ),
+                                      ],
+                                    ),
+                                    height: 30,
+                                  ),
+                            Container(
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    timeTwo,
+                                    style: timeStyle,
+                                  ),
+                                ],
+                              ),
+                              height: 20,
                             ),
-                            Text(
-                              timeTwo,
-                              style: timeStyle,
-                            )
                           ],
                         ),
                         margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
-                      )
+                      ),
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
