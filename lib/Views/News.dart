@@ -31,7 +31,7 @@ class NewsState extends State<News> {
   }
 
   Future _load() async {
-    var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLES);
+    var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
     var response = await request.getArticles();
     if (response == null) return;
     List<Widget> newArticles = [];

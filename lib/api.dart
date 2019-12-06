@@ -13,7 +13,6 @@ enum APIAction {
   GET_RPLAN_TOMORROW,
   GET_RPLAN_DAYAFTERTOMMOROW,
   GET_USER_INFO,
-  GET_ARTICLES,
   GET_ARTICLE
 
 }
@@ -45,8 +44,6 @@ class API {
         return true;
       case APIAction.GET_USER_INFO:
         return true;
-      case APIAction.GET_ARTICLES:
-        return false;
       case APIAction.GET_ARTICLE:
         return false;
     }
@@ -276,7 +273,7 @@ class _APIRequest {
   ///
   Future<List<dynamic>> getNextCalendarEntries() async {
     _actionExecution(APIAction.GET_CALENDAR);
-    await _cache.init("next", cacheDuration: 10);//1000 * 60 * 60 * 24);
+    await _cache.init("next", cacheDuration: 1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
@@ -292,7 +289,7 @@ class _APIRequest {
   Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
     _actionExecution(APIAction.GET_CALENDAR);
     await _cache.init("soon" + page.toString(),
-        cacheDuration: 10);//1000 * 60 * 60 * 24);
+        cacheDuration: 1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
@@ -341,12 +338,12 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
-  Future<String> getRAWRPlan(String key, String teacher, {force: false}) async {
+  Future<String> getRAWRPlan(String teacherType, String teacher, {force: false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     var day = await getIDForRPlanDay(_endpoint);
     if (teacher != null) {
-      params[key] = "eq-"+teacher;
+      params[teacherType] = "eq-"+teacher;
     }
     await _cache.init(params.toString());
     if (force) _cache.delete();
@@ -395,20 +392,12 @@ class _APIRequest {
     }
     if (response != null) {
       return response;
-      /**final jResponse = jsonDecode(response);Map<String, String> requestResponse = {};
-          info.forEach((attribute) {
-          if (jResponse['entity']['attributes'].containsKey(attribute)) {
-          requestResponse[attribute] =
-          jResponse['entity']['attributes'][attribute][0];
-          }
-          });
-          return requestResponse;*/
     }
     return null;
   }
 
   Future <String> getArticles() async {
-    _actionExecution(APIAction.GET_ARTICLES);
+    _actionExecution(APIAction.GET_ARTICLE);
     Map<String, String> params = {};
     params['view'] = "canonical";
 
@@ -521,8 +510,6 @@ class _CacheManager {
         return 1000 * 60 * 60;
       case APIAction.GET_USER_INFO:
         return 1000 * 60 * 60 * 24 * 7;
-      case APIAction.GET_ARTICLES:
-        return 0;
       case APIAction.GET_ARTICLE:
         return 0;
     }
