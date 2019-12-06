@@ -13,7 +13,9 @@ enum APIAction {
   GET_RPLAN_TOMORROW,
   GET_RPLAN_DAYAFTERTOMMOROW,
   GET_USER_INFO,
-  GET_ARTICLES
+  GET_ARTICLES,
+  GET_ARTICLE
+
 }
 
 class API {
@@ -44,6 +46,8 @@ class API {
       case APIAction.GET_USER_INFO:
         return true;
       case APIAction.GET_ARTICLES:
+        return false;
+      case APIAction.GET_ARTICLE:
         return false;
     }
     return true;
@@ -415,6 +419,16 @@ class _APIRequest {
     return "";
   }
 
+  Future <String> getArticle(String id) async {
+    _actionExecution(APIAction.GET_ARTICLE);
+
+    String response = await _APIConnection.getFromAPI("articles/$id", null, null);
+    if (response != null) {
+      return response;
+    }
+    return "";
+  }
+
 
 }
 
@@ -508,6 +522,8 @@ class _CacheManager {
       case APIAction.GET_USER_INFO:
         return 1000 * 60 * 60 * 24 * 7;
       case APIAction.GET_ARTICLES:
+        return 0;
+      case APIAction.GET_ARTICLE:
         return 0;
     }
     return 0;

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
@@ -55,13 +56,15 @@ class CalendarState extends State {
         )));
   }
 
-  Widget _generateRow(entry) {
+  Future<Widget> _generateRow(entry) async {
+    var descriptionText = "";
+    if (entry['description'] != null) {
+      descriptionText = await loadDescription(entry['description']);
+    }
     var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    var dateTwo = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
-    var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(
-        dateOne.month)}.";
-    var dateTwoText = "${betterNumbers(dateTwo.day)}.${betterNumbers(
-        dateTwo.month)}.";
+    var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
+    var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(dateOne.month)}.";
+    var dateTwoText = "${betterNumbers(dateTwo.day)}.${betterNumbers(dateTwo.month)}.";
 
     return Container(
       decoration: BoxDecoration(
@@ -104,7 +107,7 @@ class CalendarState extends State {
                     height: 40,
                   ),
                   Container(
-                    child: Text(getShortedLongDescription(entry['description']),
+                    child: Text(getShortedLongDescription(descriptionText),
                         style: descriptionStyle,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2),
@@ -127,12 +130,22 @@ class CalendarState extends State {
     if (entriesRequest != null) {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
-      entries.forEach((entry) => entryRows.add(_generateRow(entry)));
+      entries.forEach((entry) async => entryRows.add(await _generateRow(entry)));
         setState(() {
           rows = entryRows;
         }
       );
     }
+  }
+
+  Future <String> loadDescription(String id) async {
+    var descriptionRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
+    if (descriptionRequest == null) return "";
+    var response = await descriptionRequest.getArticle(id);
+    if (response == null) return "";
+    print(id);
+    print(response);
+    return jsonDecode(response)['preview'];
   }
 
   @override

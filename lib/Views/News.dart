@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../api.dart';
 import '../main.dart';
@@ -141,12 +143,33 @@ class NewsState extends State<News> {
           )
         ],
       ),
-        //onTap:
+        onTap: () => Navigator.push(context,
+            MaterialPageRoute(builder: (context) => ArticleDetail(article))),
       ),
     );
   }
 }
 
-class ArticleDetail {
+class ArticleDetail extends StatelessWidget {
+  ArticleDetail(this.article);
 
+  final article;
+
+  @override
+  Widget build(BuildContext context) {
+    var htmlSite = """<h1>${article['title']}<\h1><p> ${castBase64ToHTML(article['body'])}""";
+
+
+    return Scaffold(
+      appBar: AppBar(),
+      body: Container(
+        child: Html(data: htmlSite),
+        padding: EdgeInsets.all(10),
+      ),
+    );
+  }
+
+  String castBase64ToHTML(String text) {
+    return latin1.decode(base64Decode(text.replaceAll('\n', '')));
+  }
 }
