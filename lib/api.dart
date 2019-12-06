@@ -247,6 +247,7 @@ class _APIRequest {
   ///
   List<dynamic> getGroups() {
     _actionExecution(APIAction.GET_GROUPS);
+    print(_user.getGroups());
     return _user.getGroups();
   }
 
@@ -341,12 +342,12 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
-  Future<String> getRAWRPlan(String teacher, {force: false}) async {
+  Future<String> getRAWRPlan(String key, String teacher, {force: false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     var day = await getIDForRPlanDay(_endpoint);
     if (teacher != null) {
-      params["v_lehrer"] = "eq-"+teacher;
+      params[key] = "eq-"+teacher;
     }
     await _cache.init(params.toString());
     if (force) _cache.delete();

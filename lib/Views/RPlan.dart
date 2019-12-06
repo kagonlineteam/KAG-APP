@@ -157,32 +157,41 @@ class RPlanState extends State<RPlan>
       searchedTeacher = preferences.getString(SP_FILTER);
     }
     // Load is Teacher
-    isTeacher = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
+    var isTeacher = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
             .getGroups()
             .contains("ROLE_TEACHER") ||
         (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
             .getGroups()
             .contains("ROLE_ADMINISTRATOR"));
+    setState(() {
+      this.isTeacher = isTeacher;
+    });
   }
 
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
-      var rplan = jsonDecode(
-          await rplanRequest.getRAWRPlan(searchedTeacher, force: force));
+      var rplan = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
+      var rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force));
+      var newLessons = <Widget>[];
       if (rplan != null) {
-        var newLessons = <Widget>[];
         await rplan['entities']
             .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
-        setState(() {
-          lessons = newLessons;
-          String a = rplan['entities'][0]['vplan'];
-          int b = int.parse(a);
-          DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
-          dateText = "${dateTime.day}.${dateTime.month}.";
-        });
-        _createDots(requestDate);
       }
+      if (rplanTwo != null) {
+        await rplanTwo['entities']
+            .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
+      }
+      if (newLessons.isEmpty) return;
+
+      setState(() {
+        lessons = newLessons;
+        String a = rplan['entities'][0]['vplan'];
+        int b = int.parse(a);
+        DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
+        dateText = "${dateTime.day}.${dateTime.month}.";
+      });
+      _createDots(requestDate);
     }
     switchingDays = false;
   }
@@ -468,77 +477,6 @@ class RPlanDetail extends StatelessWidget {
     if (lesson['v_lehrer'] == null) lesson['v_lehrer'] = "";
     width = MediaQuery.of(context).size.width;
 
-    /*final a = Column(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        Text(lesson['art'], style: textStyle),
-        Column(
-          children: <Widget>[
-            Container(
-              child: Text("Allgemein", style: titleStyle),
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text(lesson['klasse'], style: textStyle),
-                Text(lesson['stunde'], style: textStyle)
-              ],
-            ),
-          ],
-        ),
-        Column(
-          children: <Widget>[
-            Container(
-              child: Text("Fach", style: titleStyle),
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text(lesson['fach'], style: textStyle),
-                Text(lesson['v_fach'], style: textStyle)
-              ],
-            ),
-          ],
-        ),
-        Column(
-          children: <Widget>[
-            Container(
-              child: Text("Raum", style: titleStyle),
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text(lesson['raum'], style: textStyle),
-                Text(lesson['v_raum'], style: textStyle)
-              ],
-            ),
-          ],
-        ),
-        Column(
-          children: <Widget>[
-            Container(
-              child: Text(getTeacherText(lesson['lehrer'], lesson['v_lehrer']),
-                  style: titleStyle),
-              alignment: Alignment.centerLeft,
-              margin: EdgeInsets.fromLTRB(20, 0, 0, 0),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                Text(lesson['lehrer'], style: textStyle),
-                Text(lesson['v_lehrer'], style: textStyle)
-              ],
-            ),
-          ],
-        ),
-      ],
-    );*/
     List<Widget> widgets = [
       element("Art", lesson['art'], ""),
       element("Stunde", lesson['stunde'], ""),
