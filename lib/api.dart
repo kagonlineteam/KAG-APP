@@ -128,7 +128,7 @@ class _User {
   /// Read Username from jwt if exists
   ///
   String getUsername() {
-    return getDecodedJWT()['username'];
+    return getDecodedJWT()['user'];
   }
 
   ///
@@ -382,7 +382,7 @@ class _APIRequest {
   ///
   /// It directly returns the Information as String
   ///
-  Future<Map<String, String>> getUserInfo(List<String> info) async {
+  Future <String> getUserInfo() async {
     _actionExecution(APIAction.GET_USER_INFO);
     await _cache.init("${_user.getUsername()}");
     String response;
@@ -394,15 +394,15 @@ class _APIRequest {
       _cache.setCache(response);
     }
     if (response != null) {
-      final jResponse = jsonDecode(response);
-      Map<String, String> requestResponse = {};
-      info.forEach((attribute) {
-        if (jResponse['entity']['attributes'].containsKey(attribute)) {
+      return response;
+      /**final jResponse = jsonDecode(response);Map<String, String> requestResponse = {};
+          info.forEach((attribute) {
+          if (jResponse['entity']['attributes'].containsKey(attribute)) {
           requestResponse[attribute] =
           jResponse['entity']['attributes'][attribute][0];
-        }
-      });
-      return requestResponse;
+          }
+          });
+          return requestResponse;*/
     }
     return null;
   }
