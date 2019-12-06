@@ -171,22 +171,25 @@ class RPlanState extends State<RPlan>
   Future _load({force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(requestDate);
     if (rplanRequest != null) {
-      var rplan = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
-      var rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force));
+      var rplan = jsonDecode(await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force));
+      var rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
       var newLessons = <Widget>[];
+      String a;
       if (rplan != null) {
         await rplan['entities']
             .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
+        a = rplan['entities'][0]['vplan'];
       }
       if (rplanTwo != null) {
         await rplanTwo['entities']
             .forEach((lesson) => newLessons.add(_loadLesson(lesson)));
+        a = rplanTwo['entities'][0]['vplan'];
+        print(newLessons);
       }
       if (newLessons.isEmpty) return;
 
       setState(() {
         lessons = newLessons;
-        String a = rplan['entities'][0]['vplan'];
         int b = int.parse(a);
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
         dateText = "${dateTime.day}.${dateTime.month}.";

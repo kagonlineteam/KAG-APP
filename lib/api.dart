@@ -247,7 +247,6 @@ class _APIRequest {
   ///
   List<dynamic> getGroups() {
     _actionExecution(APIAction.GET_GROUPS);
-    print(_user.getGroups());
     return _user.getGroups();
   }
 
