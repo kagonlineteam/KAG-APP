@@ -155,7 +155,7 @@ class _User {
 }
 
 class _APIConnection {
-  static const API = "https://habicht.kag-langenfeld.de/";
+  static const API = "https://apiv2.kag-langenfeld.de/";
 
   ///
   /// Makes Login request.
@@ -278,7 +278,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI(
-        "termine", {"limit": "3", "view": "canonical"}, _user.getJWT());
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -294,7 +294,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical"}, _user.getJWT());
+        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -400,6 +400,7 @@ class _APIRequest {
     _actionExecution(APIAction.GET_ARTICLE);
     Map<String, String> params = {};
     params['view'] = "canonical";
+    params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
 
     String response = await _APIConnection.getFromAPI("articles", params, null);
     if (response != null) {
