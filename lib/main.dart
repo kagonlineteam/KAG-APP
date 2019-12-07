@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-import './Views/Calendar.dart' as Calendar;
-import './Views/Home.dart' as Home;
-import './Views/Login.dart' as Login;
-import './Views/RPlan.dart' as RPlan;
-import './Views/User.dart' as User;
+import './Views/Calendar.dart'  as Calendar;
+import './Views/Home.dart'      as Home;
+import './Views/Login.dart'     as Login;
+import './Views/RPlan.dart'     as RPlan;
+import './Views/User.dart'      as User;
+import './Views/News.dart'      as News;
 import 'api.dart';
 
 void main() => runApp(KAGApp());
@@ -108,7 +109,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
         new Home.Home(),
         new RPlan.RPlan(),
         new Calendar.Calendar(),
-        //new News.News(),
+        new News.News(),
         new User.User()
       ];
     });
@@ -121,7 +122,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           new Home.Home(),
           new Login.NotLoggedIn(),
           new Calendar.Calendar(),
-          //new News.News(),
+          new News.News(),
           new Login.Login()
         ];
       });
@@ -130,9 +131,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    KAGApp.tabs = new TabController(length: 5 - 1, vsync: this);
+    KAGApp.tabs = new TabController(length: 5, vsync: this);
     return DefaultTabController(
-      length: 5 - 1,
+      length: 5,
       child: Scaffold(
           body: TabBarView(
             controller: KAGApp.tabs,
@@ -156,7 +157,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   text: "Termine",
                   icon: Icon(Icons.event),
                 ),
-                //Tab(text: "Aktuelles", icon: Icon(Icons.public),),
+                Tab(text: "Aktuelles", icon: Icon(Icons.public),),
                 Tab(
                   text: "User",
                   icon: Icon(Icons.person),

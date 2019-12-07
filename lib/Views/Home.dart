@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
@@ -158,7 +159,6 @@ class HomeState extends State<Home> {
                 new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
                 [dd, ".", mm]),
             entry['title'],
-            entry['description'],
             entry);
       });
     });
@@ -206,7 +206,12 @@ class HomeState extends State<Home> {
     });
   }
 
-  void addCalendarEntry(String date, String title, String description, entry) {
+  Future<void> addCalendarEntry(String date, String title, entry) async {
+    var descriptionText = "";
+    if (entry['description'] != null) {
+      descriptionText = await loadDescription(entry['description']);
+    }
+
     setState(() {
       calendarEntries.add(Container(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -241,7 +246,7 @@ class HomeState extends State<Home> {
                 children: <Widget>[
                   Expanded(
                     child: Container(
-                        child: Text(getShortedDescription(description),
+                        child: Text(getShortedDescription(descriptionText),
                             style: eventDescriptionText),
                         margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
                   )
@@ -254,6 +259,16 @@ class HomeState extends State<Home> {
         ),
       ));
     });
+  }
+
+  Future <String> loadDescription(String id) async {
+    var descriptionRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
+    if (descriptionRequest == null) return "";
+    var response = await descriptionRequest.getArticle(id);
+    if (response == null) return "";
+    print(id);
+    print(response);
+    return jsonDecode(response)['preview'];
   }
 
   @override
@@ -278,6 +293,7 @@ class HomeState extends State<Home> {
   }
 
   String getShortedDescription(String text) {
+    if (text == null) return "";
     if (text.length > 50) {
       return text.substring(0, 50) + "...";
     } else {

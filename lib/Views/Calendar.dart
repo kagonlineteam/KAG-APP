@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:kag/api.dart';
 
@@ -53,11 +56,15 @@ class CalendarState extends State {
         )));
   }
 
-  Widget _generateRow(entry) {
+  Future<Widget> _generateRow(entry) async {
+    var descriptionText = "";
+    if (entry['description'] != null) {
+      descriptionText = await loadDescription(entry['description']);
+    }
     var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
-    var dateOneText = "${dateOne.day}.${dateOne.month}";
-    var dateTwoText = "${dateTwo.day}.${dateTwo.month}";
+    var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
+    var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(dateOne.month)}.";
+    var dateTwoText = "${betterNumbers(dateTwo.day)}.${betterNumbers(dateTwo.month)}.";
 
     return Container(
       decoration: BoxDecoration(
@@ -100,7 +107,7 @@ class CalendarState extends State {
                     height: 40,
                   ),
                   Container(
-                    child: Text(getShortedLongDescription(entry['description']),
+                    child: Text(getShortedLongDescription(descriptionText),
                         style: descriptionStyle,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2),
@@ -123,12 +130,22 @@ class CalendarState extends State {
     if (entriesRequest != null) {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
-      entries.forEach((entry) => entryRows.add(_generateRow(entry)));
+      entries.forEach((entry) async => entryRows.add(await _generateRow(entry)));
         setState(() {
           rows = entryRows;
         }
       );
     }
+  }
+
+  Future <String> loadDescription(String id) async {
+    var descriptionRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
+    if (descriptionRequest == null) return "";
+    var response = await descriptionRequest.getArticle(id);
+    if (response == null) return "";
+    print(id);
+    print(response);
+    return jsonDecode(response)['preview'];
   }
 
   @override
@@ -138,11 +155,19 @@ class CalendarState extends State {
   }
 
   String getShortedLongDescription(String text) {
+    if (text == null) return "";
     if (text.length > 300) {
       return text.substring(0, 300) + "...";
     } else {
       return text;
     }
+  }
+
+  String betterNumbers(int originalNumber) {
+    if (originalNumber < 10) {
+      return "0$originalNumber";
+    }
+    return "$originalNumber";
   }
 }
 
@@ -161,18 +186,23 @@ class CalendarDetail extends StatelessWidget {
     var title = entry['title'];
 
     DateTime dateObjectOne = DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(entry['end'] * 1000);
+    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(
+        entry['stop'] * 1000);
 
-    var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(dateObjectOne.month)}";
-    var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(dateObjectTwo.month)}";
+    var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(
+        dateObjectOne.month)}.";
+    var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(
+        dateObjectTwo.month)}.";
     var timeOne = "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
     var timeTwo = "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
 
     var description = entry['description'];
     var tagStrings  = entry['tags'];
 
-    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(entry['created']);
-    DateTime changeObjectDate   = DateTime.fromMillisecondsSinceEpoch(entry['changed']);
+    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(
+        entry['created'] * 1000);
+    DateTime changeObjectDate = DateTime.fromMillisecondsSinceEpoch(
+        entry['changed'] * 1000);
 
     var creationDate  = "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
     var editDate      = "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
@@ -252,7 +282,7 @@ class CalendarDetail extends StatelessWidget {
                 ),
                 Container(
                   child: Text(
-                    description,
+                    description == null ? "" : description,
                     style: descriptionStyle,
                     maxLines: 5,
                   ),
