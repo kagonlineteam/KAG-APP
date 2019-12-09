@@ -19,13 +19,10 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle eventDate =
-      const TextStyle(fontSize: 35, color: Colors.white);
-  static const TextStyle eventTitle =
-      const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle eventDate            = const TextStyle(fontSize: 35, color: Colors.white);
+  static const TextStyle eventTitle           = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const TextStyle eventDescriptionText = const TextStyle(fontSize: 18);
-  static const TextStyle titleStyle =
-      const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+  static const TextStyle titleStyle           = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
@@ -266,8 +263,6 @@ class HomeState extends State<Home> {
     if (descriptionRequest == null) return "";
     var response = await descriptionRequest.getArticle(id);
     if (response == null) return "";
-    print(id);
-    print(response);
     return jsonDecode(response)['preview'];
   }
 

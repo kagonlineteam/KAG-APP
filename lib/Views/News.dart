@@ -46,7 +46,7 @@ class NewsState extends State<News> {
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
-    usableWidth = width - 132;
+    usableWidth = width - 22; //With image: 132
 
     return Scaffold(
         appBar: AppBar(
