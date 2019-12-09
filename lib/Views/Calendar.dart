@@ -293,12 +293,12 @@ class CalendarDetail extends StatelessWidget {
                         color: Color.fromRGBO(47, 109, 29, 1),
                         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                       ),
-                      Container(
+                      /*Container(
                         child: Row(
                           children: tags,
                         ),
                         margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
-                      ),
+                      ),*/
                       Container(
                         child: Text(
                           description,
