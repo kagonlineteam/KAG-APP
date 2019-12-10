@@ -52,8 +52,8 @@ class CalendarState extends State {
         ),
         body: SafeArea(
             child: ListView(
-          children: rows,
-        )));
+              children: rows,
+            )));
   }
 
   Future<Widget> _generateRow(entry) async {
@@ -61,6 +61,7 @@ class CalendarState extends State {
     if (entry['description'] != null) {
       descriptionText = await loadDescription(entry['description']);
     }
+
     var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
     var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
     var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(dateOne.month)}.";
@@ -131,9 +132,9 @@ class CalendarState extends State {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
       entries.forEach((entry) async => entryRows.add(await _generateRow(entry)));
-        setState(() {
-          rows = entryRows;
-        }
+      setState(() {
+        rows = entryRows;
+      }
       );
     }
   }
@@ -143,8 +144,6 @@ class CalendarState extends State {
     if (descriptionRequest == null) return "";
     var response = await descriptionRequest.getArticle(id);
     if (response == null) return "";
-    print(id);
-    print(response);
     return jsonDecode(response)['preview'];
   }
 
@@ -218,102 +217,102 @@ class CalendarDetail extends StatelessWidget {
       appBar: AppBar(),
       body: SafeArea(
           child: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Column(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Container(
-                  child: Text(
-                    title,
-                    style: titleStyle,
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  alignment: Alignment.centerLeft,
-                ),
-                Container(
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              dateOne,
-                              style: dateStyle,
-                            ),
-                            Text(
-                              timeOne,
-                              style: timeStyle,
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
+                Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        title,
+                        style: titleStyle,
                       ),
-                      Container(
-                        child: Image.asset("assets/arrow_horizontal.png"),
-                      ),
-                      Container(
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              dateTwo,
-                              style: dateStyle,
+                      margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                      alignment: Alignment.centerLeft,
+                    ),
+                    Container(
+                      child: Row(
+                        children: <Widget>[
+                          Container(
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  dateOne,
+                                  style: dateStyle,
+                                ),
+                                Text(
+                                  timeOne,
+                                  style: timeStyle,
+                                )
+                              ],
                             ),
-                            Text(
-                              timeTwo,
-                              style: timeStyle,
-                            )
-                          ],
-                        ),
-                        margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
-                      )
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  ),
-                  height: 70,
-                  color: Color.fromRGBO(47, 109, 29, 1),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                ),
-                Container(
+                            margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
+                          ),
+                          Container(
+                            child: Image.asset("assets/arrow_horizontal.png"),
+                          ),
+                          Container(
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  dateTwo,
+                                  style: dateStyle,
+                                ),
+                                Text(
+                                  timeTwo,
+                                  style: timeStyle,
+                                )
+                              ],
+                            ),
+                            margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
+                          )
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
+                      height: 70,
+                      color: Color.fromRGBO(47, 109, 29, 1),
+                      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                    ),
+                    /*Container(
                   child: Row(
                     children: tags,
                   ),
                   margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
+                ),*/
+                    Container(
+                      child: Text(
+                        description == null ? "" : description,
+                        style: descriptionStyle,
+                        maxLines: 5,
+                      ),
+                      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                      alignment: Alignment.topLeft,
+                    ),
+                  ],
                 ),
                 Container(
-                  child: Text(
-                    description == null ? "" : description,
-                    style: descriptionStyle,
-                    maxLines: 5,
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: Text(creationDate, style: descriptionStyle),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      Container(
+                        child: Text(editDate, style: descriptionStyle),
+                        alignment: Alignment.centerLeft,
+                      ),
+                      Container(
+                        child: Text(createdBy, style: descriptionStyle),
+                        alignment: Alignment.centerLeft,
+                      ),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  alignment: Alignment.topLeft,
-                ),
+                  margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
+                )
               ],
             ),
-            Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    child: Text(creationDate, style: descriptionStyle),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  Container(
-                    child: Text(editDate, style: descriptionStyle),
-                    alignment: Alignment.centerLeft,
-                  ),
-                  Container(
-                    child: Text(createdBy, style: descriptionStyle),
-                    alignment: Alignment.centerLeft,
-                  ),
-                ],
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              ),
-              margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-            )
-          ],
-        ),
-      )),
+          )),
     );
   }
 
