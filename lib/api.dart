@@ -12,7 +12,9 @@ enum APIAction {
   GET_RPLAN_TODAY,
   GET_RPLAN_TOMORROW,
   GET_RPLAN_DAYAFTERTOMMOROW,
-  GET_USER_INFO
+  GET_USER_INFO,
+  GET_ARTICLE
+
 }
 
 class API {
@@ -42,6 +44,8 @@ class API {
         return true;
       case APIAction.GET_USER_INFO:
         return true;
+      case APIAction.GET_ARTICLE:
+        return false;
     }
     return true;
   }
@@ -121,7 +125,7 @@ class _User {
   /// Read Username from jwt if exists
   ///
   String getUsername() {
-    return getDecodedJWT()['username'];
+    return getDecodedJWT()['user'];
   }
 
   ///
@@ -133,7 +137,7 @@ class _User {
 
   getDecodedJWT() {
     String output =
-        _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
+    _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
     switch (output.length % 4) {
       case 0:
         break;
@@ -151,19 +155,20 @@ class _User {
 }
 
 class _APIConnection {
-  static const API = "https://api.kag-langenfeld.de/";
+  static const API = "https://apiv2.kag-langenfeld.de/";
 
   ///
   /// Makes Login request.
   /// Return JWT if successful else null
   ///
-  static Future<String> getJWTFromLogin(
-      String username, String password) async {
-    var loginBody = jsonEncode({"username": username, "password": password});
-    var response = await http.post(API + "login",
-        body: loginBody, headers: {"Content-Type": "application/json"});
+  static Future<String> getJWTFromLogin(String username,
+      String password) async {
+    var loginBody = jsonEncode(
+        {"username": username, "password": password, "client": "appclient"});
+    var response = await http.post(API + "login", body: loginBody,
+        headers: {"Content-Type": "application/json"});
     if (response.statusCode == 200) {
-      return jsonDecode(response.body)['token'];
+      return jsonDecode(response.body)['access_token'];
     }
     return null;
   }
@@ -174,8 +179,8 @@ class _APIConnection {
   /// If not successful returns null
   /// Will not send authorization header if jwt is null
   ///
-  static Future<String> getFromAPI(
-      String path, Map<String, String> params, String jwt) async {
+  static Future<String> getFromAPI(String path, Map<String, String> params,
+      String jwt) async {
     String query = "";
     if (params != null) {
       query = "?";
@@ -184,8 +189,8 @@ class _APIConnection {
         query += "$name=$value";
       });
     }
-    return (await http.get("${API}v1/$path$query",
-            headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
+    return (await http.get("${API}$path$query",
+        headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
         .body;
   }
 }
@@ -273,7 +278,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI(
-        "termine", {"limit": "3"}, _user.getJWT());
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -289,7 +294,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString()}, _user.getJWT());
+        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -317,7 +322,7 @@ class _APIRequest {
           "limit": "1",
           "tags%5Bferien%5D": "like",
           "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D":
-              "gte"
+          "gte"
         },
         _user.getJWT()))['entities'];
     if (jsonResponse.length > 0) {
@@ -333,25 +338,38 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
-  Future<String> getRAWRPlan(String teacher, {force: false}) async {
+  Future<String> getRAWRPlan(String teacherType, String teacher, {force: false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
-    if (_endpoint == APIAction.GET_RPLAN_TODAY) params["file"] = "heute";
-    if (_endpoint == APIAction.GET_RPLAN_TOMORROW) params["file"] = "morgen";
-    if (_endpoint == APIAction.GET_RPLAN_DAYAFTERTOMMOROW)
-      params["file"] = "uebermorgen";
+    var day = await getIDForRPlanDay(_endpoint);
     if (teacher != null) {
-      params["abbreviation"] = teacher;
+      params[teacherType] = "eq-"+teacher;
     }
     await _cache.init(params.toString());
     if (force) _cache.delete();
     if (_cache.hasCache()) {
       return _cache.getCache();
     }
-    String response =
-        await _APIConnection.getFromAPI("vplan", params, _user.getJWT());
+
+    params["vplan"] = "eq-" + day;
+    params["view"] = "canonical";
+    String response = await _APIConnection.getFromAPI(
+        "vertretungen", params, _user.getJWT());
     _cache.setCache(response);
     return response;
+  }
+
+  Future <String> getIDForRPlanDay(APIAction action) async {
+    String response = await _APIConnection.getFromAPI(
+        "vplans", {"date": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000) - 86400}"}, _user.getJWT());
+    var jsonResponse = jsonDecode(response)["entities"];
+    if (action == APIAction.GET_RPLAN_TODAY) {
+      return jsonResponse[0]["id"];
+    } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+      return jsonResponse[1]["id"];
+    } else {
+      return jsonResponse[2]["id"];
+    }
   }
 
   ///
@@ -361,7 +379,7 @@ class _APIRequest {
   ///
   /// It directly returns the Information as String
   ///
-  Future<Map<String, String>> getUserInfo(List<String> info) async {
+  Future <String> getUserInfo() async {
     _actionExecution(APIAction.GET_USER_INFO);
     await _cache.init("${_user.getUsername()}");
     String response;
@@ -373,18 +391,35 @@ class _APIRequest {
       _cache.setCache(response);
     }
     if (response != null) {
-      final jResponse = jsonDecode(response);
-      Map<String, String> requestResponse = {};
-      info.forEach((attribute) {
-        if (jResponse['entity']['attributes'].containsKey(attribute)) {
-          requestResponse[attribute] =
-              jResponse['entity']['attributes'][attribute][0];
-        }
-      });
-      return requestResponse;
+      return response;
     }
     return null;
   }
+
+  Future <String> getArticles() async {
+    _actionExecution(APIAction.GET_ARTICLE);
+    Map<String, String> params = {};
+    params['view'] = "canonical";
+    params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
+
+    String response = await _APIConnection.getFromAPI("articles", params, null);
+    if (response != null) {
+      return response;
+    }
+    return "";
+  }
+
+  Future <String> getArticle(String id) async {
+    _actionExecution(APIAction.GET_ARTICLE);
+
+    String response = await _APIConnection.getFromAPI("articles/$id", null, null);
+    if (response != null) {
+      return response;
+    }
+    return "";
+  }
+
+
 }
 
 class _CacheManager {
@@ -476,6 +511,8 @@ class _CacheManager {
         return 1000 * 60 * 60;
       case APIAction.GET_USER_INFO:
         return 1000 * 60 * 60 * 24 * 7;
+      case APIAction.GET_ARTICLE:
+        return 0;
     }
     return 0;
   }

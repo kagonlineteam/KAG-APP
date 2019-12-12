@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -12,7 +14,7 @@ class User extends StatefulWidget {
 }
 
 class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
-  var name = "";
+  String name = "";
   Widget timeTable = Row();
 
   void logout() {
@@ -23,24 +25,24 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
 
   Future _load() async {
     KAGApp.api.getAPIRequest(APIAction.GET_USER_INFO).then((request) async {
-      Map<String, String> userInfo =
-          await request.getUserInfo(["sn", "givenName", "employeeNumber"]);
+      String response = await request.getUserInfo();
+      var userInfo = jsonDecode(response)['entity'];
 
       // Set Timetable
-      if (userInfo.containsKey("employeeNumber") &&
-          (userInfo['employeeNumber'] == "EF" ||
-              userInfo['employeeNumber'] == "Q1" ||
-              userInfo['employeeNumber'] == "Q2")) {
-        _setTimeTable(userInfo['employeeNumber']);
+      if (userInfo.containsKey("stufe") &&
+          (userInfo['stufe'] == "EF" ||
+              userInfo['stufe'] == "Q1" ||
+              userInfo['stufe'] == "Q2")) {
+        _setTimeTable(userInfo['stufe']);
       }
 
       // Set Name
-      if (userInfo.containsKey("employeeNumber")) {
+      if (userInfo.containsKey("stufe")) {
         // Student
-        name = userInfo['givenName'];
+        name = userInfo['name'][0];
       } else {
         // Teacher
-        name = userInfo['sn'];
+        name = userInfo['surname'];
       }
     });
   }
@@ -53,7 +55,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
         child: OrientationBuilder(builder: (context, orientation) {
           return Image.network(
             "https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
-            height: MediaQuery.of(context).size.height - 150,
+            //height: MediaQuery.of(context).size.height - 100,
           );
         }),
       );
@@ -70,18 +72,23 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
   Widget build(BuildContext context) {
     super.build(context);
     return new SafeArea(
-      child: Column(
+      child: ListView(
         children: <Widget>[
-          Row(children: <Widget>[
-            Text(name, style: TextStyle(fontSize: 30)),
-            MaterialButton(
-              child: Text("Abmelden"),
-              onPressed: logout,
-            )
-          ], mainAxisAlignment: MainAxisAlignment.spaceAround),
-          timeTable
+          Column(
+            children: <Widget>[
+              Row(children: <Widget>[
+                Text(name, style: TextStyle(fontSize: 30)),
+                MaterialButton(
+                  child: Text("Abmelden"),
+                  onPressed: logout,
+                )
+              ], mainAxisAlignment: MainAxisAlignment.spaceAround),
+              timeTable
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
         ],
-      ),
+      )
     );
   }
 

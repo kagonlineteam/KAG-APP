@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
@@ -18,13 +19,10 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle eventDate =
-      const TextStyle(fontSize: 35, color: Colors.white);
-  static const TextStyle eventTitle =
-      const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle eventDate            = const TextStyle(fontSize: 35, color: Colors.white);
+  static const TextStyle eventTitle           = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const TextStyle eventDescriptionText = const TextStyle(fontSize: 18);
-  static const TextStyle titleStyle =
-      const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+  static const TextStyle titleStyle           = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
@@ -158,7 +156,6 @@ class HomeState extends State<Home> {
                 new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
                 [dd, ".", mm]),
             entry['title'],
-            entry['description'],
             entry);
       });
     });
@@ -206,7 +203,12 @@ class HomeState extends State<Home> {
     });
   }
 
-  void addCalendarEntry(String date, String title, String description, entry) {
+  Future<void> addCalendarEntry(String date, String title, entry) async {
+    var descriptionText = "";
+    if (entry['description'] != null) {
+      descriptionText = await loadDescription(entry['description']);
+    }
+
     setState(() {
       calendarEntries.add(Container(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -241,7 +243,7 @@ class HomeState extends State<Home> {
                 children: <Widget>[
                   Expanded(
                     child: Container(
-                        child: Text(getShortedDescription(description),
+                        child: Text(getShortedDescription(descriptionText),
                             style: eventDescriptionText),
                         margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
                   )
@@ -254,6 +256,14 @@ class HomeState extends State<Home> {
         ),
       ));
     });
+  }
+
+  Future <String> loadDescription(String id) async {
+    var descriptionRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
+    if (descriptionRequest == null) return "";
+    var response = await descriptionRequest.getArticle(id);
+    if (response == null) return "";
+    return jsonDecode(response)['preview'];
   }
 
   @override
@@ -278,6 +288,7 @@ class HomeState extends State<Home> {
   }
 
   String getShortedDescription(String text) {
+    if (text == null) return "";
     if (text.length > 50) {
       return text.substring(0, 50) + "...";
     } else {
