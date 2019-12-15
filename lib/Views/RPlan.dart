@@ -71,14 +71,14 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
                   margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   alignment: Alignment.centerLeft,
                 ),
-                GestureDetector(
+                canSeeAllDays ? GestureDetector(
                     onTap: _showFilterOptions,
                     child: Container(
                       child: Text("Filtern",
                           style: TextStyle(fontSize: 20, color: Colors.white)),
                       margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       alignment: Alignment.centerRight,
-                    ))
+                    )): Container()
               ],
             ),
           )
@@ -117,18 +117,15 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   Future _preLoad() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
+    // Load canSeeAllDays
+    var groups = (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS)).getGroups();
+    canSeeAllDays = (groups.contains("ROLE_TEACHER") || groups.contains("ROLE_ADMINISTRATOR"));
+
     // Load searched Teacher
+    SharedPreferences preferences = await SharedPreferences.getInstance();
     if (preferences.containsKey(SP_FILTER)) {
       searchedTeacher = preferences.getString(SP_FILTER);
     }
-    // Load is Teacher
-    canSeeAllDays = ((await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-        .getGroups()
-        .contains("ROLE_TEACHER") ||
-        (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS))
-            .getGroups()
-            .contains("ROLE_ADMINISTRATOR"));
   }
 
   Future _loadRPlan({force: false}) async {
