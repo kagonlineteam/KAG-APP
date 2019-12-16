@@ -342,6 +342,8 @@ class _APIRequest {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     var day = await getIDForRPlanDay(_endpoint);
+    if (day == null) return null;
+
     if (teacher != null) {
       params[teacherType] = "eq-"+teacher;
     }
@@ -363,13 +365,15 @@ class _APIRequest {
     String response = await _APIConnection.getFromAPI(
         "vplans", {"date": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000) - 86400}"}, _user.getJWT());
     var jsonResponse = jsonDecode(response)["entities"];
-    if (action == APIAction.GET_RPLAN_TODAY) {
+
+    if (action == APIAction.GET_RPLAN_TODAY && jsonResponse.length > 0) {
       return jsonResponse[0]["id"];
-    } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+    } else if (action == APIAction.GET_RPLAN_TOMORROW && jsonResponse.length > 1) {
       return jsonResponse[1]["id"];
-    } else {
+    } else if (jsonResponse.length > 0) {
       return jsonResponse[2]["id"];
     }
+    return null;
   }
 
   ///
