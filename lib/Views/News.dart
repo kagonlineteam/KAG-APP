@@ -157,7 +157,7 @@ class ArticleDetail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var htmlSite = """<h1>${article['title']}<\h1><p> ${castBase64ToHTML(article['body'])}""";
+    var htmlSite = """<h1>${article['title']}</h1><br><br> ${castBase64ToHTML(article['body'])}""";
 
 
     return Scaffold(

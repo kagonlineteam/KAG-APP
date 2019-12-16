@@ -92,7 +92,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
               child: Container(
                 child: Align(
                   child: Container(
-                    color: Colors.white,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[points],
@@ -103,7 +102,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
                 width: 40,
                 height: 30,
                 decoration: BoxDecoration(
-                    color: Color.fromRGBO(250, 250, 250, 1),
+                    color: Color.fromRGBO(255, 255, 255, 1),
                     borderRadius: BorderRadius.all(Radius.circular(5))),
 
               ),
@@ -468,7 +467,7 @@ class RPlanDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(lesson['klasse'] + " - " + lesson['fach']),
+        title: Text(getAppBarText()),
       ),
       body: SafeArea(child: Column(children: widgets)),
     );
@@ -534,6 +533,14 @@ class RPlanDetail extends StatelessWidget {
       ),
     );
     return container;
+  }
+
+  String getAppBarText() {
+    String returnString = lesson['klasse'];
+
+    if (lesson['klasse'] != "" && lesson['fach'] != "") returnString += " - ";
+    returnString += lesson['fach'];
+    return returnString;
   }
 
   String getTeacherText(String teacher, String vTeacher) {

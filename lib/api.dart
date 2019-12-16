@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -320,9 +321,10 @@ class _APIRequest {
         "termine",
         {
           "limit": "1",
-          "tags%5Bferien%5D": "like",
-          "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D":
-          "gte"
+          "tags": "eq-6spaDnbYlZttaWosETA8vU",
+          "stop": "gte-${new DateTime.now().millisecondsSinceEpoch ~/ 1000}",
+          "view": "runtime",
+          "orderby": "asc-start"
         },
         _user.getJWT()))['entities'];
     if (jsonResponse.length > 0) {
@@ -342,6 +344,8 @@ class _APIRequest {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     var day = await getIDForRPlanDay(_endpoint);
+    if (day == null) return null;
+
     if (teacher != null) {
       params[teacherType] = "eq-"+teacher;
     }
@@ -363,13 +367,15 @@ class _APIRequest {
     String response = await _APIConnection.getFromAPI(
         "vplans", {"date": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000) - 86400}"}, _user.getJWT());
     var jsonResponse = jsonDecode(response)["entities"];
-    if (action == APIAction.GET_RPLAN_TODAY) {
+
+    if (action == APIAction.GET_RPLAN_TODAY && jsonResponse.length > 0) {
       return jsonResponse[0]["id"];
-    } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+    } else if (action == APIAction.GET_RPLAN_TOMORROW && jsonResponse.length > 1) {
       return jsonResponse[1]["id"];
-    } else {
+    } else if (jsonResponse.length > 0) {
       return jsonResponse[2]["id"];
     }
+    return null;
   }
 
   ///
@@ -457,6 +463,8 @@ class _CacheManager {
   ///
   bool hasCache() {
     if (_type == null) throw Exception("Cache has not been initialized.");
+    // Deactivate Cache for Debug Mode
+    if (Foundation.kDebugMode) return false;
     if (!(_file.existsSync())) return false;
     if (_contents == null) _contents = _file.readAsStringSync();
     return jsonDecode(_contents)['created'] + _duration > time;
