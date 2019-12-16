@@ -35,107 +35,122 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
 
-    return new SafeArea(
-      child: ListView(
-        children: <Widget>[
-          //Logo
+    return new Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
           Container(
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom:
-                        BorderSide(color: Color.fromRGBO(235, 235, 235, 1)))),
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Image.asset("assets/logo.png"),
-          ),
-          //Holiday Countdown
-          Container(
-            child: Text("Ferien-Countdown", style: titleStyle),
-            margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-            alignment: Alignment.centerLeft,
-          ),
-          Container(
+            width: MediaQuery.of(context).size.width-10,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Text(weeks, style: countdownNumbers),
-                    Text("w")
-                  ],
+                Container(
+                  width: MediaQuery.of(context).size.width-50,
+                  decoration: new BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/logo.png"),
+                          fit: BoxFit.fitWidth
+                      )
+                  ),
                 ),
-                Column(
-                  children: <Widget>[
-                    Text(days, style: countdownNumbers),
-                    Text("d")
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    Text(hours, style: countdownNumbers),
-                    Text("h")
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    Text(minutes, style: countdownNumbers),
-                    Text("m")
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    Text(seconds, style: countdownNumbers),
-                    Text("s")
-                  ],
+                Container()
+              ],
+            ),
+          )
+        ],
+      ),
+      body: SafeArea(
+        child: ListView(
+          children: <Widget>[
+            //Holiday Countdown
+            Container(
+              child: Text("Ferien-Countdown", style: titleStyle),
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+              alignment: Alignment.centerLeft,
+            ),
+            Container(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  Column(
+                    children: <Widget>[
+                      Text(weeks, style: countdownNumbers),
+                      Text("w")
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Text(days, style: countdownNumbers),
+                      Text("d")
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Text(hours, style: countdownNumbers),
+                      Text("h")
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Text(minutes, style: countdownNumbers),
+                      Text("m")
+                    ],
+                  ),
+                  Column(
+                    children: <Widget>[
+                      Text(seconds, style: countdownNumbers),
+                      Text("s")
+                    ],
+                  )
+                ],
+              ),
+              margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
+            ),
+
+            //Appointments
+            Container(
+              child: Text("Die nächsten Termine", style: titleStyle),
+              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              alignment: Alignment.centerLeft,
+            ),
+            Column(
+              children: calendarEntries,
+            ),
+
+            //Moodle
+            Container(
+              child: Text("Atrium (Moodle)", style: titleStyle),
+              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              alignment: Alignment.centerLeft,
+            ),
+            Container(
+              child: Text(
+                  "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
+                  style: TextStyle(fontSize: 7)),
+              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+              alignment: Alignment.centerLeft,
+            ),
+            Row(
+              children: <Widget>[
+                MaterialButton(
+                  child: CachedNetworkImage(
+                    imageUrl:
+                    "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
+                    width: 75,
+                    fadeInDuration: Duration(seconds: 0),
+                  ),
+                  onPressed: () async {
+                    if (await canLaunch(
+                        "moodlemobile://atrium.kag-langenfeld.de")) {
+                      launch("moodlemobile://atrium.kag-langenfeld.de");
+                    } else {
+                      launch("https://atrium.kag-langenfeld.de");
+                    }
+                  },
                 )
               ],
             ),
-            margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
-          ),
-
-          //Appointments
-          Container(
-            child: Text("Die nächsten Termine", style: titleStyle),
-            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            alignment: Alignment.centerLeft,
-          ),
-          Column(
-            children: calendarEntries,
-          ),
-
-          //Moodle
-          Container(
-            child: Text("Atrium (Moodle)", style: titleStyle),
-            margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
-            alignment: Alignment.centerLeft,
-          ),
-          Container(
-            child: Text(
-                "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
-                style: TextStyle(fontSize: 7)),
-            margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-            alignment: Alignment.centerLeft,
-          ),
-          Row(
-            children: <Widget>[
-              MaterialButton(
-                child: CachedNetworkImage(
-                  imageUrl:
-                      "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                  width: 75,
-                  fadeInDuration: Duration(seconds: 0),
-                ),
-                onPressed: () async {
-                  if (await canLaunch(
-                      "moodlemobile://atrium.kag-langenfeld.de")) {
-                    launch("moodlemobile://atrium.kag-langenfeld.de");
-                  } else {
-                    launch("https://atrium.kag-langenfeld.de");
-                  }
-                },
-              )
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -179,10 +194,10 @@ class HomeState extends State<Home> {
     int hours =
         (holiday - secondsNow - (weeks * 604800) - (days * 86400)) ~/ 3600;
     int minutes = (holiday -
-            secondsNow -
-            (weeks * 604800) -
-            (days * 86400) -
-            (hours * 3600)) ~/
+        secondsNow -
+        (weeks * 604800) -
+        (days * 86400) -
+        (hours * 3600)) ~/
         60;
     int seconds = (holiday -
         secondsNow -
@@ -270,7 +285,7 @@ class HomeState extends State<Home> {
   void initState() {
     super.initState();
     timer =
-        new Timer.periodic(Duration(seconds: 1), (timer) => calculateTimer());
+    new Timer.periodic(Duration(seconds: 1), (timer) => calculateTimer());
     _load();
   }
 

@@ -16,8 +16,8 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "97C146ED1CF9000F007C117D"
                BuildableName = "KAG.app"
-               BlueprintName = "KAG"
-               ReferencedContainer = "container:KAG.xcodeproj">
+               BlueprintName = "Runner"
+               ReferencedContainer = "container:Runner.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -32,8 +32,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "97C146ED1CF9000F007C117D"
             BuildableName = "KAG.app"
-            BlueprintName = "KAG"
-            ReferencedContainer = "container:KAG.xcodeproj">
+            BlueprintName = "Runner"
+            ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -55,8 +55,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "97C146ED1CF9000F007C117D"
             BuildableName = "KAG.app"
-            BlueprintName = "KAG"
-            ReferencedContainer = "container:KAG.xcodeproj">
+            BlueprintName = "Runner"
+            ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,8 +72,8 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "97C146ED1CF9000F007C117D"
             BuildableName = "KAG.app"
-            BlueprintName = "KAG"
-            ReferencedContainer = "container:KAG.xcodeproj">
+            BlueprintName = "Runner"
+            ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
