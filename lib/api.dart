@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart' as Foundation;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -462,6 +463,8 @@ class _CacheManager {
   ///
   bool hasCache() {
     if (_type == null) throw Exception("Cache has not been initialized.");
+    // Deactivate Cache for Debug Mode
+    if (Foundation.kDebugMode) return false;
     if (!(_file.existsSync())) return false;
     if (_contents == null) _contents = _file.readAsStringSync();
     return jsonDecode(_contents)['created'] + _duration > time;
