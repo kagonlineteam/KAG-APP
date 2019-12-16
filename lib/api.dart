@@ -320,9 +320,10 @@ class _APIRequest {
         "termine",
         {
           "limit": "1",
-          "tags%5Bferien%5D": "like",
-          "start%5B${new DateTime.now().millisecondsSinceEpoch ~/ 1000}%5D":
-          "gte"
+          "tags": "eq-6spaDnbYlZttaWosETA8vU",
+          "stop": "gte-${new DateTime.now().millisecondsSinceEpoch ~/ 1000}",
+          "view": "runtime",
+          "orderby": "asc-start"
         },
         _user.getJWT()))['entities'];
     if (jsonResponse.length > 0) {
