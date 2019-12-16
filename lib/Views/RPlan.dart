@@ -467,7 +467,7 @@ class RPlanDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(lesson['klasse'] + " - " + lesson['fach']),
+        title: Text(getAppBarText()),
       ),
       body: SafeArea(child: Column(children: widgets)),
     );
@@ -533,6 +533,14 @@ class RPlanDetail extends StatelessWidget {
       ),
     );
     return container;
+  }
+
+  String getAppBarText() {
+    String returnString = lesson['klasse'];
+
+    if (lesson['klasse'] != "" && lesson['fach'] != "") returnString += " - ";
+    returnString += lesson['fach'];
+    return returnString;
   }
 
   String getTeacherText(String teacher, String vTeacher) {
