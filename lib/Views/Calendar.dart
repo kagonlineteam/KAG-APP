@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:ffi';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kag/api.dart';
 
@@ -17,15 +18,13 @@ class CalendarState extends State {
   static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
   static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
-  var usableWidth = 0.0;
   var page = 0;
   var rows = <Widget>[];
 
+
+
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    usableWidth = width - 132;
-
     return Scaffold(
         appBar: AppBar(
           title: Align(
@@ -47,10 +46,6 @@ class CalendarState extends State {
     );
   }
 
-  Widget generateDate() {
-
-  }
-
   Future<Widget> _generateRow(entry) async {
     var descriptionText = "";
     if (entry['description'] != null) {
@@ -70,38 +65,46 @@ class CalendarState extends State {
       child: GestureDetector(
         child: Row(
           children: <Widget>[
-            Container(
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              width: 100,
-              height: 100,
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: generateDateWidget(dateOneText, dateTwoText),
-              )
-            ),
-            Container(
-              height: 100,
-              width: usableWidth,
-              margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    child: Text(entry['title'], style: titleStyle),
+            Flexible(
+              flex: 0,
+              child: Container(
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  width: 100,
+                  height: 100,
+                  child: Align(
                     alignment: Alignment.topLeft,
-                    height: 40,
-                  ),
-                  Container(
-                    child: Text(getShortedLongDescription(descriptionText),
-                        style: descriptionStyle,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2),
-                    alignment: Alignment.topLeft,
-                    height: 50,
+                    child: generateDateWidget(dateOneText, dateTwoText),
                   )
-                ],
+              ),
+            ),
+            Flexible(
+              fit: FlexFit.loose,
+              child: Container(
+                height: 100,
+                //width: MediaQuery.of(context).size.width - 132,
+                margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(entry['title'], style: titleStyle),
+                      alignment: Alignment.topLeft,
+                      height: 40,
+                      //constraints: BoxConstraints.expand()
+                    ),
+                    Container(
+                      child: Text(getShortedLongDescription(descriptionText),
+                          style: descriptionStyle,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 2),
+                      alignment: Alignment.topLeft,
+                      height: 50,
+                    )
+                  ],
+                ),
               ),
             )
           ],
+          mainAxisAlignment: MainAxisAlignment.center,
         ),
         onTap: () => Navigator.push(context,
             MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
