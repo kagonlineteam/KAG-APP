@@ -56,33 +56,29 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     super.build(context);
     return new Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(47, 109, 29, 1),
-        actions: <Widget>[
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  child: Text(
-                    dateTexts[selectedDay],
-                    style: TextStyle(fontSize: 30),
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  alignment: Alignment.centerLeft,
-                ),
-                canSeeAllDays ? GestureDetector(
-                    onTap: _showFilterOptions,
-                    child: Container(
-                      child: Text("Filtern",
-                          style: TextStyle(fontSize: 20, color: Colors.white)),
-                      margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                      alignment: Alignment.centerRight,
-                    )): Container()
-              ],
-            ),
-          )
-        ],
+        title: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Align(
+                child: Text(dateTexts[selectedDay],
+                    style: TextStyle(fontSize: 30)),
+                alignment: Alignment.centerLeft,
+              ),
+              canSeeAllDays ? GestureDetector(
+                  onTap: _showFilterOptions,
+                  child: Container(
+                    child: Text("Filtern",
+                        style: TextStyle(fontSize: 15, color: Colors.white)),
+                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    alignment: Alignment.centerRight,
+                  )
+              ): Container(),
+
+            ],
+          ),
+        ),
+
       ),
       body: Stack(
         children: <Widget>[
