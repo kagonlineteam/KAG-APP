@@ -465,7 +465,13 @@ class RPlanDetail extends StatelessWidget {
       appBar: AppBar(
         title: Text(getAppBarText()),
       ),
-      body: SafeArea(child: Column(children: widgets)),
+      body: SafeArea(
+          child: ListView(
+            children: <Widget>[
+              Column(children: widgets)
+            ],
+          )
+      ),
     );
   }
 
@@ -483,48 +489,43 @@ class RPlanDetail extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                child: Text(
-                  title,
-                  style: titleStyle,
+              Flexible(
+                child: Container(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Text(title, style: titleStyle,
+                  ),
+                  width: width - 40,
+                  height: 30,
                 ),
-                width: width - 40,
-                height: 30,
               )
             ],
           ),
           Row(
             children: <Widget>[
-              Container(
-                child: Text(
-                  first,
-                  style: textStyle,
-                  textAlign: TextAlign.left,
+              Flexible(
+                child: Container(
+                  child: Text(first, style: textStyle, textAlign: TextAlign.left),
+                  height: 30,
                 ),
-                width: (width - 70) / 2,
-                height: 30,
+                fit: FlexFit.loose
               ),
-              Container(
-                child: Text(
-                  arrow,
-                  style: textStyle,
-                  textAlign: TextAlign.center,
-                ),
-                width: 30,
-                height: 30,
+              Flexible(
+                child: Container(
+                    child: Text(arrow, style: textStyle, textAlign: TextAlign.center),
+                    height: 30,
+                  ),
+                flex: 0,
               ),
-              Container(
-                child: Text(
-                  second,
-                  style: textStyle,
-                  textAlign: TextAlign.right,
+              Flexible(
+                child: Container(
+                  child: Text(second, style: textStyle, textAlign: TextAlign.right),
+                  height: 30,
                 ),
-                width: (width - 70) / 2,
-                height: 30,
+                fit: FlexFit.loose
               )
             ],
-          )
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
         ],
       ),
     );
