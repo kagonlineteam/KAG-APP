@@ -92,26 +92,28 @@ class NewsState extends State<News> {
                 width: 100,
                 height: 100,
               ),*/
-              Container(
-                height: 100,
-                width: usableWidth,
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: Text(title, style: titleStyle),
-                      alignment: Alignment.topLeft,
-                      height: 40,
-                    ),
-                    Container(
-                      child: Text(descriptionText,
-                          style: descriptionStyle,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3),
-                      alignment: Alignment.topLeft,
-                      height: 55,
-                    )
-                  ],
+              Expanded(
+                child: Container(
+                  height: 100,
+                  width: usableWidth,
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: Text(title, style: titleStyle),
+                        alignment: Alignment.topLeft,
+                        height: 40,
+                      ),
+                      Container(
+                        child: Text(descriptionText,
+                            style: descriptionStyle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3),
+                        alignment: Alignment.topLeft,
+                        height: 55,
+                      )
+                    ],
+                  ),
                 ),
               )
             ],
