@@ -71,25 +71,13 @@ class CalendarState extends State {
         child: Row(
           children: <Widget>[
             Container(
-              color: Color.fromRGBO(47, 109, 29, 1),
               margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
               width: 100,
               height: 100,
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    child: Text(dateOneText, style: dateStyle),
-                  ),
-                  Container(
-                    child: Image.asset("assets/arrow.png"),
-                  ),
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                    child: Text(dateTwoText, style: dateStyle),
-                  )
-                ],
-              ),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: generateDateWidget(dateOneText, dateTwoText),
+              )
             ),
             Container(
               height: 100,
@@ -118,6 +106,41 @@ class CalendarState extends State {
         onTap: () => Navigator.push(context,
             MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
       ),
+    );
+  }
+
+  Widget generateDateWidget(String dateOneText, String dateTwoText) {
+    if (dateOneText == dateTwoText) {
+      return Container(
+        color: Color.fromRGBO(47, 109, 29, 1),
+        child: Center(
+          child: Container(
+            child: Text(dateOneText, style: dateStyle),
+          ),
+        ),
+        width: 100,
+        height: 50,
+      );
+    }
+    return Container(
+      color: Color.fromRGBO(47, 109, 29, 1),
+      child: Column(
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+            child: Text(dateOneText, style: dateStyle),
+          ),
+          Container(
+            child: Image.asset("assets/arrow.png"),
+          ),
+          Container(
+            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+            child: Text(dateTwoText, style: dateStyle),
+          )
+        ],
+      ),
+      width: 100,
+      height: 100,
     );
   }
 
