@@ -71,23 +71,41 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return new SafeArea(
-      child: ListView(
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              Row(children: <Widget>[
-                Text(name, style: TextStyle(fontSize: 30)),
-                MaterialButton(
-                  child: Text("Abmelden"),
-                  onPressed: logout,
-                )
-              ], mainAxisAlignment: MainAxisAlignment.spaceAround),
-              timeTable
-            ],
+    return new Scaffold(
+      appBar: AppBar(
+        title: Container(
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Align(
+                child: Text(name,
+                    style: TextStyle(fontSize: 30)),
+                alignment: Alignment.centerLeft,
+              ),
+              GestureDetector(
+                  onTap: logout,
+                  child: Container(
+                    child: Text("Abmelden",
+                        style: TextStyle(fontSize: 15, color: Colors.white)),
+                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    alignment: Alignment.centerRight,
+                  )
+              )
+
+            ],
           ),
-        ],
+        ),
+
+      ),
+      body: Center(
+            child: Container(
+              child: Container(
+                child: timeTable,
+                margin: EdgeInsets.all(10),
+              ),
+              color: Colors.white,
+              constraints: BoxConstraints.expand(),
+            )
       )
     );
   }

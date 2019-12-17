@@ -50,27 +50,16 @@ class NewsState extends State<News> {
 
     return Scaffold(
         appBar: AppBar(
-          actions: <Widget>[
-            Container(
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      "Aktuelles",
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2),
-                    ),
-                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    alignment: Alignment.centerLeft,
-                  ),
-                ],
+            title: Align(
+              child: Text(
+                "Aktuelles",
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 2),
               ),
+              alignment: Alignment.centerLeft,
             )
-          ],
         ),
         body: SafeArea(
             child: ListView(
@@ -103,26 +92,28 @@ class NewsState extends State<News> {
                 width: 100,
                 height: 100,
               ),*/
-              Container(
-                height: 100,
-                width: usableWidth,
-                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: Text(title, style: titleStyle),
-                      alignment: Alignment.topLeft,
-                      height: 40,
-                    ),
-                    Container(
-                      child: Text(descriptionText,
-                          style: descriptionStyle,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 3),
-                      alignment: Alignment.topLeft,
-                      height: 55,
-                    )
-                  ],
+              Expanded(
+                child: Container(
+                  height: 100,
+                  width: usableWidth,
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        child: Text(title, style: titleStyle),
+                        alignment: Alignment.topLeft,
+                        height: 40,
+                      ),
+                      Container(
+                        child: Text(descriptionText,
+                            style: descriptionStyle,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 3),
+                        alignment: Alignment.topLeft,
+                        height: 55,
+                      )
+                    ],
+                  ),
                 ),
               )
             ],
