@@ -38,23 +38,17 @@ class HomeState extends State<Home> {
     return new Scaffold(
       appBar: AppBar(
         actions: <Widget>[
-          Container(
-            width: MediaQuery.of(context).size.width-10,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  width: MediaQuery.of(context).size.width-50,
-                  decoration: new BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage("assets/logo.png"),
-                          fit: BoxFit.fitWidth
-                      )
-                  ),
-                ),
-                Container()
-              ],
-            ),
+          Expanded(
+            child: Align(
+              child: Container(
+                  margin: EdgeInsets.fromLTRB(10, 5, 50, 5),
+                  child: Image(
+                    image: AssetImage("assets/logo.png"),
+                    fit: BoxFit.contain,
+                  )
+              ),
+              alignment: Alignment.centerLeft,
+            )
           )
         ],
       ),
