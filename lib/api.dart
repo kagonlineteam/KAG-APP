@@ -364,8 +364,10 @@ class _APIRequest {
   }
 
   Future <String> getIDForRPlanDay(APIAction action) async {
+    DateTime now = new DateTime.now();
+    DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
     String response = await _APIConnection.getFromAPI(
-        "vplans", {"date": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000) - 86400}"}, _user.getJWT());
+        "vplans", {"date": "gte-${requestTime.millisecondsSinceEpoch ~/ 1000}"}, _user.getJWT());
     var jsonResponse = jsonDecode(response)["entities"];
 
     if (action == APIAction.GET_RPLAN_TODAY && jsonResponse.length > 0) {
