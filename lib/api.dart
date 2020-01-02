@@ -64,6 +64,17 @@ class API {
     return new _APIRequest(action, _user);
   }
 
+
+  ///
+  /// Return a new API Instace for Sync Tasks
+  /// This only works for not login requiring tasks and GET_USER_INFO and GET_USERNAME
+  /// WARNING: This is not recommend for GET_USER_INFO and GET_USERNAME only if you absolutely need it
+  ///
+  _APIRequest getAPIRequestSync(APIAction action) {
+    if (_isLogInNeeded(action) && action != APIAction.GET_USER_INFO && action != APIAction.GET_USERNAME) throw Exception("Can not load a login needing Task syncronusly");
+    return new _APIRequest(action, _user);
+  }
+
   ///
   /// Calls setLoginCredentials in User
   ///
