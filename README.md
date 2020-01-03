@@ -1,6 +1,6 @@
 # KAG App
 
-Die KAG App für IOS und Android.
+Die KAG App für iOS und Android.
 Geschrieben 2019 von Robin Jipps und Felix Strick.
 
 ## Starten
