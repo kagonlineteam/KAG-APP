@@ -56,6 +56,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     if (!canSeeRPlan) {
       return new Scaffold(
         appBar: AppBar(),
@@ -65,10 +66,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       );
     }
 
-
-
-
-    super.build(context);
     return new Scaffold(
       appBar: AppBar(
         title: Container(
@@ -127,8 +124,8 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   Future _preLoad() async {
+    var groups = KAGApp.api.getAPIRequestSync(APIAction.GET_GROUPS).getGroups();
     // Load canSeeAllDays
-    var groups = (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS)).getGroups();
     canSeeAllDays = (groups.contains("ROLE_TEACHER") || groups.contains("ROLE_ADMINISTRATOR"));
 
     canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
