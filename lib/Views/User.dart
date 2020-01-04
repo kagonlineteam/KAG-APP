@@ -19,7 +19,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
 
   void logout() {
     KAGApp.api.setLoginCredentials(null, null);
-    KAGApp.tabs.animateTo(0);
+    KAGApp.app.controller.animateTo(0);
     KAGApp.app.checkLogin();
   }
 

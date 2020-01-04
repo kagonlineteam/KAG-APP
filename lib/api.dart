@@ -71,7 +71,7 @@ class API {
   /// WARNING: This is not recommend for GET_GROUPS and GET_USERNAME only if you absolutely need it
   ///
   _APIRequest getAPIRequestSync(APIAction action) {
-    if (_isLogInNeeded(action) && action != APIAction.GET_GROUPS && action != APIAction.GET_USERNAME) throw Exception("Can not load a login needing Task syncronusly");
+    if (_isLogInNeeded(action) && action != APIAction.GET_GROUPS && action != APIAction.GET_USERNAME) throw Exception("Can not load a login needing Task synchronously");
     return new _APIRequest(action, _user);
   }
 
