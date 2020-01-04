@@ -44,7 +44,7 @@ class LoginState extends State<Login>
             children: <Widget>[
               Center(
                 child: Text(
-                    "Konnte Login nicht durchführen. Ist dein Benutzername oder Passwort falsch?"),
+                    "Konnte Login nicht durchführen. Ist dein Benutzername oder Passwort falsch? Bitte achte auf die Groß- und Kleinschreibung (z.b. MMax16)"),
               ),
               MaterialButton(
                 onPressed: () =>
@@ -147,7 +147,7 @@ class NotLoggedIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: MaterialButton(
-          onPressed: () => KAGApp.tabs.animateTo(4),
+          onPressed: () => KAGApp.app.controller.animateTo(4),
           child: Text("Bitte melde dich an!")),
     );
   }

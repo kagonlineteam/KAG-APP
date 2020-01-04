@@ -20,6 +20,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   String searchedTeacher;
 
   bool canSeeAllDays      = false;
+  bool canSeeRPlan        = true;
   List<String> dateTexts  = ["", "", ""];
   int selectedDay         = 0;
   static const SP_FILTER  = "RPlan_filter";
@@ -38,8 +39,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   void initState() {
     super.initState();
     _preLoad();
-    _createTabBar();
-    _loadRPlan().then(onValue);
+    if (canSeeRPlan) {
+      _createTabBar();
+      _loadRPlan().then(onValue);
+    }
   }
 
   @override
@@ -54,6 +57,15 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    if (!canSeeRPlan) {
+      return new Scaffold(
+        appBar: AppBar(),
+        body: Center(
+          child: Text("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!"),
+        ),
+      );
+    }
+
     return new Scaffold(
       appBar: AppBar(
         title: Container(
@@ -112,9 +124,11 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   Future _preLoad() async {
+    var groups = KAGApp.api.getAPIRequestSync(APIAction.GET_GROUPS).getGroups();
     // Load canSeeAllDays
-    var groups = (await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS)).getGroups();
     canSeeAllDays = (groups.contains("ROLE_TEACHER") || groups.contains("ROLE_ADMINISTRATOR"));
+
+    canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
 
     // Load searched Teacher
     SharedPreferences preferences = await SharedPreferences.getInstance();
