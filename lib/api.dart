@@ -34,7 +34,7 @@ class API {
       case APIAction.GET_USERNAME:
         return true;
       case APIAction.GET_GROUPS:
-        return false;
+        return true;
       case APIAction.GET_CALENDAR:
         return false;
       case APIAction.GET_RPLAN_TODAY:
@@ -67,11 +67,11 @@ class API {
 
   ///
   /// Return a new API Instace for Sync Tasks
-  /// This only works for not login requiring tasks and GET_USER_INFO and GET_USERNAME
-  /// WARNING: This is not recommend for GET_USER_INFO and GET_USERNAME only if you absolutely need it
+  /// This only works for not login requiring tasks and GET_GROUPS and GET_USERNAME
+  /// WARNING: This is not recommend for GET_GROUPS and GET_USERNAME only if you absolutely need it
   ///
   _APIRequest getAPIRequestSync(APIAction action) {
-    if (_isLogInNeeded(action) && action != APIAction.GET_USER_INFO && action != APIAction.GET_USERNAME) throw Exception("Can not load a login needing Task synchronusly");
+    if (_isLogInNeeded(action) && action != APIAction.GET_GROUPS && action != APIAction.GET_USERNAME) throw Exception("Can not load a login needing Task synchronously");
     return new _APIRequest(action, _user);
   }
 
