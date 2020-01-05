@@ -19,10 +19,12 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle eventDate            = const TextStyle(fontSize: 35, color: Colors.white);
-  static const TextStyle eventTitle           = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static const TextStyle eventDescriptionText = const TextStyle(fontSize: 18);
-  static const TextStyle titleStyle           = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold);
+  static const TextStyle  eventDate            = const TextStyle(fontSize: 25, color: Colors.white);
+  static const TextStyle  eventTitle           = const TextStyle(fontSize: 25);
+  static const TextStyle  eventDescriptionText = const TextStyle(fontSize: 18);
+  static const TextStyle  titleStyle           = const TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
+  static const BorderSide splittingBorder      = const BorderSide( color: Color.fromRGBO(47, 109, 29, 1), width: 2);
+  static final Container splittingContainer    = Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0),decoration: BoxDecoration(border: Border(top: splittingBorder)));
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
@@ -97,23 +99,23 @@ class HomeState extends State<Home> {
                   )
                 ],
               ),
-              margin: EdgeInsets.fromLTRB(0, 10, 10, 0),
+              margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
             ),
-
             //Appointments
+            splittingContainer,
             Container(
               child: Text("Die nächsten Termine", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
               alignment: Alignment.centerLeft,
             ),
             Column(
               children: calendarEntries,
             ),
-
+            splittingContainer,
             //Moodle
             Container(
               child: Text("Atrium (Moodle)", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 20, 10, 0),
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
               alignment: Alignment.centerLeft,
             ),
             Container(
@@ -213,10 +215,6 @@ class HomeState extends State<Home> {
   }
 
   Future<void> addCalendarEntry(String date, String title, entry) async {
-    var descriptionText = "";
-    if (entry['description'] != null) {
-      descriptionText = await loadDescription(entry['description']);
-    }
 
     setState(() {
       calendarEntries.add(Container(
@@ -242,22 +240,12 @@ class HomeState extends State<Home> {
                   Expanded(
                     child: Text(
                       title,
-                      style: titleStyle,
+                      style: eventTitle,
                       overflow: TextOverflow.ellipsis,
                     ),
                   )
                 ],
               ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                        child: Text(getShortedDescription(descriptionText),
-                            style: eventDescriptionText),
-                        margin: EdgeInsets.fromLTRB(0, 10, 10, 0)),
-                  )
-                ],
-              )
             ],
           ),
           onTap: () => Navigator.push(context,
@@ -265,14 +253,6 @@ class HomeState extends State<Home> {
         ),
       ));
     });
-  }
-
-  Future <String> loadDescription(String id) async {
-    var descriptionRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    if (descriptionRequest == null) return "";
-    var response = await descriptionRequest.getArticle(id);
-    if (response == null) return "";
-    return jsonDecode(response)['preview'];
   }
 
   @override
