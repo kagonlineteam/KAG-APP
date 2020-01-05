@@ -17,7 +17,7 @@ class News extends StatefulWidget {
 
 class NewsState extends State<News> {
   static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const titleStyle       = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   static const subTextStyle     = const TextStyle(fontSize: 10);
   var usableWidth               = 0.0;
