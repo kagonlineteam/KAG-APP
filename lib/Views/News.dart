@@ -70,11 +70,11 @@ class NewsState extends State<News> {
   }
 
   Widget _generateRow(article) {
-    var title = article['title'];
-    var descriptionText = article['preview'];
+    var title = article['title'] == null ? "" : article['title'];
+    var descriptionText = article['preview'] == null ? "" : article['preview'];
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(article['created'] * 1000);
     var date = "${dateTime.day}.${dateTime.month}.${dateTime.year}";
-    var author = article['author'];
+    var author = article['author'] == null ? "" : article['author'];
 
     return Container(
       decoration: BoxDecoration(
