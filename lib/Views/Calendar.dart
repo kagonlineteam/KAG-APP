@@ -224,9 +224,6 @@ class CalendarDetail extends StatelessWidget {
     DateTime changeObjectDate = DateTime.fromMillisecondsSinceEpoch(
         entry['changed'] * 1000);
 
-    var creationDate  = "Erstellt am: ${creationObjectDate.day}.${creationObjectDate.month}.${creationObjectDate.year}";
-    var editDate      = "Geändert am: ${changeObjectDate.day}.${changeObjectDate.month}.${changeObjectDate.year}";
-    var createdBy     = "Erstellt von: ${entry['author']}";
 
     List<Widget> tags = [];
 
@@ -311,26 +308,6 @@ class CalendarDetail extends StatelessWidget {
                     ),
                   ],
                 ),
-                Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Text(creationDate, style: descriptionStyle),
-                        alignment: Alignment.centerLeft,
-                      ),
-                      Container(
-                        child: Text(editDate, style: descriptionStyle),
-                        alignment: Alignment.centerLeft,
-                      ),
-                      Container(
-                        child: Text(createdBy, style: descriptionStyle),
-                        alignment: Alignment.centerLeft,
-                      ),
-                    ],
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 0, 10, 10),
-                )
               ],
             ),
           )),
