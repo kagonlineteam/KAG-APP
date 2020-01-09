@@ -23,6 +23,7 @@ class HomeState extends State<Home> {
   static const TextStyle  eventTitle           = const TextStyle(fontSize: 25);
   static const TextStyle  eventDescriptionText = const TextStyle(fontSize: 18);
   static const TextStyle  titleStyle           = const TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
+  static const TextStyle  logoStyle            = const TextStyle(fontSize: 80, color: Colors.white);
   static const BorderSide splittingBorder      = const BorderSide( color: Color.fromRGBO(47, 109, 29, 1), width: 2);
   static final Container splittingContainer    = Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0),decoration: BoxDecoration(border: Border(top: splittingBorder)));
 
@@ -38,21 +39,24 @@ class HomeState extends State<Home> {
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
 
     return new Scaffold(
-      appBar: AppBar(
-        actions: <Widget>[
-          Expanded(
+      appBar: PreferredSize(
+        child: AppBar(
+          bottom: PreferredSize(
+            preferredSize: Size.fromHeight(100),
             child: Align(
               child: Container(
-                  margin: EdgeInsets.fromLTRB(10, 5, 50, 5),
+                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
                   child: Image(
                     image: AssetImage("assets/logo.png"),
-                    fit: BoxFit.contain,
+                    height: 100,
+                    fit: BoxFit.fitWidth,
                   )
               ),
-              alignment: Alignment.centerLeft,
-            )
-          )
-        ],
+              alignment: Alignment.topCenter,
+            ),
+          ),
+        ),
+        preferredSize: Size.fromHeight(110),
       ),
       body: SafeArea(
         child: ListView(
