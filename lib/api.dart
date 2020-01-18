@@ -347,46 +347,62 @@ class _APIRequest {
   }
 
   ///
-  /// Return RPLAN
+  /// Returns RPlan
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
   Future<String> getRAWRPlan(String teacherType, String teacher, {force: false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
-    var day = await getIDForRPlanDay(_endpoint);
+    var day = await _getIDForRPlanDay();
     if (day == null) return null;
 
     if (teacher != null) {
       params[teacherType] = "eq-"+teacher;
     }
+
+    params["vplan"] = "eq-" + day;
+    params["view"] = "canonical";
+    params["limit"] = "100";
+
     await _cache.init(params.toString());
     if (force) _cache.delete();
     if (_cache.hasCache()) {
       return _cache.getCache();
     }
-
-    params["vplan"] = "eq-" + day;
-    params["view"] = "canonical";
     String response = await _APIConnection.getFromAPI(
         "vertretungen", params, _user.getJWT());
     _cache.setCache(response);
     return response;
   }
 
-  Future <String> getIDForRPlanDay(APIAction action) async {
+  ///
+  /// Returns the ID for the current Action of the RPlan
+  /// This ID is needed to filter for days
+  ///
+  /// This Method does not use a cache, because it is only called if the RPlan Method does not contain a cache.
+  ///
+  Future <String> _getIDForRPlanDay() async {
+    _actionExecution(APIAction.GET_RPLAN_TODAY);
+
+    int days;
+    if (_endpoint == APIAction.GET_RPLAN_TODAY) {
+      days = 0;
+    } else if (_endpoint == APIAction.GET_RPLAN_TOMORROW) {
+      days = DateTime.now().weekday > 5 ?  1 + (8-DateTime.now().weekday) : 1;
+    } else {
+      days = DateTime.now().weekday > 5 ?  2 + (8-DateTime.now().weekday) : 2;
+    }
+    // Calculating today at 8o clock
     DateTime now = new DateTime.now();
     DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
+    // Adding the days
+    int time = requestTime.millisecondsSinceEpoch ~/ 1000 + (days * 86400);
     String response = await _APIConnection.getFromAPI(
-        "vplans", {"date": "gte-${requestTime.millisecondsSinceEpoch ~/ 1000}"}, _user.getJWT());
-    var jsonResponse = jsonDecode(response)["entities"];
-
-    if (action == APIAction.GET_RPLAN_TODAY && jsonResponse.length > 0) {
-      return jsonResponse[0]["id"];
-    } else if (action == APIAction.GET_RPLAN_TOMORROW && jsonResponse.length > 1) {
-      return jsonResponse[1]["id"];
-    } else if (jsonResponse.length > 0) {
-      return jsonResponse[2]["id"];
+        "vplans", {"date": "gte-$time", "orderby": "asc-date"}, _user.getJWT());
+    List<dynamic> jsonResponse = jsonDecode(response)["entities"];
+    if (jsonResponse != null && jsonResponse.length > 0) {
+      return jsonResponse[0]['id'];
     }
     return null;
   }

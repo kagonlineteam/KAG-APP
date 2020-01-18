@@ -15,7 +15,7 @@ class RPlan extends StatefulWidget {
 
 class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>, TickerProviderStateMixin {
 
-  DefaultTabController tabBar;
+  DefaultTabController tabBar = DefaultTabController(length: 0, child: Text(""),);
   TabController controller;
   String searchedTeacher;
 
@@ -25,9 +25,9 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   int selectedDay         = 0;
   static const SP_FILTER  = "RPlan_filter";
 
-  Widget todayWidget            = Column();
-  Widget tomorrowWidget         = Column();
-  Widget dayAfterTomorrowWidget = Column();
+  Widget todayWidget            = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+  Widget tomorrowWidget         = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+  Widget dayAfterTomorrowWidget = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
   Widget points                 = Row();
 
   static const normalText   = TextStyle(fontSize: 20);
@@ -40,8 +40,9 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     super.initState();
     _preLoad();
     if (canSeeRPlan) {
+      _createDots();
       _createTabBar();
-      _loadRPlan().then(onValue);
+      _loadRPlan();
     }
   }
 
@@ -137,41 +138,46 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     }
   }
 
-  Future _loadRPlan({force: false}) async {
-    await _loadOneDay(APIAction.GET_RPLAN_TODAY,    force: force);
-    await _loadOneDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+  Future _loadRPlan({force: false}) async{
+    _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
+    _processDay(APIAction.GET_RPLAN_TOMORROW, force: force);
     if (canSeeAllDays) {
-      await _loadOneDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
+      _processDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
     }
   }
 
-  Future _loadOneDay(APIAction action, {force: false}) async {
+  Future _processDay(APIAction action, {force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(action);
     if (rplanRequest == null) return;
 
+    var rplanTwo;
+
     var rplan = jsonDecode(await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force));
-    var rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
+    if (searchedTeacher != null) {
+      rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
+    }
     var newLessons = <Widget>[];
-    String a = "12345";
+    int date = 0;
 
 
     if (rplan != null) {
       await rplan['entities']
           .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      a = rplan['entities'].first['vplan'];
+      date = int.parse(rplan['entities'].first['vplan']);
     }
     if (rplanTwo != null) {
       await rplanTwo['entities']
           .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      a = rplanTwo['entities'].first['vplan'];
+      date = int.parse(rplanTwo['entities'].first['vplan']);
     }
     if (newLessons.isEmpty) return;
 
     setState(() {
-      int b = int.parse(a);
-      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
       var dateText = "${dateTime.day}.${dateTime.month}.";
       _createColumn(newLessons, dateText, action);
+      _createTabBar();
+      _handleTabSelection();
     });
   }
 
@@ -241,11 +247,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     _createDots();
   }
 
-  FutureOr onValue(value) {
-    _createTabBar();
-    _createDots();
-    selectedDay = controller.index;
-  }
 
   void _createColumn(List<Widget> lessons, String dateText, APIAction action) {
     Widget widget = GestureDetector(
