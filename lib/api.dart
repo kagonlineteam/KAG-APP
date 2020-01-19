@@ -483,7 +483,7 @@ class _CacheManager {
         "/" +
         _action.toString() +
         "/" +
-        type +
+        base64.encode(utf8.encode(type)) +
         ".json");
   }
 
@@ -525,7 +525,9 @@ class _CacheManager {
   ///
   void delete() {
     if (_type == null) throw Exception("Cache has not been initialized.");
-    _file.deleteSync();
+    if (_file.existsSync()) {
+      _file.deleteSync();
+    }
   }
 
   ///
