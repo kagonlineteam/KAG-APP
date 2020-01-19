@@ -358,7 +358,7 @@ class _APIRequest {
     if (day == null) return null;
 
     if (teacher != null) {
-      params[teacherType] = "eq-"+teacher;
+      params[teacherType] = "eq-"+Uri.encodeComponent(teacher);
     }
 
     params["vplan"] = "eq-" + day;

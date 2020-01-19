@@ -162,17 +162,27 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     int date = 0;
 
 
-    if (rplan != null) {
+    if (rplan != null && rplan['entities'].length > 0) {
       await rplan['entities']
           .forEach((lesson) => newLessons.add(_createLesson(lesson)));
       date = int.parse(rplan['entities'].first['vplan']);
     }
-    if (rplanTwo != null) {
+    if (rplanTwo != null && rplanTwo['entities'].length > 0) {
       await rplanTwo['entities']
           .forEach((lesson) => newLessons.add(_createLesson(lesson)));
       date = int.parse(rplanTwo['entities'].first['vplan']);
     }
-    if (newLessons.isEmpty) return;
+    if (newLessons.isEmpty) {
+      // Reset to default!
+      if (action == APIAction.GET_RPLAN_TODAY) {
+        todayWidget   = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+      } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+        tomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+      } else {
+        dayAfterTomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+      }
+      return;
+    }
 
     setState(() {
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
