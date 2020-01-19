@@ -40,8 +40,8 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     super.initState();
     _preLoad();
     if (canSeeRPlan) {
-      _createDots();
       _createTabBar();
+      _createDots();
       _loadRPlan();
     }
   }
@@ -152,9 +152,11 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
     var rplanTwo;
 
-    var rplan = jsonDecode(await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force));
+    var rplanText = await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force);
+    var rplan = rplanText != null ? jsonDecode(rplanText) : null;
     if (searchedTeacher != null) {
-      rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
+      var rplanTwoText = await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force);
+      rplanTwo = rplanTwoText != null ? jsonDecode(rplanTwoText) : null;
     }
     var newLessons = <Widget>[];
     int date = 0;
@@ -382,13 +384,26 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   void _createTabBar() {
-    int length = canSeeAllDays ? 3 : 2;
+    int length = 0;
+    List<Widget> tabs = [];
+
+
+    if (!(todayWidget is Center)) {
+      length++;
+      tabs.add(todayWidget);
+    }
+    if (!(tomorrowWidget is Center)) {
+      length++;
+      tabs.add(tomorrowWidget);
+    }
+    if (!(dayAfterTomorrowWidget is Center)) {
+      length++;
+      tabs.add(dayAfterTomorrowWidget);
+    }
 
     controller = new TabController(vsync: this, length: length);
     controller.addListener(_handleTabSelection);
 
-    List<Widget> tabs = [todayWidget, tomorrowWidget];
-    if (canSeeAllDays) tabs.add(dayAfterTomorrowWidget);
 
     tabBar = new DefaultTabController(
       length: length,
@@ -402,45 +417,24 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   Future _createDots() async {
-    if (canSeeAllDays) {
-      setState(() {
-        points = Container(
-          color: Colors.white,
-          child: Row(
-            children: <Widget>[
-              Text("•",
-                  style: selectedDay == 0
-                      ? dotActive
-                      : dotInactive),
-              Text("•",
-                  style: selectedDay == 1
-                      ? dotActive
-                      : dotInactive),
-              Text("•",
-                  style: selectedDay == 2
-                      ? dotActive
-                      : dotInactive)
-            ],
-          ),
-        );
-      });
-    } else {
-      setState(() {
-        points = Container(
-          color: Colors.white,
-          child: Row(children: <Widget>[
-            Text("•",
-                style: selectedDay == 0
-                    ? dotActive
-                    : dotInactive),
-            Text("•",
-                style: selectedDay == 1
-                    ? dotActive
-                    : dotInactive)
-          ]),
-        );
-      });
+    List<Widget> elements = [];
+
+    for (int i = 0; i < controller.length; i++) {
+      elements.add(Text("•",
+          style: selectedDay == i
+              ? dotActive
+              : dotInactive)
+      );
     }
+
+    setState(() {
+      points = Container(
+        color: Colors.white,
+        child: Row(
+          children: elements
+        ),
+      );
+    });
   }
 
 }
