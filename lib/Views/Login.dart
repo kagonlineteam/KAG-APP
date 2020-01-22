@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,13 +40,11 @@ class LoginState extends State<Login>
       showDialog(
           context: context,
           // ignore: deprecated_member_use
-          child: new SimpleDialog(
+          child: new CupertinoAlertDialog(
             title: Text("Login nicht möglich"),
-            children: <Widget>[
-              Center(
-                child: Text(
-                    "Konnte Login nicht durchführen. Ist dein Benutzername oder Passwort falsch? Bitte achte auf die Groß- und Kleinschreibung (z.b. MMax16)"),
-              ),
+            content: Text(
+                "Konnte Login nicht durchführen.\n Ist dein Benutzername oder Passwort falsch?\n Bitte achte auf die Groß- und Kleinschreibung (z.b. MMax16)"),
+            actions: <Widget>[
               MaterialButton(
                 onPressed: () =>
                     launch('https://kag-langenfeld.de/user/password'),
@@ -53,7 +52,7 @@ class LoginState extends State<Login>
               ),
               MaterialButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text("Erneut versuchen."),
+                child: Text("Erneut versuchen"),
               )
             ],
           ));
@@ -98,16 +97,19 @@ class LoginState extends State<Login>
           border: Border(bottom: BorderSide(color: Colors.white))),
     );
 
-    final loginButton = Material(
-      borderRadius: BorderRadius.circular(30),
-      color: Color.fromRGBO(47, 109, 29, 1),
-      child: MaterialButton(
-          onPressed: login,
-          padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
-          minWidth: MediaQuery.of(context).size.width,
-          child: Container(
-            child: Text("Anmelden", style: textStyle),
-          )),
+    final loginButton = Padding(
+      padding: const EdgeInsets.only(left: 35, right: 35),
+      child: Material(
+        borderRadius: BorderRadius.circular(30),
+        color: Color.fromRGBO(47, 109, 29, 1),
+        child: MaterialButton(
+            onPressed: login,
+            padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
+            minWidth: MediaQuery.of(context).size.width,
+            child: Container(
+              child: Text("Anmelden", style: textStyle),
+            )),
+      ),
     );
 
     return Container(
@@ -118,7 +120,7 @@ class LoginState extends State<Login>
                   image: AssetImage("assets/background.png"),
                   fit: BoxFit.cover)),
           child: Padding(
-            padding: const EdgeInsets.all(36.0),
+            padding: const EdgeInsets.all(70.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -129,6 +131,11 @@ class LoginState extends State<Login>
                 passwordField,
                 SizedBox(height: 35.0),
                 loginButton,
+                SizedBox(height: 6.0),
+                MaterialButton(
+                  onPressed: () => launch('https://kag-langenfeld.de/user/password'),
+                  child: Text("Passwort vergessen?", style: const TextStyle(color: Colors.grey),),
+                ),
                 SizedBox(height: 15.0),
               ],
             ),
