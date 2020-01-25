@@ -15,8 +15,8 @@ class Calendar extends StatefulWidget {
 }
 
 class CalendarState extends State {
-  static const dateStyle = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const dateStyle = const TextStyle(fontSize: 15, color: Colors.white);
+  static const titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   var page = 0;
   var rows = <Widget>[];
@@ -68,9 +68,9 @@ class CalendarState extends State {
             Flexible(
               flex: 0,
               child: Container(
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  width: 100,
-                  height: 100,
+                  margin: EdgeInsets.fromLTRB(10, 5, 30, 10),
+                  width: 80,
+                  height: 75,
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: generateDateWidget(dateOneText, dateTwoText),
@@ -82,7 +82,7 @@ class CalendarState extends State {
               child: Container(
                 height: 100,
                 //width: MediaQuery.of(context).size.width - 132,
-                margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+                margin: EdgeInsets.fromLTRB(0, 14, 10, 10),
                 child: Column(
                   children: <Widget>[
                     Container(
