@@ -69,38 +69,53 @@ class HomeState extends State<Home> {
             ),
             Container(
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MediaQuery.of(context).size.width > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
                 children: <Widget>[
-                  Column(
-                    children: <Widget>[
-                      Text(weeks, style: countdownNumbers),
-                      Text("w")
-                    ],
+                  Container(
+                    margin:EdgeInsets.fromLTRB(10, 0, 20, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(weeks, style: countdownNumbers),
+                        Text("w")
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(days, style: countdownNumbers),
-                      Text("d")
-                    ],
+                  Container(
+                    margin:EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(days, style: countdownNumbers),
+                        Text("d")
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(hours, style: countdownNumbers),
-                      Text("h")
-                    ],
+                  Container(
+                    margin:EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(hours, style: countdownNumbers),
+                        Text("h")
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(minutes, style: countdownNumbers),
-                      Text("m")
-                    ],
+                  Container(
+                    margin:EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(minutes, style: countdownNumbers),
+                        Text("m")
+                      ],
+                    ),
                   ),
-                  Column(
-                    children: <Widget>[
-                      Text(seconds, style: countdownNumbers),
-                      Text("s")
-                    ],
-                  )
+                  Container(
+                    margin:EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(seconds, style: countdownNumbers),
+                        Text("s")
+                      ],
+                    ),
+                  ),
                 ],
               ),
               margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
