@@ -15,7 +15,7 @@ class Calendar extends StatefulWidget {
 }
 
 class CalendarState extends State {
-  static const dateStyle = const TextStyle(fontSize: 15, color: Colors.white);
+  static const dateStyle = const TextStyle(fontSize: 20, color: Colors.white);
   static const titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   var page = 0;
@@ -39,8 +39,11 @@ class CalendarState extends State {
           )
         ),
         body: SafeArea(
-            child: ListView(
-              children: rows,
+            child: Container(
+              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: ListView(
+                children: rows,
+              ),
             )
         )
     );
@@ -65,31 +68,24 @@ class CalendarState extends State {
       child: GestureDetector(
         child: Row(
           children: <Widget>[
-            Flexible(
-              flex: 0,
-              child: Container(
+              Container(
                   margin: EdgeInsets.fromLTRB(10, 5, 30, 10),
                   width: 80,
-                  height: 75,
+                  height: 85,
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: generateDateWidget(dateOneText, dateTwoText),
                   )
               ),
-            ),
             Flexible(
               fit: FlexFit.loose,
               child: Container(
-                height: 100,
-                //width: MediaQuery.of(context).size.width - 132,
-                margin: EdgeInsets.fromLTRB(0, 14, 10, 10),
+                margin: EdgeInsets.fromLTRB(0, 0, 10, 10),
                 child: Column(
                   children: <Widget>[
                     Container(
                       child: Text(entry['title'], style: titleStyle),
                       alignment: Alignment.topLeft,
-                      height: 40,
-                      //constraints: BoxConstraints.expand()
                     ),
                     Container(
                       child: Text(getShortedLongDescription(descriptionText),
@@ -152,7 +148,9 @@ class CalendarState extends State {
     if (entriesRequest != null) {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
-      entries.forEach((entry) async => entryRows.add(await _generateRow(entry)));
+      for (var entry in entries) {
+        entryRows.add(await _generateRow(entry));
+      }
       setState(() {
         rows = entryRows;
       }
@@ -165,7 +163,11 @@ class CalendarState extends State {
     if (descriptionRequest == null) return "";
     var response = await descriptionRequest.getArticle(id);
     if (response == null) return "";
-    return jsonDecode(response)['preview'];
+    try {
+      return jsonDecode(response)['preview'];
+    } catch (e) {
+      return "";
+    }
   }
 
   @override
