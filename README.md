@@ -7,3 +7,6 @@ Geschrieben 2019 von Robin Jipps und Felix Strick.
 
 Um die App zu starten muss Flutter installiert sein.
 Dann mit flutter run --release starten.
+
+## Aktuelle Version
+Beta 5
