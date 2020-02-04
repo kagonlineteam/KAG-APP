@@ -129,7 +129,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
                   text: "Termine",
                   icon: Icon(Icons.event),
                 ),
-                Tab(text: "Aktuelles", icon: Icon(Icons.public),),
+                Tab(text: "News", icon: Icon(Icons.public),),
                 Tab(
                   text: "User",
                   icon: Icon(Icons.person),

@@ -15,7 +15,7 @@ class RPlan extends StatefulWidget {
 
 class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>, TickerProviderStateMixin {
 
-  DefaultTabController tabBar;
+  DefaultTabController tabBar = DefaultTabController(length: 0, child: Text(""),);
   TabController controller;
   String searchedTeacher;
 
@@ -25,9 +25,9 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   int selectedDay         = 0;
   static const SP_FILTER  = "RPlan_filter";
 
-  Widget todayWidget            = Column();
-  Widget tomorrowWidget         = Column();
-  Widget dayAfterTomorrowWidget = Column();
+  Widget todayWidget            = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+  Widget tomorrowWidget         = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+  Widget dayAfterTomorrowWidget = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
   Widget points                 = Row();
 
   static const normalText   = TextStyle(fontSize: 20);
@@ -41,7 +41,8 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     _preLoad();
     if (canSeeRPlan) {
       _createTabBar();
-      _loadRPlan().then(onValue);
+      _createDots();
+      _loadRPlan();
     }
   }
 
@@ -137,41 +138,58 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     }
   }
 
-  Future _loadRPlan({force: false}) async {
-    await _loadOneDay(APIAction.GET_RPLAN_TODAY,    force: force);
-    await _loadOneDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+  Future _loadRPlan({force: false}) async{
+    _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
+    _processDay(APIAction.GET_RPLAN_TOMORROW, force: force);
     if (canSeeAllDays) {
-      await _loadOneDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
+      _processDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
     }
   }
 
-  Future _loadOneDay(APIAction action, {force: false}) async {
+  Future _processDay(APIAction action, {force: false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(action);
     if (rplanRequest == null) return;
 
-    var rplan = jsonDecode(await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force));
-    var rplanTwo = jsonDecode(await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force));
+    var rplanTwo;
+
+    var rplanText = await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force);
+    var rplan = rplanText != null ? jsonDecode(rplanText) : null;
+    if (searchedTeacher != null) {
+      var rplanTwoText = await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher, force: force);
+      rplanTwo = rplanTwoText != null ? jsonDecode(rplanTwoText) : null;
+    }
     var newLessons = <Widget>[];
-    String a = "12345";
+    int date = 0;
 
 
-    if (rplan != null) {
+    if (rplan != null && rplan['entities'].length > 0) {
       await rplan['entities']
           .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      a = rplan['entities'].first['vplan'];
+      date = int.parse(rplan['entities'].first['vplan']);
     }
-    if (rplanTwo != null) {
+    if (rplanTwo != null && rplanTwo['entities'].length > 0) {
       await rplanTwo['entities']
           .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      a = rplanTwo['entities'].first['vplan'];
+      date = int.parse(rplanTwo['entities'].first['vplan']);
     }
-    if (newLessons.isEmpty) return;
+    if (newLessons.isEmpty) {
+      // Reset to default!
+      if (action == APIAction.GET_RPLAN_TODAY) {
+        todayWidget   = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+      } else if (action == APIAction.GET_RPLAN_TOMORROW) {
+        tomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+      } else {
+        dayAfterTomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+      }
+      return;
+    }
 
     setState(() {
-      int b = int.parse(a);
-      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(b * 1000);
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(date * 1000);
       var dateText = "${dateTime.day}.${dateTime.month}.";
       _createColumn(newLessons, dateText, action);
+      _createTabBar();
+      _handleTabSelection();
     });
   }
 
@@ -241,11 +259,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     _createDots();
   }
 
-  FutureOr onValue(value) {
-    _createTabBar();
-    _createDots();
-    selectedDay = controller.index;
-  }
 
   void _createColumn(List<Widget> lessons, String dateText, APIAction action) {
     Widget widget = GestureDetector(
@@ -381,13 +394,26 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   void _createTabBar() {
-    int length = canSeeAllDays ? 3 : 2;
+    int length = 0;
+    List<Widget> tabs = [];
+
+
+    if (!(todayWidget is Center)) {
+      length++;
+      tabs.add(todayWidget);
+    }
+    if (!(tomorrowWidget is Center)) {
+      length++;
+      tabs.add(tomorrowWidget);
+    }
+    if (!(dayAfterTomorrowWidget is Center)) {
+      length++;
+      tabs.add(dayAfterTomorrowWidget);
+    }
 
     controller = new TabController(vsync: this, length: length);
     controller.addListener(_handleTabSelection);
 
-    List<Widget> tabs = [todayWidget, tomorrowWidget];
-    if (canSeeAllDays) tabs.add(dayAfterTomorrowWidget);
 
     tabBar = new DefaultTabController(
       length: length,
@@ -401,45 +427,24 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   Future _createDots() async {
-    if (canSeeAllDays) {
-      setState(() {
-        points = Container(
-          color: Colors.white,
-          child: Row(
-            children: <Widget>[
-              Text("•",
-                  style: selectedDay == 0
-                      ? dotActive
-                      : dotInactive),
-              Text("•",
-                  style: selectedDay == 1
-                      ? dotActive
-                      : dotInactive),
-              Text("•",
-                  style: selectedDay == 2
-                      ? dotActive
-                      : dotInactive)
-            ],
-          ),
-        );
-      });
-    } else {
-      setState(() {
-        points = Container(
-          color: Colors.white,
-          child: Row(children: <Widget>[
-            Text("•",
-                style: selectedDay == 0
-                    ? dotActive
-                    : dotInactive),
-            Text("•",
-                style: selectedDay == 1
-                    ? dotActive
-                    : dotInactive)
-          ]),
-        );
-      });
+    List<Widget> elements = [];
+
+    for (int i = 0; i < controller.length; i++) {
+      elements.add(Text("•",
+          style: selectedDay == i
+              ? dotActive
+              : dotInactive)
+      );
     }
+
+    setState(() {
+      points = Container(
+        color: Colors.white,
+        child: Row(
+          children: elements
+        ),
+      );
+    });
   }
 
 }

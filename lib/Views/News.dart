@@ -17,7 +17,7 @@ class News extends StatefulWidget {
 
 class NewsState extends State<News> {
   static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
+  static const titleStyle       = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   static const subTextStyle     = const TextStyle(fontSize: 10);
   var usableWidth               = 0.0;
@@ -70,11 +70,11 @@ class NewsState extends State<News> {
   }
 
   Widget _generateRow(article) {
-    var title = article['title'];
-    var descriptionText = article['preview'];
+    var title = article['title'] == null ? "" : article['title'];
+    var descriptionText = article['preview'] == null ? "" : article['preview'];
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(article['created'] * 1000);
     var date = "${dateTime.day}.${dateTime.month}.${dateTime.year}";
-    var author = article['author'];
+    var author = article['author'] == null ? "" : article['author'];
 
     return Container(
       decoration: BoxDecoration(
