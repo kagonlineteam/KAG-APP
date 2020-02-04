@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:kag/Views/News.dart';
 import 'package:kag/api.dart';
 
 import '../main.dart';
@@ -54,7 +55,6 @@ class CalendarState extends State {
     if (entry['description'] != null) {
       descriptionText = await loadDescription(entry['description']);
     }
-
     var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
     var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
     var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(dateOne.month)}.";
@@ -164,7 +164,7 @@ class CalendarState extends State {
     var response = await descriptionRequest.getArticle(id);
     if (response == null) return "";
     try {
-      return jsonDecode(response)['preview'];
+      return jsonDecode(response)['entity']['preview'];
     } catch (e) {
       return "";
     }
@@ -193,15 +193,27 @@ class CalendarState extends State {
   }
 }
 
-class CalendarDetail extends StatelessWidget {
+class CalendarDetail extends StatefulWidget {
   CalendarDetail(this.entry);
+  final entry;
+
+  @override
+  State<StatefulWidget> createState() {
+    return new CalendarDetailState(entry);
+  }
+
+}
+
+class CalendarDetailState extends State {
+  CalendarDetailState(this.entry);
 
   final entry;
   static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
   static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const tagStyle         = const TextStyle(fontSize: 16, color: Colors.white);
   static const timeStyle        = const TextStyle(fontSize: 16, color: Colors.white);
-  static const descriptionStyle = const TextStyle(fontSize: 16);
+
+  Widget description = Text("");
 
   @override
   Widget build(BuildContext context) {
@@ -218,13 +230,8 @@ class CalendarDetail extends StatelessWidget {
     var timeOne = "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
     var timeTwo = "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
 
-    var description = entry['description'];
     var tagStrings  = entry['tags'];
 
-    DateTime creationObjectDate = DateTime.fromMillisecondsSinceEpoch(
-        entry['created'] * 1000);
-    DateTime changeObjectDate = DateTime.fromMillisecondsSinceEpoch(
-        entry['changed'] * 1000);
 
 
     List<Widget> tags = [];
@@ -300,11 +307,7 @@ class CalendarDetail extends StatelessWidget {
                   margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
                 ),*/
                     Container(
-                      child: Text(
-                        description == null ? "" : description,
-                        style: descriptionStyle,
-                        maxLines: 5,
-                      ),
+                      child: description,
                       margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                       alignment: Alignment.topLeft,
                     ),
@@ -314,6 +317,13 @@ class CalendarDetail extends StatelessWidget {
             ),
           )),
     );
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    getDescription();
   }
 
   Widget createTag(String title) {
@@ -331,6 +341,16 @@ class CalendarDetail extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(20))),
     );
   }
+
+  Future getDescription() async {
+    if (entry['description'] == null) return;
+    var entriesRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
+    String text = (await jsonDecode(await entriesRequest.getArticle(entry['description'])))['entity']['body'];
+    setState(() {
+      description = Html(data: latin1.decode(base64Decode(text.replaceAll('\n', ''))));
+    });
+  }
+
 
   String betterNumbers(int originalNumber) {
     if (originalNumber < 10) {
