@@ -127,7 +127,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   Future _preLoad() async {
     var groups = KAGApp.api.getAPIRequestSync(APIAction.GET_GROUPS).getGroups();
     // Load canSeeAllDays
-    canSeeAllDays = (groups.contains("ROLE_TEACHER") || groups.contains("ROLE_ADMINISTRATOR"));
+    canSeeAllDays = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
 
     canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
 
