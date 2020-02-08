@@ -141,7 +141,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
   Future _loadRPlan({force: false}) async{
     _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
-    _processDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+    // I know that this should not be down Client Side. But here it is. Limiting students to see the plan of übermorgen on weekends
+    if (canSeeAllDays || DateTime.now().weekday < 6) {
+      _processDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+    }
     if (canSeeAllDays) {
       _processDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
     }
@@ -185,6 +188,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
         dayAfterTomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
         dateTexts[2] = "";
       }
+      setState(() {
+        _createTabBar();
+        _handleTabSelection();
+      });
       return;
     }
 
@@ -417,6 +424,16 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       tabs.add(dayAfterTomorrowWidget);
       renderedDateTexts.add(dateTexts[2]);
     }
+
+    if (tabs.isEmpty) {
+      if (canSeeAllDays) {
+        tabs.add(Center(child: Container(child: Text("Es gibt keine Vertretungen für Sie. Sollte dies unerwartet sein und Sie einen Filter konfiguriert haben, so überprüfen sie bitte das eingebene Kürzel."), margin: EdgeInsets.all(10),)));
+      } else {
+        tabs.add(Center(child: Text("Es gibt keine Vertretung für dich.")));
+      }
+      length++;
+    }
+
 
     // Populate with empty Strings to not cause errors
     while (renderedDateTexts.length < 3) {
