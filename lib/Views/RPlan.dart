@@ -22,6 +22,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   bool canSeeAllDays      = false;
   bool canSeeRPlan        = true;
   List<String> dateTexts  = ["", "", ""];
+  List<String> renderedDateTexts  = ["", "", ""];
   int selectedDay         = 0;
   static const SP_FILTER  = "RPlan_filter";
 
@@ -74,7 +75,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Align(
-                child: Text(dateTexts[selectedDay],
+                child: Text(renderedDateTexts[selectedDay],
                     style: TextStyle(fontSize: 30)),
                 alignment: Alignment.centerLeft,
               ),
@@ -176,10 +177,13 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       // Reset to default!
       if (action == APIAction.GET_RPLAN_TODAY) {
         todayWidget   = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+        dateTexts[0] = "";
       } else if (action == APIAction.GET_RPLAN_TOMORROW) {
         tomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+        dateTexts[1] = "";
       } else {
         dayAfterTomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+        dateTexts[2] = "";
       }
       return;
     }
@@ -396,24 +400,33 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   void _createTabBar() {
     int length = 0;
     List<Widget> tabs = [];
-
+    List <String> renderedDateTexts = [];
 
     if (!(todayWidget is Center)) {
       length++;
       tabs.add(todayWidget);
+      renderedDateTexts.add(dateTexts[0]);
     }
     if (!(tomorrowWidget is Center)) {
       length++;
       tabs.add(tomorrowWidget);
+      renderedDateTexts.add(dateTexts[1]);
     }
     if (!(dayAfterTomorrowWidget is Center)) {
       length++;
       tabs.add(dayAfterTomorrowWidget);
+      renderedDateTexts.add(dateTexts[2]);
     }
+
+    // Populate with empty Strings to not cause errors
+    while (renderedDateTexts.length < 3) {
+      renderedDateTexts.add("");
+    }
+    // After there should be no reason for a null pointer place the texts to be rendered
+    this.renderedDateTexts = renderedDateTexts;
 
     controller = new TabController(vsync: this, length: length);
     controller.addListener(_handleTabSelection);
-
 
     tabBar = new DefaultTabController(
       length: length,
