@@ -41,8 +41,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     super.initState();
     _preLoad();
     if (canSeeRPlan) {
-      _createTabBar();
-      _createDots();
       _loadRPlan();
     }
   }
@@ -214,7 +212,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
             children: <Widget>[
               Container(
                 child: CupertinoTextField(
-                  placeholder: "Filter",
+                  placeholder: "Kürzel",
                   placeholderStyle:
                   TextStyle(color: Color.fromRGBO(150, 150, 150, 1)),
                   controller: teacher,
@@ -226,7 +224,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
               ),
               Container(
                 child: Text(
-                  "Der Vertretungsplan wird nach diesem Filter gefiltert",
+                  "Bitte geben Sie ihr Lehrer Kürzel ein um den Plan zu filtern.",
                 ),
                 margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
               ),
