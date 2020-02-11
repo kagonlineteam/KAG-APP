@@ -22,6 +22,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   bool canSeeAllDays      = false;
   bool canSeeRPlan        = true;
   List<String> dateTexts  = ["", "", ""];
+  List<String> renderedDateTexts  = ["", "", ""];
   int selectedDay         = 0;
   static const SP_FILTER  = "RPlan_filter";
 
@@ -40,8 +41,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     super.initState();
     _preLoad();
     if (canSeeRPlan) {
-      _createTabBar();
-      _createDots();
       _loadRPlan();
     }
   }
@@ -74,7 +73,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               Align(
-                child: Text(dateTexts[selectedDay],
+                child: Text(renderedDateTexts[selectedDay],
                     style: TextStyle(fontSize: 30)),
                 alignment: Alignment.centerLeft,
               ),
@@ -127,7 +126,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   Future _preLoad() async {
     var groups = KAGApp.api.getAPIRequestSync(APIAction.GET_GROUPS).getGroups();
     // Load canSeeAllDays
-    canSeeAllDays = (groups.contains("ROLE_TEACHER") || groups.contains("ROLE_ADMINISTRATOR"));
+    canSeeAllDays = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
 
     canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
 
@@ -140,7 +139,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
   Future _loadRPlan({force: false}) async{
     _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
-    _processDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+    // I know that this should not be down Client Side. But here it is. Limiting students to see the plan of übermorgen on weekends
+    if (canSeeAllDays || DateTime.now().weekday < 6) {
+      _processDay(APIAction.GET_RPLAN_TOMORROW, force: force);
+    }
     if (canSeeAllDays) {
       _processDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW, force: force);
     }
@@ -176,11 +178,18 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       // Reset to default!
       if (action == APIAction.GET_RPLAN_TODAY) {
         todayWidget   = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+        dateTexts[0] = "";
       } else if (action == APIAction.GET_RPLAN_TOMORROW) {
         tomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+        dateTexts[1] = "";
       } else {
         dayAfterTomorrowWidget  = Center(child: Text("Der Vertretungsplan wird noch geladen..."));
+        dateTexts[2] = "";
       }
+      setState(() {
+        _createTabBar();
+        _handleTabSelection();
+      });
       return;
     }
 
@@ -203,7 +212,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
             children: <Widget>[
               Container(
                 child: CupertinoTextField(
-                  placeholder: "Filter",
+                  placeholder: "Kürzel",
                   placeholderStyle:
                   TextStyle(color: Color.fromRGBO(150, 150, 150, 1)),
                   controller: teacher,
@@ -215,7 +224,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
               ),
               Container(
                 child: Text(
-                  "Der Vertretungsplan wird nach diesem Filter gefiltert",
+                  "Bitte geben Sie ihr Lehrer Kürzel ein um den Plan zu filtern.",
                 ),
                 margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
               ),
@@ -396,24 +405,43 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   void _createTabBar() {
     int length = 0;
     List<Widget> tabs = [];
-
+    List <String> renderedDateTexts = [];
 
     if (!(todayWidget is Center)) {
       length++;
       tabs.add(todayWidget);
+      renderedDateTexts.add(dateTexts[0]);
     }
     if (!(tomorrowWidget is Center)) {
       length++;
       tabs.add(tomorrowWidget);
+      renderedDateTexts.add(dateTexts[1]);
     }
     if (!(dayAfterTomorrowWidget is Center)) {
       length++;
       tabs.add(dayAfterTomorrowWidget);
+      renderedDateTexts.add(dateTexts[2]);
     }
+
+    if (tabs.isEmpty) {
+      if (canSeeAllDays) {
+        tabs.add(Center(child: Container(child: Text("Es gibt keine Vertretungen für Sie. Sollte dies unerwartet sein und Sie einen Filter konfiguriert haben, so überprüfen sie bitte das eingebene Kürzel."), margin: EdgeInsets.all(10),)));
+      } else {
+        tabs.add(Center(child: Text("Es gibt keine Vertretung für dich.")));
+      }
+      length++;
+    }
+
+
+    // Populate with empty Strings to not cause errors
+    while (renderedDateTexts.length < 3) {
+      renderedDateTexts.add("");
+    }
+    // After there should be no reason for a null pointer place the texts to be rendered
+    this.renderedDateTexts = renderedDateTexts;
 
     controller = new TabController(vsync: this, length: length);
     controller.addListener(_handleTabSelection);
-
 
     tabBar = new DefaultTabController(
       length: length,

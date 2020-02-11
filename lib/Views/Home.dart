@@ -34,8 +34,11 @@ class HomeState extends State<Home> {
 
   List<Container> calendarEntries = [];
 
+
   @override
   Widget build(BuildContext context) {
+    var screenSize = MediaQuery.of(context).size.width;
+
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
 
     return new Scaffold(
@@ -69,10 +72,10 @@ class HomeState extends State<Home> {
             ),
             Container(
               child: Row(
-                mainAxisAlignment: MediaQuery.of(context).size.width > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
+                mainAxisAlignment: screenSize > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   Container(
-                    margin:EdgeInsets.fromLTRB(10, 0, 20, 0),
+                    margin:EdgeInsets.fromLTRB(10, 0, screenSize / 50, 0),
                     child: Column(
                       children: <Widget>[
                         Text(weeks, style: countdownNumbers),
@@ -81,7 +84,7 @@ class HomeState extends State<Home> {
                     ),
                   ),
                   Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
                     child: Column(
                       children: <Widget>[
                         Text(days, style: countdownNumbers),
@@ -90,7 +93,7 @@ class HomeState extends State<Home> {
                     ),
                   ),
                   Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
                     child: Column(
                       children: <Widget>[
                         Text(hours, style: countdownNumbers),
@@ -99,7 +102,7 @@ class HomeState extends State<Home> {
                     ),
                   ),
                   Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, 20, 0),
+                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
                     child: Column(
                       children: <Widget>[
                         Text(minutes, style: countdownNumbers),

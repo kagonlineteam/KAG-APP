@@ -244,8 +244,7 @@ class CalendarDetailState extends State {
       appBar: AppBar(),
       body: SafeArea(
           child: Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: ListView(
               children: <Widget>[
                 Column(
                   children: <Widget>[

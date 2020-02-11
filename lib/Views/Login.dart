@@ -120,7 +120,7 @@ class LoginState extends State<Login>
                   image: AssetImage("assets/background.png"),
                   fit: BoxFit.cover)),
           child: Padding(
-            padding: const EdgeInsets.all(70.0),
+            padding: const EdgeInsets.fromLTRB(70, 35, 70, 5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,

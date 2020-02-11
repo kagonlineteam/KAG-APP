@@ -154,8 +154,10 @@ class ArticleDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Container(
-        child: Html(data: htmlSite),
-        padding: EdgeInsets.all(10),
+        child: ListView(
+          children: <Widget>[Html(data: htmlSite)],
+        ),
+        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
       ),
     );
   }
