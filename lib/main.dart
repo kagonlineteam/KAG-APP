@@ -85,7 +85,7 @@ class KAGApp extends StatefulWidget {
 }
 
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
-  static int _index = 0;
+  static int _index = 2;
   TabController controller;
 
   @override
@@ -118,21 +118,24 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
               controller: controller,
               tabs: <Widget>[
                 Tab(
-                  text: "Home",
-                  icon: Icon(Icons.home),
+                  text: "Termine",
+                  icon: Icon(Icons.event),
                 ),
                 Tab(
                   text: "VPlan",
                   icon: Icon(Icons.compare_arrows),
                 ),
                 Tab(
-                  text: "Termine",
-                  icon: Icon(Icons.event),
+                  text: "Home",
+                  icon: Icon(Icons.home),
                 ),
-                Tab(text: "News", icon: Icon(Icons.public),),
                 Tab(
                   text: "User",
                   icon: Icon(Icons.person),
+                ),
+                Tab(
+                  text: "News",
+                  icon: Icon(Icons.public),
                 ),
               ],
               isScrollable: false,
@@ -155,11 +158,11 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   Future setLoggedIn() async {
     setState(() {
       tabContents = <Widget>[
-        new Home.Home(),
-        new RPlan.RPlan(),
         new Calendar.Calendar(),
+        new RPlan.RPlan(),
+        new Home.Home(),
+        new User.User(),
         new News.News(),
-        new User.User()
       ];
     });
   }
@@ -168,11 +171,11 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     if ((await KAGApp.api.getAPIRequest(APIAction.GET_USERNAME)) == null) {
       setState(() {
         tabContents = <Widget>[
-          new Home.Home(),
-          new Login.NotLoggedIn(),
           new Calendar.Calendar(),
+          new Login.NotLoggedIn(),
+          new Home.Home(),
+          new Login.Login(),
           new News.News(),
-          new Login.Login()
         ];
       });
     }
