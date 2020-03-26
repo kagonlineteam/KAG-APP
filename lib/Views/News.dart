@@ -94,7 +94,6 @@ class NewsState extends State<News> {
               ),*/
               Expanded(
                 child: Container(
-                  height: 100,
                   width: usableWidth,
                   margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                   child: Column(
@@ -102,7 +101,7 @@ class NewsState extends State<News> {
                       Container(
                         child: Text(title, style: titleStyle),
                         alignment: Alignment.topLeft,
-                        height: 40,
+                        height: 60,
                       ),
                       Container(
                         child: Text(descriptionText,
@@ -163,6 +162,6 @@ class ArticleDetail extends StatelessWidget {
   }
 
   String castBase64ToHTML(String text) {
-    return latin1.decode(base64Decode(text.replaceAll('\n', '')));
+    return utf8.decode(base64Decode(text.replaceAll('\n', '')));
   }
 }
