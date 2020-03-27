@@ -436,6 +436,7 @@ class _APIRequest {
     Map<String, String> params = {};
     params['view'] = "canonical";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
+    params['orderby'] = "desc-changed";
 
     String response = await _APIConnection.getFromAPI("articles", params, null);
     if (response != null) {
