@@ -41,7 +41,7 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     var screenSize = MediaQuery.of(context).size.width;
 
-    TextStyle countdownNumbers = new TextStyle(fontSize: 40);
+    TextStyle countdownNumbers = new TextStyle(fontSize: 25);
 
     Widget moodleIcon;
     if (kIsWeb) {
