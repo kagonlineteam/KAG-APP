@@ -9,6 +9,9 @@ import './Views/User.dart'      as User;
 import './Views/News.dart'      as News;
 import 'api.dart';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+
 void main() {
   runApp(
     MaterialApp(
@@ -78,7 +81,9 @@ class KAGApp extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    _holidayNotification();
+    if (!kIsWeb) {
+      _holidayNotification();
+    }
     app = KAGAppState();
     return app;
   }

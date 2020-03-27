@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:kag/Views/Calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,6 +33,7 @@ class HomeState extends State<Home> {
   int holiday;
   Timer timer;
 
+
   List<Container> calendarEntries = [];
 
 
@@ -40,6 +42,19 @@ class HomeState extends State<Home> {
     var screenSize = MediaQuery.of(context).size.width;
 
     TextStyle countdownNumbers = new TextStyle(fontSize: 40);
+
+    Widget moodleIcon;
+    if (kIsWeb) {
+      moodleIcon = Image.network("https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png", width: 75);
+    } else {
+      moodleIcon = CachedNetworkImage(
+        imageUrl:
+        "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
+        width: 75,
+        fadeInDuration: Duration(seconds: 0),
+      );
+    }
+
 
     return new Scaffold(
       appBar: PreferredSize(
@@ -150,12 +165,7 @@ class HomeState extends State<Home> {
             Row(
               children: <Widget>[
                 MaterialButton(
-                  child: CachedNetworkImage(
-                    imageUrl:
-                    "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                    width: 75,
-                    fadeInDuration: Duration(seconds: 0),
-                  ),
+                  child: moodleIcon,
                   onPressed: () async {
                     if (await canLaunch(
                         "moodlemobile://atrium.kag-langenfeld.de")) {
