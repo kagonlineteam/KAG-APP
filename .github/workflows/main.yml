@@ -39,7 +39,7 @@ jobs:
         name: android-release-bundle
         path: build/app/outputs/bundle/release/app-release.aab
     - name: build-web
-      run: flutter build web
+      run: flutter config --enable-web && flutter build web
     - name: deploy web
       uses: appleboy/scp-action@master
       with:
