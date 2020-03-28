@@ -19,7 +19,7 @@ jobs:
         channel: 'beta'
     - run: flutter pub get
     - name: build-android
-      run: echo $KEY_JKS > key.jks && flutter build apk --release && flutter build appbundle --release
+      run: echo $KEY_JKS > android/key.jks && flutter build apk --release && flutter build appbundle --release
       env:
         KEY_JKS: ${{ secrets.KEY_JKS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
