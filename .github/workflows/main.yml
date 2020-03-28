@@ -16,12 +16,14 @@ jobs:
         java-version: '12.x'
     - uses: subosito/flutter-action@v1.1.1
       with:
-        channel: 'dev'
+        channel: 'beta'
+    - run: flutter pub get
+    - name: build-android
+      run: echo $KEY_JKS > key.jks && flutter build apk --release && flutter build appbundle --release
       env:
         KEY_JKS: ${{ secrets.KEY_JKS }}
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: echo $KEY_JKS > key.jks && flutter pub get && flutter build apk --release && flutter build appbundle --release
     - uses: actions/upload-artifact@v1
       with:
         name: release-apk
