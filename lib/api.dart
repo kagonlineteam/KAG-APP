@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' as Foundation;
 import 'package:path_provider/path_provider.dart';
@@ -314,13 +315,13 @@ class _APIRequest {
   ///
   /// Returns Holiday Timestamp
   ///
-  /// Note: Please do not use this as example how to use cache
+  /// Cache is not validated here because it is validated afterwards by checking if the holidays already began
   ///
   Future<int> getHolidayUnixTimestamp() async {
     _actionExecution(APIAction.GET_CALENDAR);
     await _cache.init("holiday");
-    String cached = _cache.getCache();
-    if (cached != null) {
+    if (_cache.hasCache(validate: false)) {
+      String cached = _cache.getCache();
       int cachedI = int.parse(cached);
       if (cachedI > new DateTime.now().millisecondsSinceEpoch ~/ 1000) {
         return cachedI;
@@ -438,6 +439,7 @@ class _APIRequest {
     Map<String, String> params = {};
     params['view'] = "canonical";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
+    params['orderby'] = "desc-changed";
 
     String response = await _APIConnection.getFromAPI("articles", params, null);
     if (response != null) {
@@ -481,24 +483,28 @@ class _CacheManager {
     if (_duration == null) {
       _duration = _getDuration();
     }
-    _file = File((await getTemporaryDirectory()).path +
-        "/" +
-        _action.toString() +
-        "/" +
-        base64.encode(utf8.encode(type)) +
-        ".json");
+    if (!kIsWeb) {
+      _file = File((await getTemporaryDirectory()).path +
+          "/" +
+          _action.toString() +
+          "/" +
+          base64.encode(utf8.encode(type)) +
+          ".json");
+    }
   }
 
   ///
   /// Check if Cache exists and is valid
   ///
-  bool hasCache() {
+  bool hasCache({validate: true}) {
     if (_type == null) throw Exception("Cache has not been initialized.");
     // Deactivate Cache for Debug Mode
     if (Foundation.kDebugMode) return false;
+    // Do not cache in Web.
+    if (kIsWeb) return false;
     if (!(_file.existsSync())) return false;
     if (_contents == null) _contents = _file.readAsStringSync();
-    return jsonDecode(_contents)['created'] + _duration > time;
+    return validate == false ? true : jsonDecode(_contents)['created'] + _duration > time;
   }
 
   ///
@@ -507,7 +513,7 @@ class _CacheManager {
   ///
   String getCache() {
     if (_type == null) throw Exception("Cache has not been initialized.");
-    if (!(_file.existsSync())) return null;
+    if (_file == null || !(_file.existsSync())) return null;
     if (_contents == null) _contents = _file.readAsStringSync();
     return jsonDecode(_contents)['content'];
   }
@@ -517,6 +523,7 @@ class _CacheManager {
   ///
   void setCache(String content) {
     if (_type == null) throw Exception("Cache has not been initialized.");
+    if (_file == null) return;
     _file.createSync(recursive: true);
     _contents = jsonEncode({"created": time, "content": content});
     _file.writeAsStringSync(_contents, flush: true);

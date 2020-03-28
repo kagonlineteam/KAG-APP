@@ -54,7 +54,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
             "https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf"),
         child: OrientationBuilder(builder: (context, orientation) {
           return Image.network(
-            "https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/$employeeNumber.png",
+            "https://kag-langenfeld.de/sites/default/files/files//schueler/sek_I/stundenpl%C3%A4ne/Stundenplan%20$employeeNumber.pdf.png",
             //height: MediaQuery.of(context).size.height - 100,
           );
         }),
