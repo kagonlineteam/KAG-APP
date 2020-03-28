@@ -38,3 +38,16 @@ jobs:
       with:
         name: android-release-bundle
         path: build/app/outputs/bundle/release/app-release.aab
+    - name: build-web
+      run: flutter build web
+    - name: deploy web
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_URL }}
+        username: github
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        source: 'build/web/*'
+        target: '/var/www/app/'
+        rm: true
+      
