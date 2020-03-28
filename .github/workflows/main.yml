@@ -18,16 +18,18 @@ jobs:
       with:
         channel: 'beta'
     - run: flutter pub get
-    - name: Extract Android key file
+    - id: android-key
+      name: Extract Android key file
       uses: timheuer/base64-to-file@v1.0.3
       with:
-        fileName: 'android/key.jks'
+        fileName: 'key.jks'
         encodedString: ${{ secrets.KEY_JKS }}
     - name: build-android
-      run: flutter build apk --release && flutter build appbundle --release
+      run: cp $KEY_LOCATION android/key.jks && flutter build apk --release && flutter build appbundle --release
       env:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        KEY_LOCATION: ${{ steps.android-key.outputs.filePath }}
     - uses: actions/upload-artifact@v1
       with:
         name: android-release-apk
