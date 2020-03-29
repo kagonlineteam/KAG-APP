@@ -55,6 +55,112 @@ class HomeState extends State<Home> {
       );
     }
 
+    Widget content = ListView(
+      children: <Widget>[
+        //Holiday Countdown
+        Container(
+          child: Text("Ferien-Countdown", style: titleStyle),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: screenSize > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                margin:EdgeInsets.fromLTRB(10, 0, screenSize / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(weeks, style: countdownNumbers),
+                    Text("w")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(days, style: countdownNumbers),
+                    Text("d")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(hours, style: countdownNumbers),
+                    Text("h")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(minutes, style: countdownNumbers),
+                    Text("m")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(seconds, style: countdownNumbers),
+                    Text("s")
+                  ],
+                ),
+              ),
+            ],
+          ),
+          margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+        ),
+        //Appointments
+        splittingContainer,
+        Container(
+          child: Text("Die nächsten Termine", style: titleStyle),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          alignment: Alignment.centerLeft,
+        ),
+        Column(
+          children: calendarEntries,
+        ),
+        splittingContainer,
+        //Moodle
+        Container(
+          child: Text("Atrium (Moodle)", style: titleStyle),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Container(
+          child: Text(
+              "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
+              style: TextStyle(fontSize: 7)),
+          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Row(
+          children: <Widget>[
+            MaterialButton(
+              child: moodleIcon,
+              onPressed: () async {
+                if (await canLaunch(
+                    "moodlemobile://atrium.kag-langenfeld.de")) {
+                  launch("moodlemobile://atrium.kag-langenfeld.de");
+                } else {
+                  launch("https://atrium.kag-langenfeld.de");
+                }
+              },
+            )
+          ],
+        ),
+      ],
+    );
+
+    if (MediaQuery.of(context).size.longestSide > 600)  {
+      content = Center(child: content,);
+    }
 
     return new Scaffold(
       appBar: PreferredSize(
@@ -77,108 +183,7 @@ class HomeState extends State<Home> {
         preferredSize: Size.fromHeight(110),
       ),
       body: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            //Holiday Countdown
-            Container(
-              child: Text("Ferien-Countdown", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              alignment: Alignment.centerLeft,
-            ),
-            Container(
-              child: Row(
-                mainAxisAlignment: screenSize > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Container(
-                    margin:EdgeInsets.fromLTRB(10, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(weeks, style: countdownNumbers),
-                        Text("w")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(days, style: countdownNumbers),
-                        Text("d")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(hours, style: countdownNumbers),
-                        Text("h")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(minutes, style: countdownNumbers),
-                        Text("m")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(seconds, style: countdownNumbers),
-                        Text("s")
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
-            ),
-            //Appointments
-            splittingContainer,
-            Container(
-              child: Text("Die nächsten Termine", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              alignment: Alignment.centerLeft,
-            ),
-            Column(
-              children: calendarEntries,
-            ),
-            splittingContainer,
-            //Moodle
-            Container(
-              child: Text("Atrium (Moodle)", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              alignment: Alignment.centerLeft,
-            ),
-            Container(
-              child: Text(
-                  "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
-                  style: TextStyle(fontSize: 7)),
-              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              alignment: Alignment.centerLeft,
-            ),
-            Row(
-              children: <Widget>[
-                MaterialButton(
-                  child: moodleIcon,
-                  onPressed: () async {
-                    if (await canLaunch(
-                        "moodlemobile://atrium.kag-langenfeld.de")) {
-                      launch("moodlemobile://atrium.kag-langenfeld.de");
-                    } else {
-                      launch("https://atrium.kag-langenfeld.de");
-                    }
-                  },
-                )
-              ],
-            ),
-          ],
-        ),
+        child: content,
       ),
     );
   }
