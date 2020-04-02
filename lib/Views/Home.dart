@@ -20,37 +20,45 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle  eventDate            = const TextStyle(fontSize: 25, color: Colors.white);
-  static const TextStyle  eventTitle           = const TextStyle(fontSize: 25);
-  static const TextStyle  eventDescriptionText = const TextStyle(fontSize: 18);
-  static const TextStyle  titleStyle           = const TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
-  static const TextStyle  logoStyle            = const TextStyle(fontSize: 80, color: Colors.white);
+  static TextStyle  eventDate            ;
+  static TextStyle  eventTitle           ;
+  //static TextStyle  eventDescriptionText ;
+  static TextStyle  titleStyle           ;
+  //static const TextStyle  logoStyle            = const TextStyle(fontSize: 80, color: Colors.white);
   static const BorderSide splittingBorder      = const BorderSide( color: Color.fromRGBO(47, 109, 29, 1), width: 2);
   static final Container splittingContainer    = Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0),decoration: BoxDecoration(border: Border(top: splittingBorder)));
+  static bool isTablet;
+
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
   int holiday;
   Timer timer;
 
-
   List<Container> calendarEntries = [];
+  List<dynamic> rawCalendarEntries = [];
 
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size.width;
+    isTablet = MediaQuery.of(context).size.longestSide > 1000;
+    eventDate            = TextStyle(fontSize: isTablet ? 30 : 25, color: Colors.white);
+    eventTitle           = TextStyle(fontSize: isTablet ? 30 : 25);
+    titleStyle           = TextStyle(fontSize: (isTablet ? 33 : 28), fontWeight: FontWeight.bold);
+    TextStyle countdownNumbers = new TextStyle(fontSize: isTablet ? 35 : 25);
+    rebuildCalendarEntries();
 
-    TextStyle countdownNumbers = new TextStyle(fontSize: 25);
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
 
     Widget moodleIcon;
     if (kIsWeb) {
-      moodleIcon = Image.network("https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png", width: 75);
+      moodleIcon = Image.network("https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png", width: isTablet ? 150 : 75);
     } else {
       moodleIcon = CachedNetworkImage(
         imageUrl:
         "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-        width: 75,
+        width: isTablet ? 150 : 75,
         fadeInDuration: Duration(seconds: 0),
       );
     }
@@ -65,10 +73,10 @@ class HomeState extends State<Home> {
         ),
         Container(
           child: Row(
-            mainAxisAlignment: screenSize > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Container(
-                margin:EdgeInsets.fromLTRB(10, 0, screenSize / 50, 0),
+                margin:EdgeInsets.fromLTRB(10, 0, screenSizeWidth / 50, 0),
                 child: Column(
                   children: <Widget>[
                     Text(weeks, style: countdownNumbers),
@@ -77,7 +85,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               Container(
-                margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
+                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
                 child: Column(
                   children: <Widget>[
                     Text(days, style: countdownNumbers),
@@ -86,7 +94,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               Container(
-                margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
+                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
                 child: Column(
                   children: <Widget>[
                     Text(hours, style: countdownNumbers),
@@ -95,7 +103,7 @@ class HomeState extends State<Home> {
                 ),
               ),
               Container(
-                margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
+                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
                 child: Column(
                   children: <Widget>[
                     Text(minutes, style: countdownNumbers),
@@ -158,8 +166,23 @@ class HomeState extends State<Home> {
       ],
     );
 
-    if (MediaQuery.of(context).size.longestSide > 600)  {
-      content = Center(child: content,);
+    if (isTablet)  {
+      content = Container(
+        child: Container(
+          child: Container(
+            child: content,
+            margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+          color: Colors.white,
+          margin: EdgeInsets.fromLTRB(screenSizeWidth / 3, screenSizeHeight / 10, screenSizeWidth / 3, screenSizeHeight / 6),
+        ),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: new AssetImage("assets/background-main.png"),
+            fit: BoxFit.fill
+          )
+        ),
+      );
     }
 
     return new Scaffold(
@@ -188,6 +211,18 @@ class HomeState extends State<Home> {
     );
   }
 
+  void rebuildCalendarEntries() {
+    calendarEntries = [];
+    rawCalendarEntries.forEach((entry) {
+      addCalendarEntry(
+          formatDate(
+              new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
+              [dd, ".", mm]),
+          entry['title'],
+          entry);
+    });
+  }
+
   Future _load() async {
     (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
         .getHolidayUnixTimestamp()
@@ -198,14 +233,7 @@ class HomeState extends State<Home> {
     (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
         .getNextCalendarEntries()
         .then((entries) {
-      entries.forEach((entry) {
-        addCalendarEntry(
-            formatDate(
-                new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
-                [dd, ".", mm]),
-            entry['title'],
-            entry);
-      });
+          rawCalendarEntries = entries;
     });
   }
 
