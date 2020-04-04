@@ -178,7 +178,7 @@ class HomeState extends State<Home> {
         ),
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: new AssetImage("assets/background-main.png"),
+            image: new AssetImage("assets/background-main.jpg"),
             fit: BoxFit.fill
           )
         ),
