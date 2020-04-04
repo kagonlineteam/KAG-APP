@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kag/push_notifications.dart';
 
 import './Views/Calendar.dart'	as Calendar;
@@ -45,7 +44,6 @@ void main() {
 
 class KAGApp extends StatefulWidget {
   static final API api = new API();
-  static FlutterLocalNotificationsPlugin notificationsPlugin;
   static KAGAppState app;
 
   @override
