@@ -435,7 +435,7 @@ class _APIRequest {
   Future <String> getArticles() async {
     _actionExecution(APIAction.GET_ARTICLE);
     Map<String, String> params = {};
-    params['view'] = "canonical";
+    params['view'] = "preview-with-image";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
     params['orderby'] = "desc-changed";
 
