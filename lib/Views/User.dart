@@ -75,6 +75,9 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
                   ),
                   padding: EdgeInsets.all(50),
                 ),
+                Container(
+                  child: Text("Bitte gebe den Buchstaben deinen Klasse ein (z.B.: a)"),
+                )
               ],
             );
           });
