@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
@@ -136,11 +135,6 @@ class HomeState extends State<Home> {
             splittingContainer,
             //Moodle
             Container(
-              child: Text("Atrium (Moodle)", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              alignment: Alignment.centerLeft,
-            ),
-            Container(
               child: Text(
                   "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
                   style: TextStyle(fontSize: 7)),
@@ -153,7 +147,7 @@ class HomeState extends State<Home> {
                   child: CachedNetworkImage(
                     imageUrl:
                     "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                    width: 75,
+                    width: 175,
                     fadeInDuration: Duration(seconds: 0),
                   ),
                   onPressed: () async {
