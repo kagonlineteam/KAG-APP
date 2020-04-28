@@ -4,10 +4,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:kag/Views/Calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../api.dart';
+
 import '../main.dart';
 import 'Calendar.dart';
 
@@ -273,7 +272,7 @@ class HomeState extends State<Home> {
     });
   }
 
-  Future<void> addCalendarEntry(String date, String title, entry) async {
+  Future<void> addCalendarEntry(String date, String title, Map<String, dynamic> entry) async {
 
     setState(() {
       calendarEntries.add(Container(
@@ -330,7 +329,7 @@ class HomeState extends State<Home> {
 
   String betterNumber(int number) {
     if (number.toString().length == 1) {
-      return "0" + number.toString();
+      return "0${number.toString()}";
     }
     return number.toString();
   }
@@ -338,7 +337,7 @@ class HomeState extends State<Home> {
   String getShortedDescription(String text) {
     if (text == null) return "";
     if (text.length > 50) {
-      return text.substring(0, 50) + "...";
+      return "${text.substring(0, 50)}...";
     } else {
       return text;
     }

@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart' as Foundation;
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -148,6 +148,7 @@ class _User {
     return _jwt;
   }
 
+  // ignore: type_annotate_public_apis
   getDecodedJWT() {
     String output =
     _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
@@ -178,7 +179,7 @@ class _APIConnection {
       String password) async {
     var loginBody = jsonEncode(
         {"username": username, "password": password, "client": "appclient"});
-    var response = await http.post(API + "login", body: loginBody,
+    var response = await http.post("${API}login", body: loginBody,
         headers: {"Content-Type": "application/json"});
     if (response.statusCode == 200) {
       return jsonDecode(response.body)['access_token'];
@@ -202,7 +203,7 @@ class _APIConnection {
         query += "$name=$value";
       });
     }
-    return (await http.get("${API}$path$query",
+    return (await http.get("$API$path$query",
         headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
         .body;
   }
@@ -291,7 +292,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI(
-        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -301,13 +302,13 @@ class _APIRequest {
   ///
   Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
     _actionExecution(APIAction.GET_CALENDAR);
-    await _cache.init("soon" + page.toString(),
+    await _cache.init("soon${page.toString()}",
         cacheDuration: 1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
+        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.getJWT());
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -352,19 +353,19 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
-  Future<String> getRAWRPlan(String teacherType, String teacher, {force: false}) async {
+  Future<String> getRAWRPlan(String teacherType, String teacher, {bool force=false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     var day = await _getIDForRPlanDay();
     if (day == null) return null;
 
     if (teacher != null) {
-      params[teacherType] = "eq-"+Uri.encodeComponent(teacher);
+      params[teacherType] = "eq-${Uri.encodeComponent(teacher)}";
     } else {
       params["orderby"] = "asc-stunde";
     }
 
-    params["vplan"] = "eq-" + day;
+    params["vplan"] = "eq-$day";
     params["view"] = "canonical";
     params["limit"] = "100";
 
@@ -466,7 +467,7 @@ class _CacheManager {
 
   // Creating this at the loading of CacheManager to not cause weird errors with too little time left
   int time = DateTime.now().millisecondsSinceEpoch;
-  APIAction _action;
+  final APIAction _action;
   String _type;
   int _duration;
   File _file;
@@ -478,13 +479,13 @@ class _CacheManager {
   /// Type: Specific type: e.g. the date for RPlan, nextEvents for nextEvents in Calender etc.
   /// Cache Duration: If the standard Cache Duration should not be used. Eg. for Holiday Time
   Future init(String type, {int cacheDuration}) async {
-    this._type = type;
-    this._duration = cacheDuration;
+    _type = type;
+    _duration = cacheDuration;
     if (_duration == null) {
       _duration = _getDuration();
     }
     if (!kIsWeb) {
-      _file = File((await getTemporaryDirectory()).path +
+      _file = File((await getTemporaryDirectory()).path + // ignore: prefer_interpolation_to_compose_strings
           "/" +
           _action.toString() +
           "/" +
@@ -496,10 +497,10 @@ class _CacheManager {
   ///
   /// Check if Cache exists and is valid
   ///
-  bool hasCache({validate: true}) {
+  bool hasCache({bool validate=true}) {
     if (_type == null) throw Exception("Cache has not been initialized.");
     // Deactivate Cache for Debug Mode
-    if (Foundation.kDebugMode) return false;
+    if (foundation.kDebugMode) return false;
     // Do not cache in Web.
     if (kIsWeb) return false;
     if (!(_file.existsSync())) return false;

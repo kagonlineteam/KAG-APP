@@ -137,7 +137,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     }
   }
 
-  Future _loadRPlan({force: false}) async{
+  Future _loadRPlan({force=false}) async{
     _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
     // I know that this should not be down Client Side. But here it is. Limiting students to see the plan of übermorgen on weekends
     if (canSeeAllDays || DateTime.now().weekday < 6) {
@@ -148,11 +148,11 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     }
   }
 
-  Future _processDay(APIAction action, {force: false}) async {
+  Future _processDay(APIAction action, {force=false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(action);
     if (rplanRequest == null) return;
 
-    var rplanTwo;
+    var rplanTwo; // ignore: prefer_typing_uninitialized_variables
 
     var rplanText = await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force);
     var rplan = rplanText != null ? jsonDecode(rplanText) : null;
@@ -308,7 +308,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
     if (canSeeAllDays) {
       if (lesson['lehrer'] != null) bottomLeftText = lesson['lehrer'];
-      if (lesson['v_lehrer'] != null) bottomLeftText += " -> " + lesson['v_lehrer'];
+      if (lesson['v_lehrer'] != null) bottomLeftText += " -> ${lesson['v_lehrer']}";
       bottomCenterText = "";
       bottomRightText = lesson['art'];
     }
@@ -481,7 +481,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 class RPlanDetail extends StatelessWidget {
   RPlanDetail(this.lesson);
 
-  final lesson;
+  Map<String, dynamic> lesson;
   double width;
   static const TextStyle textStyle  = const TextStyle(fontSize: 25);
   static const TextStyle titleStyle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
