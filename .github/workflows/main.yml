@@ -1,0 +1,53 @@
+name: main
+
+on:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - uses: subosito/flutter-action@v1.1.1
+      with:
+        channel: 'beta'
+    - run: flutter pub get
+    - id: android-key
+      name: Extract Android key file
+      uses: timheuer/base64-to-file@v1.0.3
+      with:
+        fileName: 'key.jks'
+        encodedString: ${{ secrets.KEY_JKS }}
+    - name: build-android
+      run: cp $KEY_LOCATION android/key.jks && flutter build apk --release && flutter build appbundle --release
+      env:
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        KEY_LOCATION: ${{ steps.android-key.outputs.filePath }}
+    - uses: actions/upload-artifact@v1
+      with:
+        name: android-release-apk
+        path: build/app/outputs/apk/release/app-release.apk 
+    - uses: actions/upload-artifact@v1
+      with:
+        name: android-release-bundle
+        path: build/app/outputs/bundle/release/app-release.aab
+    - name: build-web
+      run: flutter config --enable-web && flutter build web
+    - name: deploy web
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_URL }}
+        username: github
+        key: ${{ secrets.SSH_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        source: 'build/web/*'
+        target: '/var/www/app/'
+        rm: true
+      
