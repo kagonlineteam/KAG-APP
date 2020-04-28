@@ -3,9 +3,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:kag/Views/News.dart';
-import 'package:kag/api.dart';
 
+import '../api.dart';
 import '../main.dart';
 
 class Calendar extends StatefulWidget {
@@ -19,8 +18,8 @@ class CalendarState extends State {
   static const dateStyle = const TextStyle(fontSize: 20, color: Colors.white);
   static const titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
-  var page = 0;
-  var rows = <Widget>[];
+  int page = 0;
+  List<Widget> rows = <Widget>[];
 
 
 
@@ -164,7 +163,7 @@ class CalendarState extends State {
   String getShortedLongDescription(String text) {
     if (text == null) return "";
     if (text.length > 300) {
-      return text.substring(0, 300) + "...";
+      return "${text.substring(0, 300)}...";
     } else {
       return text;
     }
@@ -179,8 +178,8 @@ class CalendarState extends State {
 }
 
 class CalendarDetail extends StatefulWidget {
-  CalendarDetail(this.entry);
-  final entry;
+  CalendarDetail(final this.entry);
+  final Map<String, dynamic> entry;
 
   @override
   State<StatefulWidget> createState() {
@@ -192,7 +191,7 @@ class CalendarDetail extends StatefulWidget {
 class CalendarDetailState extends State {
   CalendarDetailState(this.entry);
 
-  final entry;
+  Map<String, dynamic> entry;
   static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
   static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const tagStyle         = const TextStyle(fontSize: 16, color: Colors.white);

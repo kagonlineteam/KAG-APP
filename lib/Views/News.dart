@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 import '../api.dart';
 import '../main.dart';
@@ -20,7 +19,7 @@ class NewsState extends State<News> {
   static const titleStyle       = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
   static const subTextStyle     = const TextStyle(fontSize: 10);
-  var usableWidth               = 0.0;
+  num usableWidth               = 0.0;
 
   List<Widget> articles = [];
 
@@ -86,8 +85,8 @@ class NewsState extends State<News> {
             child: Column(
               children: <Widget>[
                 article['files'] != [] ? LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return  Container(child: Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/" + article['files']['id']), width: constraints.maxWidth));
+                  builder: (context, constraints) {
+                    return  Container(child: Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/ ${article['files']['id']}"), width: constraints.maxWidth));
                   },
                 ) : Container(),
                 Row(

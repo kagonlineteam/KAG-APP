@@ -1,15 +1,17 @@
+// ignore_for_file: library_prefixes
+
 import 'package:flutter/material.dart';
-import 'package:kag/push_notifications.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
 import './Views/Login.dart'     as Login;
+import './Views/News.dart'      as News;
 import './Views/RPlan.dart'     as RPlan;
 import './Views/User.dart'      as User;
-import './Views/News.dart'      as News;
-import 'api.dart';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'api.dart';
+import 'push_notifications.dart';
 
 
 void main() {
@@ -54,6 +56,7 @@ class KAGApp extends StatefulWidget {
 }
 
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
+  // ignore: prefer_final_fields
   static int _index = 2;
   TabController controller;
 
@@ -122,7 +125,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
 
   }
-  var tabContents;
+  List<Widget> tabContents;
 
   Future setLoggedIn() async {
     setState(() {

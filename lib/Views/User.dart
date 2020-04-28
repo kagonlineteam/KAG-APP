@@ -57,7 +57,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
                       maxLength: 1,
                       maxLengthEnforced: true,
                       style: new TextStyle(color: Colors.green),
-                      onChanged: (String klasse){
+                      onChanged: (klasse){
                         uKlasse = klasse;
                       }
                   ),
@@ -112,7 +112,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
 
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _load();
   }
