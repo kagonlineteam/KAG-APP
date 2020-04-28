@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kag/push_notifications.dart';
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
@@ -8,6 +8,9 @@ import './Views/RPlan.dart'     as RPlan;
 import './Views/User.dart'      as User;
 import './Views/News.dart'      as News;
 import 'api.dart';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 
 void main() {
   runApp(
@@ -34,58 +37,24 @@ void main() {
       home: KAGApp(),
     ),
   );
+  if (!kIsWeb) {
+    new PushNotificationsManager().init();
+  }
 }
 
 class KAGApp extends StatefulWidget {
   static final API api = new API();
-  static FlutterLocalNotificationsPlugin notificationsPlugin;
   static KAGAppState app;
-
-  static Future _holidayNotification() async {
-    notificationsPlugin = FlutterLocalNotificationsPlugin();
-    var initializationSettingsAndroid =
-    new AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = new IOSInitializationSettings(
-      // ignore: missing_return
-        onDidReceiveLocalNotification: (param, param1, param2, param3) {});
-    var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-    notificationsPlugin.initialize(initializationSettings,
-        // ignore: missing_return
-        onSelectNotification: (param) {});
-    var time = (await ((await api.getAPIRequest(APIAction.GET_CALENDAR))
-        .getHolidayUnixTimestamp())) *
-        1000;
-    if (time > DateTime.now().millisecondsSinceEpoch) {
-      var scheduledNotificationDateTime =
-      new DateTime.fromMillisecondsSinceEpoch(time);
-      var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-          'holidayKAG',
-          'KAG Holiday Channel',
-          'KAG will send you a Holiday Notification.');
-      var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-      NotificationDetails platformChannelSpecifics = new NotificationDetails(
-          androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-      await notificationsPlugin.cancelAll();
-      await notificationsPlugin.schedule(
-          0,
-          'Ferien',
-          'Viel Spaß in den Ferien!',
-          scheduledNotificationDateTime,
-          platformChannelSpecifics);
-    }
-  }
 
   @override
   State<StatefulWidget> createState() {
-    _holidayNotification();
     app = KAGAppState();
     return app;
   }
 }
 
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
-  static int _index = 0;
+  static int _index = 2;
   TabController controller;
 
   @override
@@ -118,21 +87,24 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
               controller: controller,
               tabs: <Widget>[
                 Tab(
-                  text: "Home",
-                  icon: Icon(Icons.home),
+                  text: "Termine",
+                  icon: Icon(Icons.event),
                 ),
                 Tab(
                   text: "VPlan",
                   icon: Icon(Icons.compare_arrows),
                 ),
                 Tab(
-                  text: "Termine",
-                  icon: Icon(Icons.event),
+                  text: "Home",
+                  icon: Icon(Icons.home),
                 ),
-                Tab(text: "News", icon: Icon(Icons.public),),
                 Tab(
                   text: "User",
                   icon: Icon(Icons.person),
+                ),
+                Tab(
+                  text: "News",
+                  icon: Icon(Icons.public),
                 ),
               ],
               isScrollable: false,
@@ -155,11 +127,11 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   Future setLoggedIn() async {
     setState(() {
       tabContents = <Widget>[
-        new Home.Home(),
-        new RPlan.RPlan(),
         new Calendar.Calendar(),
+        new RPlan.RPlan(),
+        new Home.Home(),
+        new User.User(),
         new News.News(),
-        new User.User()
       ];
     });
   }
@@ -168,11 +140,11 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     if ((await KAGApp.api.getAPIRequest(APIAction.GET_USERNAME)) == null) {
       setState(() {
         tabContents = <Widget>[
-          new Home.Home(),
-          new Login.NotLoggedIn(),
           new Calendar.Calendar(),
+          new Login.NotLoggedIn(),
+          new Home.Home(),
+          new Login.Login(),
           new News.News(),
-          new Login.Login()
         ];
       });
     }

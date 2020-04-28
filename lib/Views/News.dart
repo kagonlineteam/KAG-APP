@@ -62,8 +62,10 @@ class NewsState extends State<News> {
             )
         ),
         body: SafeArea(
-            child: ListView(
-          children: articles,
+            child: GridView.count(
+              childAspectRatio: 0.9,
+              crossAxisCount: width > 1000 ? 3 : 1,
+              children: articles,
         )
         )
     );
@@ -72,97 +74,118 @@ class NewsState extends State<News> {
   Widget _generateRow(article) {
     var title = article['title'] == null ? "" : article['title'];
     var descriptionText = article['preview'] == null ? "" : article['preview'];
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(article['created'] * 1000);
-    var date = "${dateTime.day}.${dateTime.month}.${dateTime.year}";
-    var author = article['author'] == null ? "" : article['author'];
 
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  color: Color.fromRGBO(235, 235, 235, 1), width: 2))),
-      child: GestureDetector(
-          child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              /*Container(
+    return
+      Container(
+        margin: EdgeInsets.all(20),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: GestureDetector(
+            child: Column(
+              children: <Widget>[
+                article['files'] != [] ? LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return  Container(child: Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/" + article['files']['id']), width: constraints.maxWidth));
+                  },
+                ) : Container(),
+                Row(
+                  children: <Widget>[
+                    /*Container(
                 color: Color.fromRGBO(200, 200, 200, 1),
                 margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
                 width: 100,
                 height: 100,
               ),*/
-              Expanded(
-                child: Container(
-                  height: 100,
-                  width: usableWidth,
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Text(title, style: titleStyle),
-                        alignment: Alignment.topLeft,
-                        height: 40,
+                    Expanded(
+                      child: Container(
+                        width: usableWidth,
+                        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              child: Text(title, style: titleStyle),
+                              alignment: Alignment.topLeft,
+                              height: 60,
+                            ),
+                            descriptionText != "" ? Container(
+                              child: Text(descriptionText,
+                                  style: descriptionStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3),
+                              alignment: Alignment.topLeft,
+                              height: 55,
+                            ) : Container()
+                          ],
+                        ),
                       ),
-                      Container(
-                        child: Text(descriptionText,
-                            style: descriptionStyle,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 3),
-                        alignment: Alignment.topLeft,
-                        height: 55,
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Container(
-                  child: Text(author, style: subTextStyle),
-                ),
-                Container(
-                  child: Text(date, style: subTextStyle),
+                    )
+                  ],
                 )
               ],
             ),
-            margin: EdgeInsets.fromLTRB(10, 0, 10, 5),
-          )
-        ],
-      ),
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => ArticleDetail(article))),
-      ),
-    );
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ArticleDetail(article['id']))),
+          ),
+          margin: EdgeInsets.fromLTRB(0, 5, 0, 3),
+        ),
+      );
   }
 }
 
-class ArticleDetail extends StatelessWidget {
+class ArticleDetail extends StatefulWidget {
   ArticleDetail(this.article);
 
-  final article;
+  final String article;
+
+  @override
+  State<StatefulWidget> createState() {
+    return new ArticleDetailState(article);
+  }
+
+}
+
+class ArticleDetailState extends State<ArticleDetail> {
+  ArticleDetailState(this.article);
+
+  final String article;
+  Widget content = Center(child: Text("Bitte warten.\n Der Artikel wird geladen!"),);
+
 
   @override
   Widget build(BuildContext context) {
-    var htmlSite = """<h1>${article['title']}</h1><br><br> ${castBase64ToHTML(article['body'])}""";
-
 
     return Scaffold(
       appBar: AppBar(),
       body: Container(
         child: ListView(
-          children: <Widget>[Html(data: htmlSite)],
+          children: <Widget>[content, ],
         ),
         padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
       ),
     );
   }
 
-  String castBase64ToHTML(String text) {
-    return latin1.decode(base64Decode(text.replaceAll('\n', '')));
+  String decodeBase64(String text) {
+    return utf8.decode(base64Decode(text.replaceAll('\n', '')));
   }
+
+  @override
+  void initState() {
+    super.initState();
+    loadArticle();
+  }
+
+  Future<void> loadArticle() async {
+    var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
+    var response = await request.getArticle(article);
+    if (response == null) return;
+    var articleContent = jsonDecode(response)['entity'];
+    var htmlData = """<h1>${articleContent['title']}</h1><br><br> ${decodeBase64(articleContent['body'])}""";
+    setState(() {
+      content = Html(data: htmlData);
+    });
+  }
+
 }

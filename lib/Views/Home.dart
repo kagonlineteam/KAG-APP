@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:date_format/date_format.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:kag/Views/Calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,13 +19,15 @@ class Home extends StatefulWidget {
 }
 
 class HomeState extends State<Home> {
-  static const TextStyle  eventDate            = const TextStyle(fontSize: 25, color: Colors.white);
-  static const TextStyle  eventTitle           = const TextStyle(fontSize: 25);
-  static const TextStyle  eventDescriptionText = const TextStyle(fontSize: 18);
-  static const TextStyle  titleStyle           = const TextStyle(fontSize: 28, fontWeight: FontWeight.bold);
-  static const TextStyle  logoStyle            = const TextStyle(fontSize: 80, color: Colors.white);
+  static TextStyle  eventDate            ;
+  static TextStyle  eventTitle           ;
+  //static TextStyle  eventDescriptionText ;
+  static TextStyle  titleStyle           ;
+  //static const TextStyle  logoStyle            = const TextStyle(fontSize: 80, color: Colors.white);
   static const BorderSide splittingBorder      = const BorderSide( color: Color.fromRGBO(47, 109, 29, 1), width: 2);
   static final Container splittingContainer    = Container(margin: EdgeInsets.fromLTRB(10, 0, 10, 0),decoration: BoxDecoration(border: Border(top: splittingBorder)));
+  static bool isTablet;
+
 
   String weeks = "", days = "", hours = "", minutes = "", seconds = "";
   String date = "", title = "", description = "";
@@ -32,13 +35,149 @@ class HomeState extends State<Home> {
   Timer timer;
 
   List<Container> calendarEntries = [];
+  List<dynamic> rawCalendarEntries = [];
 
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery.of(context).size.width;
+    isTablet = MediaQuery.of(context).size.longestSide > 1000;
+    eventDate            = TextStyle(fontSize: isTablet ? 30 : 25, color: Colors.white);
+    eventTitle           = TextStyle(fontSize: isTablet ? 30 : 25);
+    titleStyle           = TextStyle(fontSize: (isTablet ? 33 : 28), fontWeight: FontWeight.bold);
+    TextStyle countdownNumbers = new TextStyle(fontSize: isTablet ? 35 : 25);
+    rebuildCalendarEntries();
 
-    TextStyle countdownNumbers = new TextStyle(fontSize: 40);
+    var screenSizeWidth = MediaQuery.of(context).size.width;
+    var screenSizeHeight = MediaQuery.of(context).size.height;
+
+    Widget moodleIcon;
+    if (kIsWeb) {
+      moodleIcon = Image.network("https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png", width: isTablet ? 250 : 175);
+    } else {
+      moodleIcon = CachedNetworkImage(
+        imageUrl:
+        "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
+        width: isTablet ? 250 : 175,
+        fadeInDuration: Duration(seconds: 0),
+      );
+    }
+
+    Widget content = ListView(
+      children: <Widget>[
+        //Holiday Countdown
+        Container(
+          child: Text("Ferien-Countdown", style: titleStyle),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Container(
+                margin:EdgeInsets.fromLTRB(10, 0, screenSizeWidth / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(weeks, style: countdownNumbers),
+                    Text("w")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(days, style: countdownNumbers),
+                    Text("d")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(hours, style: countdownNumbers),
+                    Text("h")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(minutes, style: countdownNumbers),
+                    Text("m")
+                  ],
+                ),
+              ),
+              Container(
+                margin:EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: Column(
+                  children: <Widget>[
+                    Text(seconds, style: countdownNumbers),
+                    Text("s")
+                  ],
+                ),
+              ),
+            ],
+          ),
+          margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
+        ),
+        //Appointments
+        splittingContainer,
+        Container(
+          child: Text("Die nächsten Termine", style: titleStyle),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          alignment: Alignment.centerLeft,
+        ),
+        Column(
+          children: calendarEntries,
+        ),
+        splittingContainer,
+        //Moodle
+        Container(
+          child: Text(
+              "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
+              style: TextStyle(fontSize: 7)),
+          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Row(
+          children: <Widget>[
+            MaterialButton(
+              child: moodleIcon,
+              onPressed: () async {
+                if (await canLaunch(
+                    "moodlemobile://atrium.kag-langenfeld.de")) {
+                  launch("moodlemobile://atrium.kag-langenfeld.de");
+                } else {
+                  launch("https://atrium.kag-langenfeld.de");
+                }
+              },
+            )
+          ],
+        ),
+      ],
+    );
+
+    if (isTablet)  {
+      content = Container(
+        child: Container(
+          child: Container(
+            child: content,
+            margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+          ),
+          color: Colors.white,
+          margin: EdgeInsets.fromLTRB(screenSizeWidth / 3, screenSizeHeight / 10, screenSizeWidth / 3, screenSizeHeight / 6),
+        ),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: new AssetImage("assets/background-main.jpg"),
+            fit: BoxFit.fill
+          )
+        ),
+      );
+    }
 
     return new Scaffold(
       appBar: PreferredSize(
@@ -61,110 +200,21 @@ class HomeState extends State<Home> {
         preferredSize: Size.fromHeight(110),
       ),
       body: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            //Holiday Countdown
-            Container(
-              child: Text("Ferien-Countdown", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-              alignment: Alignment.centerLeft,
-            ),
-            Container(
-              child: Row(
-                mainAxisAlignment: screenSize > 500 ? MainAxisAlignment.start : MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Container(
-                    margin:EdgeInsets.fromLTRB(10, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(weeks, style: countdownNumbers),
-                        Text("w")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(days, style: countdownNumbers),
-                        Text("d")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(hours, style: countdownNumbers),
-                        Text("h")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, screenSize / 50, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(minutes, style: countdownNumbers),
-                        Text("m")
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin:EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text(seconds, style: countdownNumbers),
-                        Text("s")
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
-            ),
-            //Appointments
-            splittingContainer,
-            Container(
-              child: Text("Die nächsten Termine", style: titleStyle),
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              alignment: Alignment.centerLeft,
-            ),
-            Column(
-              children: calendarEntries,
-            ),
-            splittingContainer,
-            //Moodle
-            Container(
-              child: Text(
-                  "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
-                  style: TextStyle(fontSize: 7)),
-              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-              alignment: Alignment.centerLeft,
-            ),
-            Row(
-              children: <Widget>[
-                MaterialButton(
-                  child: CachedNetworkImage(
-                    imageUrl:
-                    "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-                    width: 175,
-                    fadeInDuration: Duration(seconds: 0),
-                  ),
-                  onPressed: () async {
-                    if (await canLaunch(
-                        "moodlemobile://atrium.kag-langenfeld.de")) {
-                      launch("moodlemobile://atrium.kag-langenfeld.de");
-                    } else {
-                      launch("https://atrium.kag-langenfeld.de");
-                    }
-                  },
-                )
-              ],
-            ),
-          ],
-        ),
+        child: content,
       ),
     );
+  }
+
+  void rebuildCalendarEntries() {
+    calendarEntries = [];
+    rawCalendarEntries.forEach((entry) {
+      addCalendarEntry(
+          formatDate(
+              new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
+              [dd, ".", mm]),
+          entry['title'],
+          entry);
+    });
   }
 
   Future _load() async {
@@ -177,14 +227,7 @@ class HomeState extends State<Home> {
     (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
         .getNextCalendarEntries()
         .then((entries) {
-      entries.forEach((entry) {
-        addCalendarEntry(
-            formatDate(
-                new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000),
-                [dd, ".", mm]),
-            entry['title'],
-            entry);
-      });
+          rawCalendarEntries = entries;
     });
   }
 
