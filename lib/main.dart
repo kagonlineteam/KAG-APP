@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:kag/push_notifications.dart';
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
@@ -37,53 +37,17 @@ void main() {
       home: KAGApp(),
     ),
   );
+  if (!kIsWeb) {
+    new PushNotificationsManager().init();
+  }
 }
 
 class KAGApp extends StatefulWidget {
   static final API api = new API();
-  static FlutterLocalNotificationsPlugin notificationsPlugin;
   static KAGAppState app;
-
-  static Future _holidayNotification() async {
-    notificationsPlugin = FlutterLocalNotificationsPlugin();
-    var initializationSettingsAndroid =
-    new AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = new IOSInitializationSettings(
-      // ignore: missing_return
-        onDidReceiveLocalNotification: (param, param1, param2, param3) {});
-    var initializationSettings = new InitializationSettings(
-        initializationSettingsAndroid, initializationSettingsIOS);
-    notificationsPlugin.initialize(initializationSettings,
-        // ignore: missing_return
-        onSelectNotification: (param) {});
-    var time = (await ((await api.getAPIRequest(APIAction.GET_CALENDAR))
-        .getHolidayUnixTimestamp())) *
-        1000;
-    if (time > DateTime.now().millisecondsSinceEpoch) {
-      var scheduledNotificationDateTime =
-      new DateTime.fromMillisecondsSinceEpoch(time);
-      var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-          'holidayKAG',
-          'KAG Holiday Channel',
-          'KAG will send you a Holiday Notification.');
-      var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-      NotificationDetails platformChannelSpecifics = new NotificationDetails(
-          androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-      await notificationsPlugin.cancelAll();
-      await notificationsPlugin.schedule(
-          0,
-          'Ferien',
-          'Viel Spaß in den Ferien!',
-          scheduledNotificationDateTime,
-          platformChannelSpecifics);
-    }
-  }
 
   @override
   State<StatefulWidget> createState() {
-    if (!kIsWeb) {
-      _holidayNotification();
-    }
     app = KAGAppState();
     return app;
   }

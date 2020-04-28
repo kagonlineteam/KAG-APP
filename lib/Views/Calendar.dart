@@ -51,10 +51,7 @@ class CalendarState extends State {
   }
 
   Future<Widget> _generateRow(entry) async {
-    var descriptionText = "";
-    if (entry['description'] != null) {
-      descriptionText = await loadDescription(entry['description']);
-    }
+    var descriptionText = entry['description'] != null ? entry['description']['preview'] : "";
     var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
     var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
     var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(dateOne.month)}.";
@@ -158,18 +155,6 @@ class CalendarState extends State {
     }
   }
 
-  Future <String> loadDescription(String id) async {
-    var descriptionRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    if (descriptionRequest == null) return "";
-    var response = await descriptionRequest.getArticle(id);
-    if (response == null) return "";
-    try {
-      return jsonDecode(response)['entity']['preview'];
-    } catch (e) {
-      return "";
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -232,7 +217,7 @@ class CalendarDetailState extends State {
 
     var tagStrings  = entry['tags'];
 
-
+    description = Html(data: utf8.decode(base64Decode(entry['description']['body'].replaceAll('\n', ''))));
 
     List<Widget> tags = [];
 
@@ -318,11 +303,9 @@ class CalendarDetailState extends State {
     );
   }
 
-
   @override
   void initState() {
     super.initState();
-    getDescription();
   }
 
   Widget createTag(String title) {
@@ -340,16 +323,6 @@ class CalendarDetailState extends State {
           borderRadius: BorderRadius.all(Radius.circular(20))),
     );
   }
-
-  Future getDescription() async {
-    if (entry['description'] == null) return;
-    var entriesRequest = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    String text = (await jsonDecode(await entriesRequest.getArticle(entry['description'])))['entity']['body'];
-    setState(() {
-      description = Html(data: latin1.decode(base64Decode(text.replaceAll('\n', ''))));
-    });
-  }
-
 
   String betterNumbers(int originalNumber) {
     if (originalNumber < 10) {

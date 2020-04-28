@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "932178639950",
+    "firebase_url": "https://kag-api.firebaseio.com",
+    "project_id": "kag-api",
+    "storage_bucket": "kag-api.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932178639950:android:dca3169521212d6dc7971f",
+        "android_client_info": {
+          "package_name": "de.kaglangenfeld.kag"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "932178639950-ckavi4s0v08pasiean8b7hnjgqnmbkp5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAT58Kyrce07gNomSdL04PUpCg_s3roHAw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "932178639950-ckavi4s0v08pasiean8b7hnjgqnmbkp5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
