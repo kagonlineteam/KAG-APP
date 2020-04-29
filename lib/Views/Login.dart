@@ -154,8 +154,9 @@ class NotLoggedIn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: MaterialButton(
-          onPressed: () => KAGApp.app.controller.animateTo(4),
-          child: Text("Bitte melde dich an!")),
+          color: Color.fromRGBO(47, 109, 29, 1),
+          onPressed: () => KAGApp.app.controller.animateTo(3),
+          child: Text("Bitte melde dich an!", style: const TextStyle(color: Colors.white))),
     );
   }
 }
