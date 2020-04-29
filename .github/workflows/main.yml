@@ -11,6 +11,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Generate Version Code
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      run: |
+        export VC=$(curl https://api.github.com/repos/kagonlineteam/kag-app/releases -H "Authorization: Bearer $GH_TOKEN" | grep -c '"author": {' | awk '{$0=$1+1}1')
+        sed -i.bak -e 's/. #VC/'"$VC"'/' pubspec.yaml
     - uses: actions/setup-java@v1
       with:
         java-version: '12.x'
