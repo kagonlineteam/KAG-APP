@@ -80,13 +80,13 @@ class API {
   /// Calls setLoginCredentials in User
   ///
   Future<bool> setLoginCredentials(String username, String password) async {
-    _user.setLoginCredentials(username, password);
-    return await _user.login();
+    return await _user.setLoginCredentials(username, password);
   }
 }
 
 class _User {
   String _jwt;
+  String _refreshJWT;
 
   ///
   /// Checks if user is loggedin
@@ -94,7 +94,7 @@ class _User {
   ///
   bool isLoggedIn() {
     if (_jwt != null &&
-        getDecodedJWT()['exp'] <
+        getDecodedJWT()['exp'] >
             (new DateTime.now().millisecondsSinceEpoch / 1000)) {
       return true;
     }
@@ -103,12 +103,23 @@ class _User {
 
   ///
   /// Saves username and password
-  /// (Does not login)
+  /// Changed: Now it does login to gain a refresh token
   ///
-  void setLoginCredentials(String username, String password) async {
+  Future<bool> setLoginCredentials(String username, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("username", username);
-    prefs.setString("password", password);
+    if (password == null) {
+      prefs.setString("refresh", null);
+      return false;
+    }
+    var obj = await _APIConnection.login(
+        prefs.getString("username"), password);
+    if (obj == null) return false;
+    _jwt = obj["token"];
+    _refreshJWT = obj["refresh"];
+    prefs.setString("token", _jwt);
+    prefs.setString("refresh", _refreshJWT);
+    return true;
   }
 
   ///
@@ -120,9 +131,24 @@ class _User {
   ///
   Future<bool> login() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _jwt = await _APIConnection.getJWTFromLogin(
-        prefs.getString("username"), prefs.getString("password"));
-    if (_jwt == null) return false;
+    // Check if the saved JWT is still valid if none is cached (This has to be done because a new jwt can not be issued before the old one is expired)
+    if (_jwt == null) {
+      _jwt = await prefs.getString("token");
+      if (isLoggedIn()) return true;
+    }
+    // Load Refresh from disk if not cached
+    if (_refreshJWT == null) {
+      _refreshJWT = prefs.getString("refresh");
+      // We don't even need to try to login without refresh
+      if (_refreshJWT == null) return false;
+    }
+    var obj = await _APIConnection.refreshLogin(
+        prefs.getString("username"), _refreshJWT);
+    if (obj == null) return false;
+    _jwt = obj["token"];
+    _refreshJWT = obj["refresh"];
+    prefs.setString("token", _jwt);
+    prefs.setString("refresh", _refreshJWT);
     return true;
   }
 
@@ -173,16 +199,34 @@ class _APIConnection {
 
   ///
   /// Makes Login request.
-  /// Return JWT if successful else null
+  /// Returns an Object with token and refresh token
   ///
-  static Future<String> getJWTFromLogin(String username,
+  static Future<Map<String, String>> login(String username,
       String password) async {
     var loginBody = jsonEncode(
         {"username": username, "password": password, "client": "appclient"});
-    var response = await http.post("${API}login", body: loginBody,
+    var response = await http.post("${API}login?type=refresh", body: loginBody,
         headers: {"Content-Type": "application/json"});
     if (response.statusCode == 200) {
-      return jsonDecode(response.body)['access_token'];
+      var res = jsonDecode(response.body);
+      return {"token": res['access_token'], "refresh": res['refresh_token']};
+    }
+    return null;
+  }
+
+  ///
+  /// Makes Refresh Login request.
+  /// Returns an Object with token and refresh token
+  ///
+  static Future<Map<String, String>> refreshLogin(String username,
+      String refreshToken) async {
+    var loginBody = jsonEncode(
+        {"username": username, "refresh_token": refreshToken, "client": "appclient"});
+    var response = await http.post("${API}refresh?type=refresh", body: loginBody,
+        headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.body);
+      return {"token": res['access_token'], "refresh": res['refresh_token']};
     }
     return null;
   }
