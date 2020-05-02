@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -86,7 +88,9 @@ class NewsState extends State<News> {
               children: <Widget>[
                 article['files'] != [] ? LayoutBuilder(
                   builder: (context, constraints) {
-                    return  Container(child: Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/ ${article['files']['id']}"), width: constraints.maxWidth));
+                    return  Container(child: (kIsWeb ?
+                    Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/ ${article['files']['id']}"), width: constraints.maxWidth) :
+                    CachedNetworkImage(imageUrl: "https://apiv2.kag-langenfeld.de/files/ ${article['files']['id']}", width: constraints.maxWidth)));
                   },
                 ) : Container(),
                 Row(
