@@ -595,15 +595,15 @@ class _CacheManager {
       case APIAction.GET_GROUPS:
         return 0;
       case APIAction.GET_CALENDAR:
-        return 1000 * 60 * 60 * 24 * 3;
+        return 1000 * 60 * 2;
       case APIAction.GET_RPLAN_TODAY:
-        return 1000 * 60 * 5;
+        return 1000 * 60 * 2;
       case APIAction.GET_RPLAN_TOMORROW:
-        return 1000 * 60 * 20;
+        return 1000 * 60 * 2;
       case APIAction.GET_RPLAN_DAYAFTERTOMMOROW:
-        return 1000 * 60 * 60;
+        return 1000 * 60 * 2;
       case APIAction.GET_USER_INFO:
-        return 1000 * 60 * 60 * 24 * 7;
+        return 1000 * 60 * 2;
       case APIAction.GET_ARTICLE:
         return 0;
     }
