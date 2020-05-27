@@ -21,7 +21,7 @@ class CalendarState extends State {
   static const descriptionStyle = const TextStyle(fontSize: 15);
   int page = 0;
   List<Widget> rows = <Widget>[];
-
+  ScrollController controller = ScrollController();
 
 
   @override
@@ -43,6 +43,7 @@ class CalendarState extends State {
             child: Container(
               margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: ListView(
+                controller: controller,
                 children: rows,
               ),
             )
@@ -146,7 +147,7 @@ class CalendarState extends State {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
       for (var entry in entries) {
-        entryRows.add(await _generateRow(entry));
+          entryRows.add(await _generateRow(entry));
       }
       setState(() {
         rows = entryRows;
@@ -158,6 +159,14 @@ class CalendarState extends State {
   @override
   void initState() {
     super.initState();
+    controller.addListener(() {
+      if (controller.position.atEdge) {
+        if (controller.position.pixels != 0) {
+            page++;
+            loadEntries();
+          }
+    }
+    });
     loadEntries();
   }
 
