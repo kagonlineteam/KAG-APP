@@ -307,7 +307,7 @@ class HomeState extends State<Home> {
             ],
           ),
           onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CalendarDetail(entry))),
+              MaterialPageRoute(builder: (context) => CalendarDetail(new Termin.fromJSON(entry)))),
         ),
       ));
     });
