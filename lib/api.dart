@@ -330,24 +330,22 @@ class _APIRequest {
   }
 
   ///
-  /// Returns raw JSON calendar entries output
+  /// Returns Termin entries for Month
   ///
-  /// If start and end are null: All will be shown
-  ///
-  Future<String> getRAWCalendar(int start, int end) async {
+  Future<List<Termin>> getCalendarForMonth(int month, int year) async {
     _actionExecution(APIAction.GET_CALENDAR);
-    await _cache.init("$start-$end");
-    if (_cache.hasCache()) {
-      return _cache.getCache();
-    }
+    int start = (new DateTime(year, month, 1).millisecondsSinceEpoch / 1000) as int;
+    int end = (new DateTime(year, month + 1, 1).millisecondsSinceEpoch / 1000) as int;
     String response = await _APIConnection.getFromAPI(
         "termine",
-        start != null && end != null
-            ? {"start%5B$start%5D": "gte", "end%5B$end%5B": "lte"}
-            : null,
+        {"start": "gte-$start", "stop": "lte-$end", "view": "runtime", "limit": "100"},
         _user.getJWT());
-    _cache.setCache(response);
-    return response;
+    var jsonResponse = json.decode(response)['entities'];
+    List<Termin> entries = [];
+    for (var entity in jsonResponse) {
+      entries.add(new Termin.fromJSON(entity));
+    }
+    return entries;
   }
 
   ///
@@ -634,4 +632,29 @@ class _CacheManager {
     }
     return 0;
   }
+
+}
+
+// API Types
+
+class Termin {
+  String _title, _id;
+  int _start, _stop;
+
+  Termin(this._title, this._id, this._start, this._stop);
+
+  Termin.fromJSON(Map<dynamic, dynamic> rawJson) {
+    if (rawJson.containsKey("id")) _id = rawJson['id'];
+    if (rawJson.containsKey("title")) _title = rawJson['title'];
+    if (rawJson.containsKey("start")) _start = rawJson['start'];
+    if (rawJson.containsKey("stop")) _stop = rawJson['stop'];
+  }
+
+  int get stop => _stop;
+
+  int get start => _start;
+
+  String get id => _id;
+
+  String get title => _title;
 }
