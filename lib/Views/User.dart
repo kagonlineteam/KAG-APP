@@ -87,10 +87,10 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
       // Set Name
       if (userInfo.containsKey("stufe")) {
         // Student
-        name = userInfo['name'][0];
+        name = userInfo['firstname'];
       } else {
         // Teacher
-        name = userInfo['surname'];
+        name = userInfo['lastname'];
       }
     });
   }
