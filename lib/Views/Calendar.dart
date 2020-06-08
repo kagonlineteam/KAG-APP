@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
 import '../main.dart';
@@ -216,7 +217,7 @@ class CalendarDetailState extends State {
 
     var tagStrings  = entry['tags'];
 
-    description = Html(data: utf8.decode(base64Decode(entry['description']['body'].replaceAll('\n', ''))));
+    description = Html(data: utf8.decode(base64Decode(entry['description']['body'].replaceAll('\n', ''))), onLinkTap: launch,);
 
     List<Widget> tags = [];
 
