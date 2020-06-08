@@ -140,7 +140,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   }
 
   Future checkLogin() async {
-    if ((await KAGApp.api.getAPIRequest(APIAction.GET_USERNAME)) == null) {
+    if (!(await KAGApp.api.hasLoginCredentials())) {
       setState(() {
         tabContents = <Widget>[
           new Calendar.Calendar(),

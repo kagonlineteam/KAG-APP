@@ -53,6 +53,14 @@ class API {
   }
 
   ///
+  /// Returns if login credentials are saved
+  /// This does not check its validity
+  ///
+  Future<bool> hasLoginCredentials() async {
+    return await _user._hasLoginCredentialsSaved();
+  }
+
+  ///
   /// calls _isLogInNeeded to check if logIn is needed -> Logs in
   /// Returns APIRequest to user to allow executing method there.
   ///
@@ -191,6 +199,15 @@ class _User {
         throw Exception('Illegal base64url string!"');
     }
     return jsonDecode(utf8.decode(base64Url.decode(output)));
+  }
+
+  ///
+  /// Returns if login credentials are saved
+  /// This does not check its validity
+  ///
+  Future<bool> _hasLoginCredentialsSaved() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey("token");
   }
 }
 
@@ -336,7 +353,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI(
-        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.getJWT());
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.isLoggedIn() ? _user.getJWT() : null);
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -352,7 +369,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.getJWT());
+        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.isLoggedIn() ? _user.getJWT() : null);
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -383,7 +400,7 @@ class _APIRequest {
           "view": "runtime",
           "orderby": "asc-start"
         },
-        _user.getJWT()))['entities'];
+        _user.isLoggedIn() ? _user.getJWT() : null))['entities'];
     if (jsonResponse.length > 0) {
       String response = jsonResponse[0]['start'].toString();
       _cache.setCache(response);
@@ -486,7 +503,7 @@ class _APIRequest {
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
     params['orderby'] = "desc-changed";
 
-    String response = await _APIConnection.getFromAPI("articles", params, null);
+    String response = await _APIConnection.getFromAPI("articles", params, _user.isLoggedIn() ? _user.getJWT() : null);
     if (response != null) {
       return response;
     }
@@ -496,7 +513,7 @@ class _APIRequest {
   Future <String> getArticle(String id) async {
     _actionExecution(APIAction.GET_ARTICLE);
 
-    String response = await _APIConnection.getFromAPI("articles/$id", null, null);
+    String response = await _APIConnection.getFromAPI("articles/$id", null, _user.isLoggedIn() ? _user.getJWT() : null);
     if (response != null) {
       return response;
     }
