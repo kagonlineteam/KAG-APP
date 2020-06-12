@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../api.dart';
 import '../main.dart';
 
+
 class Calendar extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -62,7 +63,7 @@ class CalendarState extends State {
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
-                  color: Color.fromRGBO(235, 235, 235, 1), width: 2))),
+                  color: Color.fromRGBO(172, 172, 172, 1), width: 2))),
       child: GestureDetector(
         child: Row(
           children: <Widget>[

@@ -498,12 +498,14 @@ class _APIRequest {
     return null;
   }
 
-  Future <String> getArticles() async {
+  Future <String> getArticles({int page=0}) async {
     _actionExecution(APIAction.GET_ARTICLE);
     Map<String, String> params = {};
     params['view'] = "preview-with-image";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
     params['orderby'] = "desc-changed";
+    params['limit'] = 25.toString();
+    params['offset'] = (25 * page).toString();
 
     String response = await _APIConnection.getFromAPI("articles", params, _user.isLoggedIn() ? _user.getJWT() : null);
     if (response != null) {

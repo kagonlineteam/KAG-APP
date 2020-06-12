@@ -23,24 +23,39 @@ class NewsState extends State<News> {
   static const descriptionStyle = const TextStyle(fontSize: 15);
   static const subTextStyle     = const TextStyle(fontSize: 10);
   num usableWidth               = 0.0;
-
+  int page = 0;
   List<Widget> articles = [];
+  ScrollController controller = ScrollController();
+
 
   @override
   void initState() {
     super.initState();
+    controller.addListener(() {
+      if (controller.position.atEdge) {
+        if (controller.position.pixels != 0) {
+          page++;
+          _load();
+        }
+      }
+    });
     _load();
   }
 
+
+
+
   Future _load() async {
     var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    var response = await request.getArticles();
+    var response = await request.getArticles(page: page);
     if (response == null) return;
-    List<Widget> newArticles = [];
     var entries = jsonDecode(response)['entities'];
-    entries.forEach((article) => newArticles.add(_generateRow(article)));
+    var entryRows = List<Widget>.from(articles);
+    for (var entry in entries) {
+      entryRows.add(await _generateRow(entry));
+    }
     setState(() {
-      articles = newArticles;
+      articles = entryRows;
     });
   }
 
@@ -64,11 +79,15 @@ class NewsState extends State<News> {
             )
         ),
         body: SafeArea(
+
             child: GridView.count(
               childAspectRatio: 0.9,
               crossAxisCount: width > 1000 ? 3 : 1,
+              controller: controller,
               children: articles,
+
         )
+
         )
     );
   }
@@ -178,7 +197,7 @@ class ArticleDetailState extends State<ArticleDetail> {
   @override
   void initState() {
     super.initState();
-    loadArticle();
+
   }
 
   Future<void> loadArticle() async {
