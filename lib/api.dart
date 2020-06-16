@@ -117,7 +117,9 @@ class _User {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("username", username);
     if (password == null) {
-      prefs.setString("refresh", null);
+      prefs.remove("refresh");
+      prefs.remove("username");
+      prefs.remove("token");
       return false;
     }
     var obj = await _APIConnection.login(

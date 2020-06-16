@@ -21,8 +21,12 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
 
   void logout() {
     KAGApp.api.setLoginCredentials(null, null);
-    KAGApp.app.controller.animateTo(2);
-    KAGApp.app.checkLogin();
+    KAGApp.app.setLoggedOut();
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text("Logged out!"),
+        action: SnackBarAction(
+            label: 'Zurück zum Start!', onPressed: () => KAGApp.app.controller.animateTo(2))
+    ));
   }
 
   Future _load() async {

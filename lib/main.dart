@@ -139,17 +139,23 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     });
   }
 
+  void setLoggedOut() {
+    setState(() {
+      tabContents = <Widget>[
+        new Calendar.Calendar(),
+        new Login.NotLoggedIn(),
+        new Home.Home(),
+        new Login.Login(),
+        new News.News(),
+      ];
+    });
+  }
+
   Future checkLogin() async {
     if (!(await KAGApp.api.hasLoginCredentials())) {
-      setState(() {
-        tabContents = <Widget>[
-          new Calendar.Calendar(),
-          new Login.NotLoggedIn(),
-          new Home.Home(),
-          new Login.Login(),
-          new News.News(),
-        ];
-      });
+      setLoggedOut();
+    } else {
+      setLoggedIn();
     }
   }
 }
