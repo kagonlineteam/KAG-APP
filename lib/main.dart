@@ -58,7 +58,20 @@ class KAGApp extends StatefulWidget {
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   // ignore: prefer_final_fields
   static int _index = 2;
+  bool isLoading = false;
   TabController controller;
+
+  void setLoading({bool loading=true}) {
+    if (loading) {
+      setState(() {
+        isLoading = true;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -76,51 +89,58 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 5,
-      child: Scaffold(
-          body: TabBarView(
-            controller: controller,
-            children: tabContents,
-            physics: NeverScrollableScrollPhysics(),
-          ),
-          bottomNavigationBar: Container(
-            color: Color.fromRGBO(244, 244, 244, 1),
-            child: TabBar(
-              controller: controller,
-              tabs: <Widget>[
-                Tab(
-                  text: "Termine",
-                  icon: Icon(Icons.event),
-                ),
-                Tab(
-                  text: "VPlan",
-                  icon: Icon(Icons.compare_arrows),
-                ),
-                Tab(
-                  text: "Home",
-                  icon: Icon(Icons.home),
-                ),
-                Tab(
-                  text: "User",
-                  icon: Icon(Icons.person),
-                ),
-                Tab(
-                  text: "News",
-                  icon: Icon(Icons.public),
-                ),
-              ],
-              isScrollable: false,
-              labelColor: Color.fromRGBO(47, 109, 29, 1),
-              unselectedLabelColor: Colors.grey,
-              indicatorColor: Colors.transparent,
-              labelStyle: TextStyle(
-                fontSize: 10,
+    return Stack(
+      children: [
+        DefaultTabController(
+          length: 5,
+          child: Scaffold(
+              body: TabBarView(
+                controller: controller,
+                children: tabContents,
+                physics: NeverScrollableScrollPhysics(),
               ),
-            ),
-          )
-        //backgroundColor: Colors.green,
-      ),
+              bottomNavigationBar: Container(
+                color: Color.fromRGBO(244, 244, 244, 1),
+                child: TabBar(
+                  controller: controller,
+                  tabs: <Widget>[
+                    Tab(
+                      text: "Termine",
+                      icon: Icon(Icons.event),
+                    ),
+                    Tab(
+                      text: "VPlan",
+                      icon: Icon(Icons.compare_arrows),
+                    ),
+                    Tab(
+                      text: "Home",
+                      icon: Icon(Icons.home),
+                    ),
+                    Tab(
+                      text: "User",
+                      icon: Icon(Icons.person),
+                    ),
+                    Tab(
+                      text: "News",
+                      icon: Icon(Icons.public),
+                    ),
+                  ],
+                  isScrollable: false,
+                  labelColor: Color.fromRGBO(47, 109, 29, 1),
+                  unselectedLabelColor: Colors.grey,
+                  indicatorColor: Colors.transparent,
+                  labelStyle: TextStyle(
+                    fontSize: 10,
+                  ),
+                ),
+              )
+            //backgroundColor: Colors.green,
+          ),
+        ),
+        isLoading ? Center(
+          child: CircularProgressIndicator(),
+        ) : Container()
+      ],
     );
 
 
