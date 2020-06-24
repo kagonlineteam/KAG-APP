@@ -1,21 +1,22 @@
-name: main
+name: deployment
 
 on:
-  push:
-    branches:
-      - 'master'
+  release:
+    types:
+       - created
 
 jobs:
-  build:
+  androidAndWeb:
     runs-on: ubuntu-latest
 
     steps:
+    # Setup Enviroment
     - uses: actions/checkout@v1
     - name: Generate Version Code
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
-        export VC=$(curl https://api.github.com/repos/kagonlineteam/kag-app/releases -H "Authorization: Bearer $GH_TOKEN" | grep -c '"author": {' | awk '{$0=$1+1}1')
+        export VC=$(curl https://api.github.com/repos/kagonlineteam/kag-app/releases -H "Authorization: Bearer $GH_TOKEN" | grep -c '"author": {'
         sed -i.bak -e 's/. #VC/'"$VC"'/' pubspec.yaml
     - uses: actions/setup-java@v1
       with:
@@ -24,28 +25,28 @@ jobs:
       with:
         channel: 'beta'
     - run: flutter pub get
+    # Build a signed Android AAB and APK
     - id: android-key
       name: Extract Android key file
       uses: timheuer/base64-to-file@v1.0.3
       with:
         fileName: 'key.jks'
         encodedString: ${{ secrets.KEY_JKS }}
-    - name: build-android
+    - name: build android
       run: cp $KEY_LOCATION android/key.jks && flutter build apk --release && flutter build appbundle --release
       env:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         KEY_LOCATION: ${{ steps.android-key.outputs.filePath }}
+    # Build web Data
+    - name: build-web
+      run: flutter config --enable-web && flutter build web
+    # Add the built APK to Action
     - uses: actions/upload-artifact@v1
       with:
         name: android-release-apk
-        path: build/app/outputs/apk/release/app-release.apk 
-    - uses: actions/upload-artifact@v1
-      with:
-        name: android-release-bundle
-        path: build/app/outputs/bundle/release/app-release.aab
-    - name: build-web
-      run: flutter config --enable-web && flutter build web
+        path: build/app/outputs/apk/release/app-release.apk
+    # Deploy Web by Copying the Files to Production
     - name: deploy web
       uses: appleboy/scp-action@master
       with:
@@ -56,4 +57,19 @@ jobs:
         source: 'build/web/*'
         target: '/var/www/app/'
         rm: true
+    # Deploy Android via Fastlane
+    - id: google-key
+      name: Extract Google key file
+      uses: timheuer/base64-to-file@v1.0.3
+      with:
+        fileName: 'googleaccount.json'
+        encodedString: ${{ secrets.GOOGLE_ACCOUNT }}
+    - name: copy fastlane files
+      run: cp $GOOGLE_LOCATION android/googleaccount.json
+      env:
+        GOOGLE_LOCATION: ${{ steps.google-key.outputs.filePath }}
+    - uses: maierj/fastlane-action@v1.4.0
+      with:
+        lane: 'beta'
+        subdirectory: 'android'
       
