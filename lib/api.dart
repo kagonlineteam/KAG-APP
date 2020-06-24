@@ -7,6 +7,8 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'main.dart';
+
 enum APIAction {
   GET_USERNAME,
   GET_GROUPS,
@@ -266,9 +268,12 @@ class _APIConnection {
         query += "$name=$value";
       });
     }
-    return (await http.get("$API$path$query",
+    KAGApp.app.setLoading();
+    var request =  (await http.get("$API$path$query",
         headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
         .body;
+    KAGApp.app.setLoading(loading: false);
+    return request;
   }
 }
 
