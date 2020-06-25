@@ -1,0 +1,8 @@
+app_identifier("de.kag-langenfeld.KAG-App") # The bundle identifier of your app
+apple_id("webmaster@kag-langenfeld.de") # Your Apple email address
+
+itc_team_id("120019819") # App Store Connect Team ID
+team_id("2ALL6296J6") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

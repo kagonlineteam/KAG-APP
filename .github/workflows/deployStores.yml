@@ -1,6 +1,9 @@
 name: deployStores
 
 on:
+  push:
+    branches:
+      - master
   release:
     types:
        - created
@@ -61,4 +64,41 @@ jobs:
       with:
         lane: 'beta'
         subdirectory: 'android'
-      
+  ios:
+    runs-on: macOS-latest
+
+    steps:
+      # Setup Enviroment
+      - uses: actions/checkout@v1
+      - name: Generate Version Code
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          export VC=$(curl https://api.github.com/repos/kagonlineteam/kag-app/releases -H "Authorization: Bearer $GH_TOKEN" | grep -c '"author": {')
+          sed -i.bak -e 's/. #VC/'"$VC"'/' pubspec.yaml
+      - uses: subosito/flutter-action@v1.1.1
+        with:
+          channel: 'beta'
+      - run: flutter pub get
+      # Build
+      - run: flutter build ios --no-codesign
+      # Get SSH Key used for Match Repo
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+            key: ${{ secrets.FASTLANE_MATCH_SSH }}
+            known_hosts: ${{ secrets.GH_SSH_KNOWN_HOST }}
+      # Deploy with Fastlane
+      - name: Setup ruby
+        uses: ruby/setup-ruby@v1
+        with:
+            ruby-version: 2.7.2
+            bundler-cache: true
+      - uses: maierj/fastlane-action@v1.4.0
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+            FASTLANE_USER: ${{ secrets.APPLE_ACCOUNT }}
+            FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        with:
+          lane: 'beta'
+          subdirectory: 'ios'
