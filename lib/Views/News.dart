@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,10 +17,7 @@ class News extends StatefulWidget {
 }
 
 class NewsState extends State<News> {
-  static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle       = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
-  static const descriptionStyle = const TextStyle(fontSize: 15);
-  static const subTextStyle     = const TextStyle(fontSize: 10);
+  static const titleStyle       = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5);
   num usableWidth               = 0.0;
   int page = 0;
   List<Widget> articles = [];
@@ -62,8 +58,6 @@ class NewsState extends State<News> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    usableWidth = width - 22; //With image: 132
 
     return Scaffold(
         appBar: AppBar(
@@ -80,13 +74,17 @@ class NewsState extends State<News> {
         ),
         body: SafeArea(
 
-            child: GridView.count(
-              childAspectRatio: 0.9,
-              crossAxisCount: width > 1000 ? 3 : 1,
+            child: ListView(
               controller: controller,
-              children: articles,
+              children: [
+                Align(
+                  alignment: AlignmentDirectional.topCenter,
+                  child: Wrap(
+                    children: articles,
+                  ),
+                )],
 
-        )
+            )
 
         )
     );
@@ -94,64 +92,59 @@ class NewsState extends State<News> {
 
   Widget _generateRow(article) {
     var title = article['title'] == null ? "" : article['title'];
-    var descriptionText = article['preview'] == null ? "" : article['preview'];
 
     return
       Container(
+        width: 400,
         margin: EdgeInsets.all(20),
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          child: GestureDetector(
-            child: Column(
-              children: <Widget>[
-                article['files'] != [] ? LayoutBuilder(
-                  builder: (context, constraints) {
-                    return  Container(child: (kIsWeb ?
-                    Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/ ${article['files']['id']}"), width: constraints.maxWidth) :
-                    CachedNetworkImage(imageUrl: "https://apiv2.kag-langenfeld.de/files/ ${article['files']['id']}", width: constraints.maxWidth)));
-                  },
-                ) : Container(),
-                Row(
-                  children: <Widget>[
-                    /*Container(
-                color: Color.fromRGBO(200, 200, 200, 1),
-                margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                width: 100,
-                height: 100,
-              ),*/
-                    Expanded(
-                      child: Container(
-                        width: usableWidth,
-                        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              child: Text(title, style: titleStyle),
-                              alignment: Alignment.topLeft,
-                              height: 60,
-                            ),
-                            descriptionText != "" ? Container(
-                              child: Text(descriptionText,
-                                  style: descriptionStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 3),
-                              alignment: Alignment.topLeft,
-                              height: 55,
-                            ) : Container()
-                          ],
-                        ),
+          elevation: 1,
+          child: InkWell(
+            child: Stack(
+              children: [
+                article['files'] != [] ? Align(
+                    alignment: Alignment.bottomCenter,
+                    child: new Container(
+                      height: 230,
+                      decoration: new BoxDecoration(
+                          image: new DecorationImage(
+                              fit: BoxFit.fitWidth,
+                              alignment: FractionalOffset.center,
+                              image: CachedNetworkImageProvider("https://apiv2.kag-langenfeld.de/files/${article['files']['id']}")
+                          )
                       ),
                     )
-                  ],
-                )
+                ) : Container(),
+                Positioned.fill(child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color.fromRGBO(47, 47, 47, 0), Color.fromRGBO(47, 47, 47, 0.3),  Color.fromRGBO(47, 47, 47, 0.6), Color.fromRGBO(47, 47, 47, 0.8)],
+                          ),
+                        ),
+                        padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                        child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                            child: Text(title, style: titleStyle, textAlign: TextAlign.left)
+                        )
+                    ),
+                  ),
+                ))
+
               ],
             ),
+            splashColor: Color.fromRGBO(47, 109, 29, 1),
             onTap: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ArticleDetail(article['id']))),
           ),
-          margin: EdgeInsets.fromLTRB(0, 5, 0, 3),
         ),
       );
   }
