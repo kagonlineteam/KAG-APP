@@ -197,7 +197,7 @@ class ArticleDetailState extends State<ArticleDetail> {
   @override
   void initState() {
     super.initState();
-
+    loadArticle();
   }
 
   Future<void> loadArticle() async {
