@@ -1,4 +1,4 @@
-name: deployment
+name: deployStores
 
 on:
   release:
@@ -6,7 +6,7 @@ on:
        - created
 
 jobs:
-  androidAndWeb:
+  android:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +16,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
-        export VC=$(curl https://api.github.com/repos/kagonlineteam/kag-app/releases -H "Authorization: Bearer $GH_TOKEN" | grep -c '"author": {'
+        export VC=$(curl https://api.github.com/repos/kagonlineteam/kag-app/releases -H "Authorization: Bearer $GH_TOKEN" | grep -c '"author": {')
         sed -i.bak -e 's/. #VC/'"$VC"'/' pubspec.yaml
     - uses: actions/setup-java@v1
       with:
@@ -38,25 +38,11 @@ jobs:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         KEY_LOCATION: ${{ steps.android-key.outputs.filePath }}
-    # Build web Data
-    - name: build-web
-      run: flutter config --enable-web && flutter build web
     # Add the built APK to Action
     - uses: actions/upload-artifact@v1
       with:
         name: android-release-apk
         path: build/app/outputs/apk/release/app-release.apk
-    # Deploy Web by Copying the Files to Production
-    - name: deploy web
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.SSH_URL }}
-        username: github
-        key: ${{ secrets.SSH_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
-        source: 'build/web/*'
-        target: '/var/www/app/'
-        rm: true
     # Deploy Android via Fastlane
     - id: google-key
       name: Extract Google key file

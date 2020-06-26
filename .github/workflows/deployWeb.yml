@@ -1,0 +1,33 @@
+name: deployWeb
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Setup Enviroment
+      - uses: actions/checkout@v1
+      - uses: subosito/flutter-action@v1.1.1
+        with:
+          channel: 'beta'
+      - run: flutter pub get
+      # Build web Data
+      - name: build-web
+        run: flutter config --enable-web && flutter build web
+      - name: generate random id to not load old cach
+        run: sed -i.bak -e "s/main.dart.js/main.dart.js?random=$RANDOM/g" build/web/index.html
+      # Deploy Web by Copying the Files to Production
+      - name: deploy web
+        uses: burnett01/rsync-deployments@4.1
+        with:
+          switches: -ar --delete
+          path: build/web
+          remote_path: /var/www/app/
+          remote_host: ${{ secrets.SSH_URL }}
+          remote_user: ${{ secrets.SSH_USERNAME }}
+          remote_key: ${{ secrets.SSH_KEY }}
