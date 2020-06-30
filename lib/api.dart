@@ -429,10 +429,9 @@ class _APIRequest {
 
     if (teacher != null) {
       params[teacherType] = "eq-${Uri.encodeComponent(teacher)}";
-    } else {
-      params["orderby"] = "asc-stunde";
     }
 
+    params["orderby"] = "asc-stunde";
     params["vplan"] = "eq-$day";
     params["view"] = "canonical";
     params["limit"] = "100";

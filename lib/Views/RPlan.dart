@@ -163,17 +163,9 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     var newLessons = <Widget>[];
     int date = 0;
 
+    date = _preProcessLessonData(rplan, newLessons);
+    _preProcessLessonData(rplanTwo, newLessons);
 
-    if (rplan != null && rplan['entities'].length > 0) {
-      await rplan['entities']
-          .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      date = int.parse(rplan['entities'].first['vplan']);
-    }
-    if (rplanTwo != null && rplanTwo['entities'].length > 0) {
-      await rplanTwo['entities']
-          .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      date = int.parse(rplanTwo['entities'].first['vplan']);
-    }
     if (newLessons.isEmpty) {
       // Reset to default!
       if (action == APIAction.GET_RPLAN_TODAY) {
@@ -268,6 +260,39 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     _createDots();
   }
 
+  _preProcessLessonData(rplan, newLessons) {
+    var date = 0;
+    if (rplan != null && rplan['entities'].length > 0) {
+      var notPrint = [];
+      for (int a = 0; a < rplan['entities'].length; a++) {
+        for (int b = a + 1; b < rplan['entities'].length; b++) {
+          if (rplan['entities'][a]['v_fach'] ==
+              rplan['entities'][b]['v_fach'] &&
+              rplan['entities'][a]['v_raum'] ==
+                  rplan['entities'][b]['v_raum'] &&
+              rplan['entities'][a]['v_klasse'] ==
+                  rplan['entities'][b]['v_klasse'] &&
+              rplan['entities'][a]['art'] == rplan['entities'][b]['art'] &&
+              rplan['entities'][a]['fach'] == rplan['entities'][b]['fach'] &&
+              rplan['entities'][a]['raum'] == rplan['entities'][b]['raum'] &&
+              rplan['entities'][a]['lehrer'] ==
+                  rplan['entities'][b]['lehrer'] &&
+              rplan['entities'][a]['v_lehrer'] ==
+                  rplan['entities'][b]['v_lehrer']) {
+            notPrint.add(b);
+            rplan['entities'][a]['stunde'] += "-${rplan['entities'][b]['stunde']}";
+          }
+        }
+      }
+      date = int.parse(rplan['entities'].first['vplan']);
+      for (int i = 0; i < rplan['entities'].length; i++) {
+        if (!notPrint.contains(i)) {
+          newLessons.add(_createLesson(rplan['entities'][i]));
+        }
+      }
+    }
+    return date;
+  }
 
   void _createColumn(List<Widget> lessons, String dateText, APIAction action) {
     Widget widget = GestureDetector(
