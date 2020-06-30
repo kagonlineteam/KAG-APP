@@ -21,8 +21,12 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
 
   void logout() {
     KAGApp.api.setLoginCredentials(null, null);
-    KAGApp.app.controller.animateTo(2);
-    KAGApp.app.checkLogin();
+    KAGApp.app.setLoggedOut();
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text("Logged out!"),
+        action: SnackBarAction(
+            label: 'Zurück zum Start!', onPressed: () => KAGApp.app.controller.animateTo(2))
+    ));
   }
 
   Future _load() async {
@@ -57,7 +61,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
                       maxLength: 1,
                       maxLengthEnforced: true,
                       style: new TextStyle(color: Colors.green),
-                      onChanged: (String klasse){
+                      onChanged: (klasse){
                         uKlasse = klasse;
                       }
                   ),
@@ -87,10 +91,10 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
       // Set Name
       if (userInfo.containsKey("stufe")) {
         // Student
-        name = userInfo['name'][0];
+        name = userInfo['firstname'];
       } else {
         // Teacher
-        name = userInfo['surname'];
+        name = userInfo['lastname'];
       }
     });
   }
@@ -112,7 +116,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
 
 
   @override
-  initState() {
+  void initState() {
     super.initState();
     _load();
   }

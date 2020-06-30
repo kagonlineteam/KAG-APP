@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
-import 'package:flutter/foundation.dart' as Foundation;
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'main.dart';
 
 enum APIAction {
   GET_USERNAME,
@@ -53,6 +55,14 @@ class API {
   }
 
   ///
+  /// Returns if login credentials are saved
+  /// This does not check its validity
+  ///
+  Future<bool> hasLoginCredentials() async {
+    return await _user._hasLoginCredentialsSaved();
+  }
+
+  ///
   /// calls _isLogInNeeded to check if logIn is needed -> Logs in
   /// Returns APIRequest to user to allow executing method there.
   ///
@@ -80,13 +90,13 @@ class API {
   /// Calls setLoginCredentials in User
   ///
   Future<bool> setLoginCredentials(String username, String password) async {
-    _user.setLoginCredentials(username, password);
-    return await _user.login();
+    return await _user.setLoginCredentials(username, password);
   }
 }
 
 class _User {
   String _jwt;
+  String _refreshJWT;
 
   ///
   /// Checks if user is loggedin
@@ -94,7 +104,7 @@ class _User {
   ///
   bool isLoggedIn() {
     if (_jwt != null &&
-        getDecodedJWT()['exp'] <
+        getDecodedJWT()['exp'] >
             (new DateTime.now().millisecondsSinceEpoch / 1000)) {
       return true;
     }
@@ -103,12 +113,25 @@ class _User {
 
   ///
   /// Saves username and password
-  /// (Does not login)
+  /// Changed: Now it does login to gain a refresh token
   ///
-  void setLoginCredentials(String username, String password) async {
+  Future<bool> setLoginCredentials(String username, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString("username", username);
-    prefs.setString("password", password);
+    if (password == null) {
+      prefs.remove("refresh");
+      prefs.remove("username");
+      prefs.remove("token");
+      return false;
+    }
+    var obj = await _APIConnection.login(
+        prefs.getString("username"), password);
+    if (obj == null) return false;
+    _jwt = obj["token"];
+    _refreshJWT = obj["refresh"];
+    prefs.setString("token", _jwt);
+    prefs.setString("refresh", _refreshJWT);
+    return true;
   }
 
   ///
@@ -120,9 +143,24 @@ class _User {
   ///
   Future<bool> login() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    _jwt = await _APIConnection.getJWTFromLogin(
-        prefs.getString("username"), prefs.getString("password"));
-    if (_jwt == null) return false;
+    // Check if the saved JWT is still valid if none is cached (This has to be done because a new jwt can not be issued before the old one is expired)
+    if (_jwt == null) {
+      _jwt = await prefs.getString("token");
+      if (isLoggedIn()) return true;
+    }
+    // Load Refresh from disk if not cached
+    if (_refreshJWT == null) {
+      _refreshJWT = prefs.getString("refresh");
+      // We don't even need to try to login without refresh
+      if (_refreshJWT == null) return false;
+    }
+    var obj = await _APIConnection.refreshLogin(
+        prefs.getString("username"), _refreshJWT);
+    if (obj == null) return false;
+    _jwt = obj["token"];
+    _refreshJWT = obj["refresh"];
+    prefs.setString("token", _jwt);
+    prefs.setString("refresh", _refreshJWT);
     return true;
   }
 
@@ -148,6 +186,7 @@ class _User {
     return _jwt;
   }
 
+  // ignore: type_annotate_public_apis
   getDecodedJWT() {
     String output =
     _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
@@ -165,6 +204,15 @@ class _User {
     }
     return jsonDecode(utf8.decode(base64Url.decode(output)));
   }
+
+  ///
+  /// Returns if login credentials are saved
+  /// This does not check its validity
+  ///
+  Future<bool> _hasLoginCredentialsSaved() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.containsKey("token");
+  }
 }
 
 class _APIConnection {
@@ -172,16 +220,34 @@ class _APIConnection {
 
   ///
   /// Makes Login request.
-  /// Return JWT if successful else null
+  /// Returns an Object with token and refresh token
   ///
-  static Future<String> getJWTFromLogin(String username,
+  static Future<Map<String, String>> login(String username,
       String password) async {
     var loginBody = jsonEncode(
         {"username": username, "password": password, "client": "appclient"});
-    var response = await http.post(API + "login", body: loginBody,
+    var response = await http.post("${API}login?type=refresh", body: loginBody,
         headers: {"Content-Type": "application/json"});
     if (response.statusCode == 200) {
-      return jsonDecode(response.body)['access_token'];
+      var res = jsonDecode(response.body);
+      return {"token": res['access_token'], "refresh": res['refresh_token']};
+    }
+    return null;
+  }
+
+  ///
+  /// Makes Refresh Login request.
+  /// Returns an Object with token and refresh token
+  ///
+  static Future<Map<String, String>> refreshLogin(String username,
+      String refreshToken) async {
+    var loginBody = jsonEncode(
+        {"username": username, "refresh_token": refreshToken, "client": "appclient"});
+    var response = await http.post("${API}refresh?type=refresh", body: loginBody,
+        headers: {"Content-Type": "application/json"});
+    if (response.statusCode == 200) {
+      var res = jsonDecode(response.body);
+      return {"token": res['access_token'], "refresh": res['refresh_token']};
     }
     return null;
   }
@@ -202,9 +268,12 @@ class _APIConnection {
         query += "$name=$value";
       });
     }
-    return (await http.get("${API}$path$query",
+    KAGApp.app.setLoading();
+    var request =  (await http.get("$API$path$query",
         headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
         .body;
+    KAGApp.app.setLoading(loading: false);
+    return request;
   }
 }
 
@@ -291,7 +360,7 @@ class _APIRequest {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI(
-        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.isLoggedIn() ? _user.getJWT() : null);
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -301,13 +370,13 @@ class _APIRequest {
   ///
   Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
     _actionExecution(APIAction.GET_CALENDAR);
-    await _cache.init("soon" + page.toString(),
+    await _cache.init("soon${page.toString()}",
         cacheDuration: 1000 * 60 * 60 * 24);
     if (_cache.hasCache()) {
       return jsonDecode(_cache.getCache())['entities'];
     }
     String response = await _APIConnection.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-" + (new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}, _user.getJWT());
+        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _user.isLoggedIn() ? _user.getJWT() : null);
     _cache.setCache(response);
     return jsonDecode(response)['entities'];
   }
@@ -338,7 +407,7 @@ class _APIRequest {
           "view": "runtime",
           "orderby": "asc-start"
         },
-        _user.getJWT()))['entities'];
+        _user.isLoggedIn() ? _user.getJWT() : null))['entities'];
     if (jsonResponse.length > 0) {
       String response = jsonResponse[0]['start'].toString();
       _cache.setCache(response);
@@ -352,19 +421,18 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
-  Future<String> getRAWRPlan(String teacherType, String teacher, {force: false}) async {
+  Future<String> getRAWRPlan(String teacherType, String teacher, {bool force=false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
     var day = await _getIDForRPlanDay();
     if (day == null) return null;
 
     if (teacher != null) {
-      params[teacherType] = "eq-"+Uri.encodeComponent(teacher);
-    } else {
-      params["orderby"] = "asc-stunde";
+      params[teacherType] = "eq-${Uri.encodeComponent(teacher)}";
     }
 
-    params["vplan"] = "eq-" + day;
+    params["orderby"] = "asc-stunde";
+    params["vplan"] = "eq-$day";
     params["view"] = "canonical";
     params["limit"] = "100";
 
@@ -434,14 +502,16 @@ class _APIRequest {
     return null;
   }
 
-  Future <String> getArticles() async {
+  Future <String> getArticles({int page=0}) async {
     _actionExecution(APIAction.GET_ARTICLE);
     Map<String, String> params = {};
     params['view'] = "preview-with-image";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
     params['orderby'] = "desc-changed";
+    params['limit'] = 25.toString();
+    params['offset'] = (25 * page).toString();
 
-    String response = await _APIConnection.getFromAPI("articles", params, null);
+    String response = await _APIConnection.getFromAPI("articles", params, _user.isLoggedIn() ? _user.getJWT() : null);
     if (response != null) {
       return response;
     }
@@ -451,7 +521,7 @@ class _APIRequest {
   Future <String> getArticle(String id) async {
     _actionExecution(APIAction.GET_ARTICLE);
 
-    String response = await _APIConnection.getFromAPI("articles/$id", null, null);
+    String response = await _APIConnection.getFromAPI("articles/$id", null, _user.isLoggedIn() ? _user.getJWT() : null);
     if (response != null) {
       return response;
     }
@@ -466,7 +536,7 @@ class _CacheManager {
 
   // Creating this at the loading of CacheManager to not cause weird errors with too little time left
   int time = DateTime.now().millisecondsSinceEpoch;
-  APIAction _action;
+  final APIAction _action;
   String _type;
   int _duration;
   File _file;
@@ -478,13 +548,13 @@ class _CacheManager {
   /// Type: Specific type: e.g. the date for RPlan, nextEvents for nextEvents in Calender etc.
   /// Cache Duration: If the standard Cache Duration should not be used. Eg. for Holiday Time
   Future init(String type, {int cacheDuration}) async {
-    this._type = type;
-    this._duration = cacheDuration;
+    _type = type;
+    _duration = cacheDuration;
     if (_duration == null) {
       _duration = _getDuration();
     }
     if (!kIsWeb) {
-      _file = File((await getTemporaryDirectory()).path +
+      _file = File((await getTemporaryDirectory()).path + // ignore: prefer_interpolation_to_compose_strings
           "/" +
           _action.toString() +
           "/" +
@@ -496,10 +566,10 @@ class _CacheManager {
   ///
   /// Check if Cache exists and is valid
   ///
-  bool hasCache({validate: true}) {
+  bool hasCache({bool validate=true}) {
     if (_type == null) throw Exception("Cache has not been initialized.");
     // Deactivate Cache for Debug Mode
-    if (Foundation.kDebugMode) return false;
+    if (foundation.kDebugMode) return false;
     // Do not cache in Web.
     if (kIsWeb) return false;
     if (!(_file.existsSync())) return false;
@@ -550,15 +620,15 @@ class _CacheManager {
       case APIAction.GET_GROUPS:
         return 0;
       case APIAction.GET_CALENDAR:
-        return 1000 * 60 * 60 * 24 * 3;
+        return 1000 * 60 * 2;
       case APIAction.GET_RPLAN_TODAY:
-        return 1000 * 60 * 5;
+        return 1000 * 60 * 2;
       case APIAction.GET_RPLAN_TOMORROW:
-        return 1000 * 60 * 20;
+        return 1000 * 60 * 2;
       case APIAction.GET_RPLAN_DAYAFTERTOMMOROW:
-        return 1000 * 60 * 60;
+        return 1000 * 60 * 2;
       case APIAction.GET_USER_INFO:
-        return 1000 * 60 * 60 * 24 * 7;
+        return 1000 * 60 * 2;
       case APIAction.GET_ARTICLE:
         return 0;
     }

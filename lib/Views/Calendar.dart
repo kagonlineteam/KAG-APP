@@ -3,10 +3,11 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:kag/Views/News.dart';
-import 'package:kag/api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../api.dart';
 import '../main.dart';
+
 
 class Calendar extends StatefulWidget {
   @override
@@ -19,9 +20,9 @@ class CalendarState extends State {
   static const dateStyle = const TextStyle(fontSize: 20, color: Colors.white);
   static const titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
-  var page = 0;
-  var rows = <Widget>[];
-
+  int page = 0;
+  List<Widget> rows = <Widget>[];
+  ScrollController controller = ScrollController();
 
 
   @override
@@ -43,6 +44,7 @@ class CalendarState extends State {
             child: Container(
               margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: ListView(
+                controller: controller,
                 children: rows,
               ),
             )
@@ -61,7 +63,7 @@ class CalendarState extends State {
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(
-                  color: Color.fromRGBO(235, 235, 235, 1), width: 2))),
+                  color: Color.fromRGBO(172, 172, 172, 1), width: 2))),
       child: GestureDetector(
         child: Row(
           children: <Widget>[
@@ -146,7 +148,7 @@ class CalendarState extends State {
       final entries = await entriesRequest.getCalendarEntriesSoon(page);
       var entryRows = List<Widget>.from(rows);
       for (var entry in entries) {
-        entryRows.add(await _generateRow(entry));
+          entryRows.add(await _generateRow(entry));
       }
       setState(() {
         rows = entryRows;
@@ -158,13 +160,21 @@ class CalendarState extends State {
   @override
   void initState() {
     super.initState();
+    controller.addListener(() {
+      if (controller.position.atEdge) {
+        if (controller.position.pixels != 0) {
+            page++;
+            loadEntries();
+          }
+    }
+    });
     loadEntries();
   }
 
   String getShortedLongDescription(String text) {
     if (text == null) return "";
     if (text.length > 300) {
-      return text.substring(0, 300) + "...";
+      return "${text.substring(0, 300)}...";
     } else {
       return text;
     }
@@ -179,8 +189,8 @@ class CalendarState extends State {
 }
 
 class CalendarDetail extends StatefulWidget {
-  CalendarDetail(this.entry);
-  final entry;
+  CalendarDetail(final this.entry);
+  final Map<String, dynamic> entry;
 
   @override
   State<StatefulWidget> createState() {
@@ -192,7 +202,7 @@ class CalendarDetail extends StatefulWidget {
 class CalendarDetailState extends State {
   CalendarDetailState(this.entry);
 
-  final entry;
+  Map<String, dynamic> entry;
   static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
   static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const tagStyle         = const TextStyle(fontSize: 16, color: Colors.white);
@@ -217,7 +227,7 @@ class CalendarDetailState extends State {
 
     var tagStrings  = entry['tags'];
 
-    description = Html(data: utf8.decode(base64Decode(entry['description']['body'].replaceAll('\n', ''))));
+    description = Html(data: utf8.decode(base64Decode(entry['description']['body'].replaceAll('\n', ''))), onLinkTap: launch,);
 
     List<Widget> tags = [];
 

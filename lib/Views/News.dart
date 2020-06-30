@@ -1,8 +1,9 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
 import '../main.dart';
@@ -16,37 +17,47 @@ class News extends StatefulWidget {
 }
 
 class NewsState extends State<News> {
-  static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle       = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
-  static const descriptionStyle = const TextStyle(fontSize: 15);
-  static const subTextStyle     = const TextStyle(fontSize: 10);
-  var usableWidth               = 0.0;
-
+  static const titleStyle       = const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: 0.5);
+  num usableWidth               = 0.0;
+  int page = 0;
   List<Widget> articles = [];
+  ScrollController controller = ScrollController();
+
 
   @override
   void initState() {
     super.initState();
+    controller.addListener(() {
+      if (controller.position.atEdge) {
+        if (controller.position.pixels != 0) {
+          page++;
+          _load();
+        }
+      }
+    });
     _load();
   }
 
+
+
+
   Future _load() async {
     var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    var response = await request.getArticles();
+    var response = await request.getArticles(page: page);
     if (response == null) return;
-    List<Widget> newArticles = [];
     var entries = jsonDecode(response)['entities'];
-    entries.forEach((article) => newArticles.add(_generateRow(article)));
+    var entryRows = List<Widget>.from(articles);
+    for (var entry in entries) {
+      entryRows.add(await _generateRow(entry));
+    }
     setState(() {
-      articles = newArticles;
+      articles = entryRows;
     });
   }
 
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    usableWidth = width - 22; //With image: 132
 
     return Scaffold(
         appBar: AppBar(
@@ -62,73 +73,78 @@ class NewsState extends State<News> {
             )
         ),
         body: SafeArea(
-            child: GridView.count(
-              childAspectRatio: 0.9,
-              crossAxisCount: width > 1000 ? 3 : 1,
-              children: articles,
-        )
+
+            child: ListView(
+              controller: controller,
+              children: [
+                Align(
+                  alignment: AlignmentDirectional.topCenter,
+                  child: Wrap(
+                    children: articles,
+                  ),
+                )],
+
+            )
+
         )
     );
   }
 
   Widget _generateRow(article) {
     var title = article['title'] == null ? "" : article['title'];
-    var descriptionText = article['preview'] == null ? "" : article['preview'];
 
     return
       Container(
+        width: 400,
         margin: EdgeInsets.all(20),
         child: Card(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          child: GestureDetector(
-            child: Column(
-              children: <Widget>[
-                article['files'] != [] ? LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return  Container(child: Image(image: NetworkImage("https://apiv2.kag-langenfeld.de/files/" + article['files']['id']), width: constraints.maxWidth));
-                  },
-                ) : Container(),
-                Row(
-                  children: <Widget>[
-                    /*Container(
-                color: Color.fromRGBO(200, 200, 200, 1),
-                margin: EdgeInsets.fromLTRB(10, 10, 0, 10),
-                width: 100,
-                height: 100,
-              ),*/
-                    Expanded(
-                      child: Container(
-                        width: usableWidth,
-                        margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                        child: Column(
-                          children: <Widget>[
-                            Container(
-                              child: Text(title, style: titleStyle),
-                              alignment: Alignment.topLeft,
-                              height: 60,
-                            ),
-                            descriptionText != "" ? Container(
-                              child: Text(descriptionText,
-                                  style: descriptionStyle,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 3),
-                              alignment: Alignment.topLeft,
-                              height: 55,
-                            ) : Container()
-                          ],
-                        ),
+          elevation: 1,
+          child: InkWell(
+            child: Stack(
+              children: [
+                article['files'] != [] ? Align(
+                    alignment: Alignment.bottomCenter,
+                    child: new Container(
+                      height: 230,
+                      decoration: new BoxDecoration(
+                          image: new DecorationImage(
+                              fit: BoxFit.fitWidth,
+                              alignment: FractionalOffset.center,
+                              image: CachedNetworkImageProvider("https://apiv2.kag-langenfeld.de/files/${article['files']['id']}")
+                          )
                       ),
                     )
-                  ],
-                )
+                ) : Container(),
+                Positioned.fill(child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Color.fromRGBO(47, 47, 47, 0), Color.fromRGBO(47, 47, 47, 0.3),  Color.fromRGBO(47, 47, 47, 0.6), Color.fromRGBO(47, 47, 47, 0.8)],
+                          ),
+                        ),
+                        padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
+                        child: Padding(
+                            padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                            child: Text(title, style: titleStyle, textAlign: TextAlign.left)
+                        )
+                    ),
+                  ),
+                ))
+
               ],
             ),
+            splashColor: Color.fromRGBO(47, 109, 29, 1),
             onTap: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ArticleDetail(article['id']))),
           ),
-          margin: EdgeInsets.fromLTRB(0, 5, 0, 3),
         ),
       );
   }
@@ -184,7 +200,7 @@ class ArticleDetailState extends State<ArticleDetail> {
     var articleContent = jsonDecode(response)['entity'];
     var htmlData = """<h1>${articleContent['title']}</h1><br><br> ${decodeBase64(articleContent['body'])}""";
     setState(() {
-      content = Html(data: htmlData);
+      content = Html(data: htmlData, onLinkTap: launch,);
     });
   }
 

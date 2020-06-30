@@ -137,7 +137,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     }
   }
 
-  Future _loadRPlan({force: false}) async{
+  Future _loadRPlan({force=false}) async{
     _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
     // I know that this should not be down Client Side. But here it is. Limiting students to see the plan of übermorgen on weekends
     if (canSeeAllDays || DateTime.now().weekday < 6) {
@@ -148,11 +148,11 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     }
   }
 
-  Future _processDay(APIAction action, {force: false}) async {
+  Future _processDay(APIAction action, {force=false}) async {
     var rplanRequest = await KAGApp.api.getAPIRequest(action);
     if (rplanRequest == null) return;
 
-    var rplanTwo;
+    var rplanTwo; // ignore: prefer_typing_uninitialized_variables
 
     var rplanText = await rplanRequest.getRAWRPlan("lehrer", searchedTeacher, force: force);
     var rplan = rplanText != null ? jsonDecode(rplanText) : null;
@@ -163,17 +163,9 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     var newLessons = <Widget>[];
     int date = 0;
 
+    date = _preProcessLessonData(rplan, newLessons);
+    _preProcessLessonData(rplanTwo, newLessons);
 
-    if (rplan != null && rplan['entities'].length > 0) {
-      await rplan['entities']
-          .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      date = int.parse(rplan['entities'].first['vplan']);
-    }
-    if (rplanTwo != null && rplanTwo['entities'].length > 0) {
-      await rplanTwo['entities']
-          .forEach((lesson) => newLessons.add(_createLesson(lesson)));
-      date = int.parse(rplanTwo['entities'].first['vplan']);
-    }
     if (newLessons.isEmpty) {
       // Reset to default!
       if (action == APIAction.GET_RPLAN_TODAY) {
@@ -268,6 +260,39 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     _createDots();
   }
 
+  _preProcessLessonData(rplan, newLessons) {
+    var date = 0;
+    if (rplan != null && rplan['entities'].length > 0) {
+      var notPrint = [];
+      for (int a = 0; a < rplan['entities'].length; a++) {
+        for (int b = a + 1; b < rplan['entities'].length; b++) {
+          if (rplan['entities'][a]['v_fach'] ==
+              rplan['entities'][b]['v_fach'] &&
+              rplan['entities'][a]['v_raum'] ==
+                  rplan['entities'][b]['v_raum'] &&
+              rplan['entities'][a]['v_klasse'] ==
+                  rplan['entities'][b]['v_klasse'] &&
+              rplan['entities'][a]['art'] == rplan['entities'][b]['art'] &&
+              rplan['entities'][a]['fach'] == rplan['entities'][b]['fach'] &&
+              rplan['entities'][a]['raum'] == rplan['entities'][b]['raum'] &&
+              rplan['entities'][a]['lehrer'] ==
+                  rplan['entities'][b]['lehrer'] &&
+              rplan['entities'][a]['v_lehrer'] ==
+                  rplan['entities'][b]['v_lehrer']) {
+            notPrint.add(b);
+            rplan['entities'][a]['stunde'] += "-${rplan['entities'][b]['stunde']}";
+          }
+        }
+      }
+      date = int.parse(rplan['entities'].first['vplan']);
+      for (int i = 0; i < rplan['entities'].length; i++) {
+        if (!notPrint.contains(i)) {
+          newLessons.add(_createLesson(rplan['entities'][i]));
+        }
+      }
+    }
+    return date;
+  }
 
   void _createColumn(List<Widget> lessons, String dateText, APIAction action) {
     Widget widget = GestureDetector(
@@ -308,7 +333,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
     if (canSeeAllDays) {
       if (lesson['lehrer'] != null) bottomLeftText = lesson['lehrer'];
-      if (lesson['v_lehrer'] != null) bottomLeftText += " -> " + lesson['v_lehrer'];
+      if (lesson['v_lehrer'] != null) bottomLeftText += " -> ${lesson['v_lehrer']}";
       bottomCenterText = "";
       bottomRightText = lesson['art'];
     }
@@ -481,7 +506,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 class RPlanDetail extends StatelessWidget {
   RPlanDetail(this.lesson);
 
-  final lesson;
+  Map<String, dynamic> lesson;
   double width;
   static const TextStyle textStyle  = const TextStyle(fontSize: 25);
   static const TextStyle titleStyle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
