@@ -489,9 +489,7 @@ class _APIRequest {
   /// Returns the ID for the current Action of the RPlan
   /// This ID is needed to filter for days
   ///
-  /// This Method does not use a cache, because it is only called if the RPlan Method does not contain a cache.
-  ///
-  Future <String> _getIDForRPlanDay() async {
+  Future<String> _getIDForRPlanDay() async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
 
     int days;
@@ -507,13 +505,9 @@ class _APIRequest {
     DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
     // Adding the days
     int time = requestTime.millisecondsSinceEpoch ~/ 1000 + (days * 86400);
-    String response = await _APIConnection.getFromAPI(
-        "vplans", {"date": "gte-$time","orderby": "asc-date"}, _user.getJWT());
-    List<dynamic> jsonResponse = jsonDecode(response)["entities"];
-    if (jsonResponse != null && jsonResponse.length > 0) {
-      return jsonResponse[0]['id'];
-    }
-    return null;
+    var plans = jsonDecode(await _APIConnection.getFromAPI("vplans", {"date": "eq-${time.toString()}"}, _user.getJWT()));
+    if (plans['entities'].length == 0) return null;
+    return plans['entities'][0]['id'];
   }
 
   ///
