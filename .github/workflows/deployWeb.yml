@@ -3,7 +3,7 @@ name: deployWeb
 on:
   push:
     branches:
-      - master
+      - stable
 
 jobs:
   deploy:
