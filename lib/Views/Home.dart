@@ -5,6 +5,7 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flip_panel/flip_panel.dart';
 import '../api.dart';
 
 import '../main.dart';
@@ -28,10 +29,11 @@ class HomeState extends State<Home> {
   static bool isTablet;
 
 
-  String weeks = "", days = "", hours = "", minutes = "", seconds = "";
+  int weeks = 0, days = 0, hours = 0, minutes = 0, seconds = 0;
   String date = "", title = "", description = "";
   int holiday;
   Timer timer;
+  double countDownSize = 25;
 
   List<Container> calendarEntries = [];
   List<dynamic> rawCalendarEntries = [];
@@ -43,7 +45,7 @@ class HomeState extends State<Home> {
     eventDate            = TextStyle(fontSize: isTablet ? 30 : 25, color: Colors.white);
     eventTitle           = TextStyle(fontSize: isTablet ? 30 : 25);
     titleStyle           = TextStyle(fontSize: (isTablet ? 33 : 28), fontWeight: FontWeight.bold);
-    TextStyle countdownNumbers = new TextStyle(fontSize: isTablet ? 35 : 25);
+    countDownSize = isTablet ? 50 : 35;
     rebuildCalendarEntries();
 
     var screenSizeWidth = MediaQuery.of(context).size.width;
@@ -73,51 +75,11 @@ class HomeState extends State<Home> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              Container(
-                margin:EdgeInsets.fromLTRB(10, 0, screenSizeWidth / 50, 0),
-                child: Column(
-                  children: <Widget>[
-                    Text(weeks, style: countdownNumbers),
-                    Text("w")
-                  ],
-                ),
-              ),
-              Container(
-                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
-                child: Column(
-                  children: <Widget>[
-                    Text(days, style: countdownNumbers),
-                    Text("d")
-                  ],
-                ),
-              ),
-              Container(
-                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
-                child: Column(
-                  children: <Widget>[
-                    Text(hours, style: countdownNumbers),
-                    Text("h")
-                  ],
-                ),
-              ),
-              Container(
-                margin:EdgeInsets.fromLTRB(0, 0, screenSizeWidth / 50, 0),
-                child: Column(
-                  children: <Widget>[
-                    Text(minutes, style: countdownNumbers),
-                    Text("m")
-                  ],
-                ),
-              ),
-              Container(
-                margin:EdgeInsets.fromLTRB(0, 0, 10, 0),
-                child: Column(
-                  children: <Widget>[
-                    Text(seconds, style: countdownNumbers),
-                    Text("s")
-                  ],
-                ),
-              ),
+              _createFerienCountdownNumber(screenSizeWidth, "w"),
+              _createFerienCountdownNumber(screenSizeWidth, "d"),
+              _createFerienCountdownNumber(screenSizeWidth, "h"),
+              _createFerienCountdownNumber(screenSizeWidth, "m"),
+              _createFerienCountdownNumber(screenSizeWidth, "s"),
             ],
           ),
           margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
@@ -204,6 +166,51 @@ class HomeState extends State<Home> {
     );
   }
 
+  Widget _createFerienCountdownNumber(double screenSizeWidth, String char, ) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(10, 0, screenSizeWidth / 50, 0),
+      child: Column(
+        children: <Widget>[
+          kIsWeb ?
+            Text(_getFerienValue(char).toString(), style: TextStyle(fontSize: countDownSize),)
+          : FlipPanel<int>.stream(
+            itemStream: Stream.periodic(
+                Duration(milliseconds: 1000), (count) => _getFerienValue(char)),
+            itemBuilder: (context, value) => Container(
+              color: Colors.black,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Text(
+                betterNumber(value),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: countDownSize,
+                    color: Colors.white),
+              ),
+            ),
+            initValue: _getFerienValue(char),
+          ),
+          Text(char)
+        ],
+      ),
+    );
+  }
+
+  int _getFerienValue(char) {
+    switch (char) {
+      case "w":
+        return weeks;
+      case "d":
+        return days;
+      case "h":
+        return hours;
+      case "m":
+        return minutes;
+      case "s":
+        return seconds;
+    }
+    return 0;
+  }
+
   void rebuildCalendarEntries() {
     calendarEntries = [];
     rawCalendarEntries.forEach((entry) {
@@ -234,11 +241,11 @@ class HomeState extends State<Home> {
     if (holiday == null) return;
     if (holiday <= new DateTime.now().millisecondsSinceEpoch ~/ 1000) {
       setState(() {
-        this.weeks = betterNumber(0);
-        this.days = betterNumber(0);
-        this.hours = betterNumber(0);
-        this.minutes = betterNumber(0);
-        this.seconds = betterNumber(0);
+        this.weeks = 0;
+        this.days = 0;
+        this.hours = 0;
+        this.minutes = 0;
+        this.seconds = 0;
       });
       return;
     }
@@ -264,11 +271,11 @@ class HomeState extends State<Home> {
     if (minutes < 0) minutes = 0;
     if (seconds < 0) seconds = 0;
     setState(() {
-      this.weeks = betterNumber(weeks);
-      this.days = betterNumber(days);
-      this.hours = betterNumber(hours);
-      this.minutes = betterNumber(minutes);
-      this.seconds = betterNumber(seconds);
+      this.weeks = weeks;
+      this.days = days;
+      this.hours = hours;
+      this.minutes = minutes;
+      this.seconds = seconds;
     });
   }
 
