@@ -101,7 +101,7 @@ class LoginState extends State<Login>
       padding: const EdgeInsets.only(left: 35, right: 35),
       child: Material(
         borderRadius: BorderRadius.circular(30),
-        color: Color.fromRGBO(47, 109, 29, 1),
+        color: Theme.of(context).buttonColor,
         child: MaterialButton(
             onPressed: login,
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -112,8 +112,9 @@ class LoginState extends State<Login>
       ),
     );
 
-    return Container(
-      child: Center(
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
         child: Container(
           decoration: BoxDecoration(
               image: DecorationImage(
@@ -152,11 +153,13 @@ class LoginState extends State<Login>
 class NotLoggedIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: MaterialButton(
-          color: Color.fromRGBO(47, 109, 29, 1),
-          onPressed: () => KAGApp.app.controller.animateTo(3),
-          child: Text("Bitte melde dich an!", style: const TextStyle(color: Colors.white))),
+    return Scaffold(
+      appBar: AppBar(),
+      body: Center(
+        child: RaisedButton(
+            onPressed: () => KAGApp.app.controller.animateTo(3),
+            child: Text("Bitte melde dich an!", style: TextStyle(color: Colors.white))),
+      ),
     );
   }
 }

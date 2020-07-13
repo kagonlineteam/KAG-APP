@@ -33,9 +33,8 @@ class _CalendarState extends State<Calendar> {
                 style: TextStyle(fontSize: 30)),
             alignment: Alignment.centerLeft,
           ),
-           MaterialButton(
+           RaisedButton(
               onPressed: _switchView,
-              color: Color.fromRGBO(0, 82, 1, 1),
               child: Container(
                 child: Text(showList ? "Als Kalender" : "Als Liste",
                     style: TextStyle(fontSize: 15, color: Colors.white)),
