@@ -10,13 +10,62 @@ import '../main.dart';
 
 
 class Calendar extends StatefulWidget {
+
   @override
   State<StatefulWidget> createState() {
-    return _TableCalendar();
+    return _CalendarState();
   }
 }
 
-class CalendarState extends State {
+class _CalendarState extends State<Calendar> {
+  bool showList = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+            title: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Align(
+            child: Text("Termine",
+                style: TextStyle(fontSize: 30)),
+            alignment: Alignment.centerLeft,
+          ),
+           MaterialButton(
+              onPressed: _switchView,
+              color: Color.fromRGBO(0, 82, 1, 1),
+              child: Container(
+                child: Text(showList ? "Als Kalender" : "Als Liste",
+                    style: TextStyle(fontSize: 15, color: Colors.white)),
+                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                alignment: Alignment.centerRight,
+              )
+          ),
+        ],
+      ),
+      alignment: Alignment.centerLeft,
+    )),
+    body: showList ? _ListCalendar() : _TableCalendar(),);
+  }
+
+  void _switchView() {
+    setState(() {
+      showList = !showList;
+    });
+  }
+
+}
+
+class _ListCalendar extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _ListCalendarState();
+  }
+}
+
+class _ListCalendarState extends State {
   static const dateStyle = const TextStyle(fontSize: 20, color: Colors.white);
   static const titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
   static const descriptionStyle = const TextStyle(fontSize: 15);
@@ -27,20 +76,8 @@ class CalendarState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Align(
-            child: Text(
-              "Termine",
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 2),
-            ),
-            alignment: Alignment.centerLeft,
-          )
-        ),
-        body: SafeArea(
+    return SafeArea(
+          child: GestureDetector(
             child: Container(
               margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: ListView(
@@ -51,8 +88,6 @@ class CalendarState extends State {
         )
     );
   }
-
-
 
   Future<Widget> _generateRow(entry) async {
     var descriptionText = entry['description'] != null ? entry['description']['preview'] : "";
@@ -358,7 +393,14 @@ class CalendarDetailState extends State {
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class _TableCalendar extends State<Calendar> with TickerProviderStateMixin{
+class _TableCalendar extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return _TableCalendarState();
+  }
+}
+
+class _TableCalendarState extends State<_TableCalendar> with TickerProviderStateMixin{
 
   Map<DateTime, List> _events;
   List<String> _loadedMonths;
@@ -433,16 +475,7 @@ class _TableCalendar extends State<Calendar> with TickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Kalender",
-        style: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 2)
-        ),
-      ),
-      body: Column(
+    return  Column(
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           _buildTableCalendar(),
@@ -450,7 +483,6 @@ class _TableCalendar extends State<Calendar> with TickerProviderStateMixin{
           const SizedBox(height: 8.0),
           Expanded(child: _buildEventList()),
         ],
-      ),
     );
   }
 
