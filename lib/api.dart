@@ -97,6 +97,9 @@ class API {
 class _User {
   String _jwt;
   String _refreshJWT;
+  // The boolean does indicate if a login process is currently happening
+  // This prevents erros with using a refresh token twice. See _User.login()
+  bool _loggingIn = false;
 
   ///
   /// Checks if user is loggedin
@@ -142,6 +145,14 @@ class _User {
   /// Returns if login successful
   ///
   Future<bool> login() async {
+    if (_loggingIn) {
+      // If already logging in wait till this is over and just return if that succeeded
+      // This may not be the cleanest way to implement that but because it is
+      // asynchronous this should be OK
+      await Future.doWhile(() => _loggingIn);
+      return isLoggedIn();
+    }
+    _loggingIn = true;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Check if the saved JWT is still valid if none is cached (This has to be done because a new jwt can not be issued before the old one is expired)
     if (_jwt == null) {
@@ -161,6 +172,7 @@ class _User {
     _refreshJWT = obj["refresh"];
     prefs.setString("token", _jwt);
     prefs.setString("refresh", _refreshJWT);
+    _loggingIn = false;
     return true;
   }
 
