@@ -167,9 +167,7 @@ class HomeState extends State<Home> {
   }
 
   Widget _createFerienCountdownNumber(double screenSizeWidth, String char, ) {
-    return Container(
-      margin: EdgeInsets.fromLTRB(10, 0, screenSizeWidth / 50, 0),
-      child: Column(
+    return Column(
         children: <Widget>[
           kIsWeb ?
             Text(_getFerienValue(char).toString(), style: TextStyle(fontSize: countDownSize),)
@@ -177,21 +175,24 @@ class HomeState extends State<Home> {
             itemStream: Stream.periodic(
                 Duration(milliseconds: 1000), (count) => _getFerienValue(char)),
             itemBuilder: (context, value) => Container(
-              color: Colors.black,
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                betterNumber(value),
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: countDownSize,
-                    color: Colors.white),
+              // The width has to be calculated like this to fit on mobile and tablet. But there should be a better way I do not know.
+                width: MediaQuery.of(context).size.longestSide > 1000 ? MediaQuery.of(context).size.width / 3 / 7 : MediaQuery.of(context).size.width / 7,
+                color: Colors.black,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Text(
+                    betterNumber(value),
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
+                ),
               ),
-            ),
             initValue: _getFerienValue(char),
           ),
           Text(char)
         ],
-      ),
     );
   }
 
