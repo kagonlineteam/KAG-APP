@@ -77,14 +77,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
                     style: TextStyle(fontSize: 30)),
                 alignment: Alignment.centerLeft,
               ),
-              canSeeAllDays ? GestureDetector(
-                  onTap: _showFilterOptions,
-                  child: Container(
-                    child: Text("Filtern",
-                        style: TextStyle(fontSize: 15, color: Colors.white)),
-                    margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    alignment: Alignment.centerRight,
-                  )
+              canSeeAllDays ? RaisedButton(
+                  onPressed: _showFilterOptions,
+                  child:  Text("Filtern",
+                  style: TextStyle(fontSize: 15, color: Colors.white))
               ): Container(),
 
             ],

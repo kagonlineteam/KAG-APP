@@ -135,17 +135,12 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
                         style: TextStyle(fontSize: 30)),
                     alignment: Alignment.centerLeft,
                   ),
-                  GestureDetector(
-                      onTap: logout,
-                      child: Container(
-                        child: Text("Abmelden",
-                            style: TextStyle(
-                                fontSize: 15, color: Colors.white)),
-                        margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        alignment: Alignment.centerRight,
-                      )
+                  RaisedButton(
+                    onPressed: logout,
+                    child: Text("Abmelden",
+                        style: TextStyle(
+                            fontSize: 15, color: Colors.white)),
                   )
-
                 ],
               ),
             ),
