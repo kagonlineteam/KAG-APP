@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api.dart';
@@ -22,6 +23,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
   void logout() {
     KAGApp.api.setLoginCredentials(null, null);
     KAGApp.app.setLoggedOut();
+    SharedPreferences.getInstance().then((instance) => instance.remove("klasse"));
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text("Logged out!"),
         action: SnackBarAction(
@@ -51,40 +53,46 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
                 userInfo['stufe'] == "7" ||
                 userInfo['stufe'] == "8" ||
                 userInfo['stufe'] == "9" ) ) {
-          setState(() {
-            timeTable = Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Container(
-                  child: TextField(
-                      enabled: true,
-                      maxLength: 1,
-                      maxLengthEnforced: true,
-                      style: new TextStyle(color: Colors.green),
-                      onChanged: (klasse){
-                        uKlasse = klasse;
-                      }
+          var preferences = await SharedPreferences.getInstance();
+          if (preferences.containsKey("klasse")) {
+            plan += preferences.getString("klasse");
+            _setTimeTable();
+          } else {
+            setState(() {
+              timeTable = Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    child: TextField(
+                        enabled: true,
+                        maxLength: 1,
+                        maxLengthEnforced: true,
+                        style: new TextStyle(color: Theme.of(context).accentColor),
+                        onChanged: (klasse){
+                          uKlasse = klasse;
+                        }
+                    ),
+                    padding: EdgeInsets.fromLTRB(100, 100, 100, 10),
                   ),
-                  padding: EdgeInsets.all(100),
-                ),
-                Container(
-                  width: double.infinity,
-                  child: FlatButton(
-                      child: Text("Bestätigen"),
-                      color: Colors.green,
-                      onPressed: (){
-                        plan += uKlasse;
-                        _setTimeTable();
-                      }
+                  Container(
+                    child: Text("Bitte gebe den Buchstaben deinen Klasse ein (z.B.: a)"),
                   ),
-                  padding: EdgeInsets.all(50),
-                ),
-                Container(
-                  child: Text("Bitte gebe den Buchstaben deinen Klasse ein (z.B.: a)"),
-                )
-              ],
-            );
-          });
+                  Container(
+                    width: double.infinity,
+                    child: RaisedButton(
+                        child: Text("Bestätigen", style: TextStyle(color: Colors.white),),
+                        onPressed: () {
+                          plan += uKlasse;
+                          _setTimeTable();
+                          SharedPreferences.getInstance().then((instance) => instance.setString("klasse", uKlasse));
+                        }
+                    ),
+                    padding: EdgeInsets.all(50),
+                  )
+                ],
+              );
+            });
+          }
         }
 
 
