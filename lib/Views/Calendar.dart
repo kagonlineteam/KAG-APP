@@ -275,6 +275,9 @@ class CalendarDetailState extends State {
     DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(
         entry.stop * 1000);
 
+    // Support both. One less second and one less millisecond
+    bool allDay = dateObjectTwo.difference(dateObjectOne).inMilliseconds == (1000 * 60 * 60 * 24) - 1 || dateObjectTwo.difference(dateObjectOne).inMilliseconds == (1000 * 60 * 60 * 24) - 1000;
+
     var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(
         dateObjectOne.month)}.";
     var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(
@@ -321,10 +324,10 @@ class CalendarDetailState extends State {
                                   dateOne,
                                   style: dateStyle,
                                 ),
-                                Text(
+                                !allDay ? Text(
                                   timeOne,
                                   style: timeStyle,
-                                )
+                                ) : Container()
                               ],
                             ),
                             margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
@@ -339,10 +342,10 @@ class CalendarDetailState extends State {
                                   dateTwo,
                                   style: dateStyle,
                                 ),
-                                Text(
+                                !allDay ? Text(
                                   timeTwo,
                                   style: timeStyle,
-                                )
+                                ) : Container()
                               ],
                             ),
                             margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
