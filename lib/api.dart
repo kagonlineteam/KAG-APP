@@ -152,22 +152,33 @@ class _User {
       await Future.doWhile(() => _loggingIn);
       return isLoggedIn();
     }
+    // This variable has to be set at any return.
+    //TODO This does not seem like the perfect way to do this
     _loggingIn = true;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // Check if the saved JWT is still valid if none is cached (This has to be done because a new jwt can not be issued before the old one is expired)
     if (_jwt == null) {
       _jwt = await prefs.getString("token");
-      if (isLoggedIn()) return true;
+      if (isLoggedIn()) {
+        _loggingIn = false;
+        return true;
+      }
     }
     // Load Refresh from disk if not cached
     if (_refreshJWT == null) {
       _refreshJWT = prefs.getString("refresh");
       // We don't even need to try to login without refresh
-      if (_refreshJWT == null) return false;
+      if (_refreshJWT == null) {
+        _loggingIn = false;
+        return false;
+      }
     }
     var obj = await _APIConnection.refreshLogin(
         prefs.getString("username"), _refreshJWT);
-    if (obj == null) return false;
+    if (obj == null) {
+      _loggingIn = false;
+      return false;
+    }
     _jwt = obj["token"];
     _refreshJWT = obj["refresh"];
     prefs.setString("token", _jwt);
