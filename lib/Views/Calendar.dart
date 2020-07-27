@@ -490,7 +490,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
 
   Widget _buildTableCalendar() {
     return TableCalendar(
-
+      locale: 'de_DE',
       calendarController: _calendarController,
       events: _events,
       startingDayOfWeek: StartingDayOfWeek.monday,

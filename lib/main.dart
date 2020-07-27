@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:intl/date_symbol_data_local.dart';
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
@@ -15,6 +16,9 @@ import 'push_notifications.dart';
 
 
 void main() {
+  // This does not need to be waited on as we do not use it in HomeScreen
+  initializeDateFormatting("de_DE");
+
   runApp(
     MaterialApp(
       title: 'KAG',
