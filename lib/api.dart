@@ -149,7 +149,10 @@ class _User {
       // If already logging in wait till this is over and just return if that succeeded
       // This may not be the cleanest way to implement that but because it is
       // asynchronous this should be OK
-      await Future.doWhile(() => _loggingIn);
+      await Future.doWhile(() async {
+        await Future.delayed(Duration(seconds: 1));
+        return _loggingIn;
+      });
       return isLoggedIn();
     }
     // This variable has to be set at any return.
