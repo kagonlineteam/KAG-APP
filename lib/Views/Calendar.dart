@@ -414,12 +414,15 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
     _loadedMonths.add(month.toString() + year.toString());
     var req = await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR);
     List<Termin> termine = await req.getCalendarForMonth(month, year);
-    for (int i = 0; i < termine.length; i++) {
-      var newDate = DateTime.fromMillisecondsSinceEpoch(termine[i].start*1000);
-      if (_events[termine[i]] == null) {
+    for (var termin in termine) {
+      var terminDate = DateTime.fromMillisecondsSinceEpoch(termin.start*1000);
+      var date = new DateTime(terminDate.year, terminDate.month, terminDate.day);
+      if (_events[date] == null) {
         setState(() {
-          _events[newDate] = [termine[i]];
+          _events[date] = [termin];
         });
+      } else {
+        _events[date].add(termin);
       }
     }
   }
