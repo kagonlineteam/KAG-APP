@@ -281,7 +281,6 @@ class HomeState extends State<Home> {
   }
 
   Future<void> addCalendarEntry(String date, String title, Map<String, dynamic> entry) async {
-
     setState(() {
       calendarEntries.add(Container(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
@@ -292,6 +291,7 @@ class HomeState extends State<Home> {
                 children: <Widget>[
                   Container(
                     margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    width: 80,
                     child: Material(
                       child: RichText(
                         text: TextSpan(children: <TextSpan>[
@@ -307,7 +307,7 @@ class HomeState extends State<Home> {
                     child: Text(
                       title,
                       style: eventTitle,
-                      overflow: TextOverflow.ellipsis,
+                      overflow: TextOverflow.fade,
                     ),
                   )
                 ],
@@ -340,14 +340,5 @@ class HomeState extends State<Home> {
       return "0${number.toString()}";
     }
     return number.toString();
-  }
-
-  String getShortedDescription(String text) {
-    if (text == null) return "";
-    if (text.length > 50) {
-      return "${text.substring(0, 50)}...";
-    } else {
-      return text;
-    }
   }
 }
