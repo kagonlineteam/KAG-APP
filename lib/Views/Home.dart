@@ -44,8 +44,8 @@ class HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     isTablet = MediaQuery.of(context).size.longestSide > 1000;
-    eventDate            = TextStyle(fontSize: isTablet ? 30 : 25, color: Colors.white);
-    eventTitle           = TextStyle(fontSize: isTablet ? 30 : 25);
+    eventDate            = TextStyle(fontSize: 30, color: Colors.white);
+    eventTitle           = TextStyle(fontSize: 30);
     titleStyle           = TextStyle(fontSize: (isTablet ? 33 : 28), fontWeight: FontWeight.bold);
     countDownSize = isTablet ? 50 : 35;
     rebuildCalendarEntries();
@@ -294,15 +294,17 @@ class HomeState extends State<Home> {
     setState(() {
       calendarEntries.add(Container(
         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+        height: 36,
         child: GestureDetector(
-          child: Column(
+          child: Row(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    width: 80,
-                    child: Material(
+              Container(
+                width: 90,
+                height: 36,
+                margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                child: Material(
+                  child: Align(
+                    child: Container(
                       child: RichText(
                         text: TextSpan(children: <TextSpan>[
                           TextSpan(text: " ", style: TextStyle(fontSize: 25)),
@@ -310,18 +312,20 @@ class HomeState extends State<Home> {
                           TextSpan(text: " ", style: TextStyle(fontSize: 25))
                         ]), //Text(" " + date + " ", style: eventDate)
                       ),
-                      color: Color.fromRGBO(47, 109, 29, 1),
                     ),
+                    alignment: Alignment.center,
                   ),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: eventTitle,
-                      overflow: TextOverflow.fade,
-                    ),
-                  )
-                ],
+                  color: Color.fromRGBO(47, 109, 29, 1),
+                ),
               ),
+              Expanded(
+                child: Text(
+                  title.replaceAll("", "\u{200B}"), // This is a very weird workaround from Flutter Issue #18761 //TODO change when issue gets resolved
+                  style: eventTitle,
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
             ],
           ),
           onTap: () => Navigator.push(context,
