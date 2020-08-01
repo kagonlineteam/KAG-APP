@@ -463,6 +463,8 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
       if (_selectedEvents.length == 1) {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => CalendarDetail(_selectedEvents[0])));
+      } else {
+        _showEventListModal();
       }
     });
   }
@@ -484,9 +486,6 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
         mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           _buildTableCalendar(),
-          const SizedBox(height: 8.0),
-          const SizedBox(height: 8.0),
-          Expanded(child: _buildEventList()),
         ],
     );
   }
@@ -511,7 +510,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
           return [new Container(), new Container()];
         },
       ),
-      rowHeight: MediaQuery.of(context).size.height / 8,
+      rowHeight: (MediaQuery.of(context).size.height - 150) / 7,
       calendarStyle: CalendarStyle(
         selectedColor: Color.fromRGBO(255, 145, 10, 1),
         outsideDaysVisible: false,
@@ -534,7 +533,6 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
     return Container(
       margin: const EdgeInsets.all(4.0),
       padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-      color: selected ? Color.fromRGBO(255, 145, 10, 1) : null,
       child: Column(
         children: [
           Text(
@@ -561,22 +559,28 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
 
 
   // Builds the list shown after a day has been selected
-  Widget _buildEventList() {
-    return ListView(
-      children: _selectedEvents
-          .map((event) => Container(
-        decoration: BoxDecoration(
-          border: Border.all(width: 0.8),
-          borderRadius: BorderRadius.circular(12.0),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-        child: ListTile(
-          title: Text(event.title),
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => CalendarDetail(event))),
-        ),
-      ))
-          .toList(),
-    );
+  void _showEventListModal() {
+    showCupertinoDialog(context: context, builder: (context) {
+      return CupertinoAlertDialog(
+        title: Text("Es gibt mehrere Termine"),
+        content: Column(
+          children: _selectedEvents
+              .map((event) => Container(
+            decoration: BoxDecoration(
+              border: Border.all(width: 0.8),
+              borderRadius: BorderRadius.circular(12.0),
+              color: Theme.of(context).buttonColor
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            child: MaterialButton(
+              child: Text(event.title, style: TextStyle(color: Colors.white),),
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CalendarDetail(event))),
+            ),
+          ))
+              .toList(),
+        )
+      );
+    }, barrierDismissible: true);
   }
 }
