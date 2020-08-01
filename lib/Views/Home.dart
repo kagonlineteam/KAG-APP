@@ -6,9 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flip_panel/flip_panel.dart';
-import '../api.dart';
 
+import '../api.dart';
+import '../components/menu.dart';
 import '../main.dart';
+
 import 'Calendar.dart';
 
 class Home extends StatefulWidget {
@@ -145,17 +147,25 @@ class HomeState extends State<Home> {
         child: AppBar(
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(100),
-            child: Align(
-              child: Container(
-                  margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                  child: Image(
-                    image: AssetImage("assets/logo.png"),
-                    height: 100,
-                    fit: BoxFit.fitWidth,
-                  )
-              ),
-              alignment: Alignment.topCenter,
-            ),
+            child:
+                Stack(
+                  children: [
+                    Container(
+                        margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                        alignment: Alignment.topCenter,
+                        child: Image(
+                          image: AssetImage("assets/logo.png"),
+                          height: 100,
+                          width: MediaQuery.of(context).size.width,
+                        )
+                    ),
+                    Positioned(
+                      bottom: 2,
+                      right: 2,
+                      child: ExtraOptionsMenu(),
+                    )
+                  ],
+                ),
           ),
         ),
         preferredSize: Size.fromHeight(110),
