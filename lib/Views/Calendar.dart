@@ -560,7 +560,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
 
   // Builds the list shown after a day has been selected
   void _showEventListModal() {
-    showCupertinoDialog(context: context, builder: (context) {
+    showDialog(context: context, builder: (context) {
       return CupertinoAlertDialog(
         title: Text("Es gibt mehrere Termine"),
         content: Column(
@@ -581,6 +581,6 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
               .toList(),
         )
       );
-    }, barrierDismissible: true);
+    });
   }
 }
