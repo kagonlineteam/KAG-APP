@@ -61,7 +61,10 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       return new Scaffold(
         appBar: AppBar(),
         body: Center(
-          child: Text("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!"),
+          child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Text("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!"),
+          ),
         ),
       );
     }
