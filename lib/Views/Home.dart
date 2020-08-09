@@ -123,6 +123,7 @@ class HomeState extends State<Home> {
       ],
     );
 
+    var marginWidth = screenSizeWidth > 1200 ? screenSizeWidth / 3.5 : screenSizeWidth / 6;
     if (isTablet)  {
       content = Container(
         child: Container(
@@ -131,7 +132,7 @@ class HomeState extends State<Home> {
             margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
           ),
           color: Colors.white,
-          margin: EdgeInsets.fromLTRB(screenSizeWidth / 3, screenSizeHeight / 10, screenSizeWidth / 3, screenSizeHeight / 6),
+          margin: EdgeInsets.fromLTRB(marginWidth, screenSizeHeight / 10, marginWidth, screenSizeHeight / 6),
         ),
         decoration: BoxDecoration(
           image: DecorationImage(
