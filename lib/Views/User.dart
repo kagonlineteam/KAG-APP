@@ -27,7 +27,7 @@ class UserState extends State<User> with AutomaticKeepAliveClientMixin<User> {
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Text("Logged out!"),
         action: SnackBarAction(
-            label: 'Zurück zum Start!', onPressed: () => KAGApp.app.controller.animateTo(2))
+            label: 'Zurück zum Start!', onPressed: () => KAGApp.app.goToPage(2))
     ));
   }
 

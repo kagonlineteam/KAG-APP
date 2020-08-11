@@ -1,8 +1,8 @@
 // ignore_for_file: library_prefixes
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:universal_html/html.dart' as browser;
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
@@ -50,7 +50,8 @@ class KAGApp extends StatefulWidget {
 
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   // ignore: prefer_final_fields
-  static int _index = 2;
+  static final _isVPlanApp = kIsWeb && browser.window.location.host.startsWith("vplan.");
+  static int _index = _isVPlanApp ? 0 : 2; // ignore: prefer_final_fields
   bool isLoading = false;
   TabController controller;
 
@@ -69,7 +70,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(initialIndex: KAGAppState._index, length: 5, vsync: this);
+    controller = TabController(initialIndex: KAGAppState._index, length: _isVPlanApp ? 2 : 5, vsync: this);
     setLoggedIn();
     checkLogin();
   }
@@ -85,7 +86,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     return Stack(
       children: [
         DefaultTabController(
-          length: 5,
+          length: _isVPlanApp ? 2 : 5,
           child: Scaffold(
               body: TabBarView(
                 controller: controller,
@@ -96,7 +97,20 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
                 color: Color.fromRGBO(244, 244, 244, 1),
                 child: TabBar(
                   controller: controller,
-                  tabs: <Widget>[
+                  tabs: _isVPlanApp ?
+                  // VPlan App
+                  <Widget>[
+                    Tab(
+                      text: "VPlan",
+                      icon: Icon(Icons.compare_arrows),
+                    ),
+                    Tab(
+                      text: "SPlan",
+                      icon: Icon(Icons.person),
+                    ),
+                  ] :
+                  // Normal App
+                  <Widget>[
                     Tab(
                       text: "Termine",
                       icon: Icon(Icons.event),
@@ -141,27 +155,45 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   List<Widget> tabContents;
 
   Future setLoggedIn() async {
-    setState(() {
-      tabContents = <Widget>[
-        new Calendar.Calendar(),
-        new RPlan.RPlan(),
-        new Home.Home(),
-        new User.User(),
-        new News.News(),
-      ];
-    });
+    if (_isVPlanApp) {
+      setState(() {
+        tabContents = <Widget>[
+          new RPlan.RPlan(),
+          new User.User(),
+        ];
+      });
+    } else {
+      setState(() {
+        tabContents = <Widget>[
+          new Calendar.Calendar(),
+          new RPlan.RPlan(),
+          new Home.Home(),
+          new User.User(),
+          new News.News(),
+        ];
+      });
+    }
   }
 
   void setLoggedOut() {
-    setState(() {
-      tabContents = <Widget>[
-        new Calendar.Calendar(),
-        new Login.NotLoggedIn(),
-        new Home.Home(),
-        new Login.Login(),
-        new News.News(),
-      ];
-    });
+    if (_isVPlanApp) {
+      setState(() {
+        tabContents = <Widget>[
+          new Login.NotLoggedIn(),
+          new Login.Login(),
+        ];
+      });
+    } else {
+      setState(() {
+        tabContents = <Widget>[
+          new Calendar.Calendar(),
+          new Login.NotLoggedIn(),
+          new Home.Home(),
+          new Login.Login(),
+          new News.News(),
+        ];
+      });
+    }
   }
 
   Future checkLogin() async {
@@ -170,6 +202,12 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     } else {
       setLoggedIn();
     }
+  }
+
+  void goToPage(int page) {
+    if (page == 3 && _isVPlanApp) page = 1;
+    if (page == 2 && _isVPlanApp) page = 0;
+    controller.animateTo(page);
   }
 }
 
