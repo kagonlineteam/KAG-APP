@@ -40,9 +40,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   void initState() {
     super.initState();
     _preLoad();
-    if (canSeeRPlan) {
-      _loadRPlan();
-    }
   }
 
   @override
@@ -123,17 +120,24 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   Future _preLoad() async {
-    var groups = KAGApp.api.getAPIRequestSync(APIAction.GET_GROUPS).getGroups();
-    // Load canSeeAllDays
-    canSeeAllDays = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
-
-    canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
-
     // Load searched Teacher
     SharedPreferences preferences = await SharedPreferences.getInstance();
     if (preferences.containsKey(SP_FILTER)) {
       searchedTeacher = preferences.getString(SP_FILTER);
     }
+
+    // Load Settings
+    KAGApp.api.getAPIRequest(APIAction.GET_GROUPS).then((api) {
+      var groups = api.getGroups();
+      canSeeAllDays = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
+
+      canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
+
+      if (canSeeRPlan) {
+        _loadRPlan();
+      }
+    });
+
   }
 
   Future _loadRPlan({force=false}) async{
