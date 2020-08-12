@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import '../api.dart';
+import '../components/rplan.dart';
 import '../main.dart';
 
 class RPlan extends StatefulWidget {
@@ -134,13 +135,13 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
 
       if (canSeeRPlan) {
-        _loadRPlan();
+        loadRPlan();
       }
     });
 
   }
 
-  Future _loadRPlan({force=false}) async{
+  Future loadRPlan({bool force=false}) async{
     _processDay(APIAction.GET_RPLAN_TODAY,    force: force);
     // I know that this should not be down Client Side. But here it is. Limiting students to see the plan of übermorgen on weekends
     if (canSeeAllDays || DateTime.now().weekday < 6) {
@@ -244,7 +245,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
                   searchedTeacher = teacher.text;
                   preferences.setString(SP_FILTER, searchedTeacher);
                 }
-                _loadRPlan(force: true);
+                loadRPlan(force: true);
                 Navigator.pop(context);
               },
               child: Container(
@@ -290,7 +291,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       date = int.parse(rplan['entities'].first['vplan']);
       for (int i = 0; i < rplan['entities'].length; i++) {
         if (!notPrint.contains(i)) {
-          newLessons.add(_createLesson(rplan['entities'][i]));
+          newLessons.add(Lesson(rplan['entities'][i]));
         }
       }
     }
@@ -298,20 +299,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
   }
 
   void _createColumn(List<Widget> lessons, String dateText, APIAction action) {
-    Widget widget = GestureDetector(
-      child: RefreshIndicator(
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: ListView(
-                    children: lessons
-                ),
-              ),
-            ],
-          ),
-          onRefresh: () => _loadRPlan(force: true)
-      ),
-    );
+    DayWidget widget = DayWidget(lessons: lessons, canSeeAllDays: canSeeAllDays, rPlan: this);
 
     if (action == APIAction.GET_RPLAN_TODAY) {
       todayWidget   = widget;
@@ -323,111 +311,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
       dayAfterTomorrowWidget  = widget;
       dateTexts[2]            = dateText;
     }
-  }
-
-  Widget _createLesson(lesson) {
-    double width = MediaQuery.of(context).size.width;
-    double elementWidth = (width - 60) / 3;
-    double elementHeight = 25;
-
-    var bottomLeftText = "";
-    var bottomCenterText = lesson['art'];
-    var bottomRightText = "";
-
-    if (canSeeAllDays) {
-      if (lesson['lehrer'] != null) bottomLeftText = lesson['lehrer'];
-      if (lesson['v_lehrer'] != null) bottomLeftText += " -> ${lesson['v_lehrer']}";
-      bottomCenterText = "";
-      bottomRightText = lesson['art'];
-    }
-
-    Container c =  new Container(
-      color: Colors.white,
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-      child: GestureDetector(
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
-          child: Container(
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        color: Color.fromRGBO(235, 235, 235, 1), width: 2)
-                )
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                  width: elementWidth,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        width: elementWidth,
-                        height: elementHeight,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(lesson['klasse'],
-                            style: bigText, textAlign: TextAlign.left),
-                      ),
-                      Container(
-                        width: elementWidth,
-                        height: elementHeight,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(bottomLeftText,
-                            style: normalText, textAlign: TextAlign.left),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: elementWidth,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        width: elementWidth,
-                        height: elementHeight,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(lesson['fach'],
-                            style: bigText, textAlign: TextAlign.center),
-                      ),
-                      Container(
-                        width: elementWidth,
-                        height: elementHeight,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(bottomCenterText,
-                            style: normalText, textAlign: TextAlign.center),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: elementWidth,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                        width: elementWidth,
-                        height: elementHeight,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(lesson['stunde'],
-                            style: bigText, textAlign: TextAlign.right),
-                      ),
-                      Container(
-                        width: elementWidth,
-                        height: elementHeight,
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                        child: Text(bottomRightText,
-                            style: normalText, textAlign: TextAlign.right),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          )),
-    );
-    return c;
   }
 
   void _createTabBar() {
