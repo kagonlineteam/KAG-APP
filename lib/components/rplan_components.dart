@@ -4,30 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Views/RPlan.dart';
 
-class TabBarDay extends StatelessWidget {
-  TabBarDay(this.day);
-
-  final DayWidget day;
-
-  @override
-  Widget build(BuildContext context) {
-    return RefreshIndicator(
-        child: Scaffold(
-          appBar: AppBar(centerTitle: true, title: Text("VPlan | ${day.date}"),),
-          body: Expanded(
-            child: ListView(
-              children: [
-                day
-              ],
-            ),
-          ),
-        ),
-        onRefresh: () => RPlan.of(context).loadRPlan()
-    );
-  }
-
-}
-
 class ListViewDay extends StatelessWidget {
   ListViewDay(this.day);
 
@@ -358,5 +334,4 @@ class TeacherKuerzelButton extends StatelessWidget {
           ],
         ));
   }
-  
 }

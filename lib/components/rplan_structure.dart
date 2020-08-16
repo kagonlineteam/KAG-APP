@@ -7,10 +7,23 @@ class RPlanTabBar extends StatelessWidget {
   final List<DayWidget> _days;
 
   Widget build(BuildContext context) {
-    return DefaultTabController(length: _days.length, child: TabBarView(
-      children: _days.map((day) => TabBarDay(day)).toList(),
-    ));
+    return DefaultTabController(
+        length: _days.length,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("VPlan"),
+            actions: [TeacherKuerzelButton()],
+            bottom: TabBar(
+              tabs: _days.map((day) => Tab(text: day.date,)).toList(),
+            ),
+          ),
+          body: TabBarView(
+            children: _days.map((day) => ListView(children: [day],)).toList(),
+          ),
+        )
+    );
   }
+
 }
 
 class RPlanListView extends StatelessWidget {
