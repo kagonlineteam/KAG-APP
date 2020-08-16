@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import '../api.dart';
-import '../components/rplan.dart';
+import '../components/helpers.dart';
+import '../components/rplan_components.dart';
+import '../components/rplan_structure.dart';
 import '../main.dart';
-
+/**
 class RPlan extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -16,8 +20,6 @@ class RPlan extends StatefulWidget {
 
 class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>, TickerProviderStateMixin {
 
-  DefaultTabController tabBar = DefaultTabController(length: 0, child: Text(""),);
-  TabController controller;
   String searchedTeacher;
 
   bool canSeeAllDays      = false;
@@ -45,7 +47,6 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -54,70 +55,20 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
-    if (!canSeeRPlan) {
-      return new Scaffold(
-        appBar: AppBar(),
-        body: Center(
-          child: Padding(
-            padding: EdgeInsets.all(10),
-            child: Text("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!"),
-          ),
-        ),
-      );
-    }
-
-    return new Scaffold(
-      appBar: AppBar(
-        title: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Align(
-                child: Text(renderedDateTexts[selectedDay],
-                    style: TextStyle(fontSize: 30)),
-                alignment: Alignment.centerLeft,
-              ),
-              canSeeAllDays ? RaisedButton(
-                  onPressed: _showFilterOptions,
-                  child:  Text("Filtern",
-                  style: TextStyle(fontSize: 15, color: Colors.white))
-              ): Container(),
-
-            ],
-          ),
-        ),
-
-      ),
-      body: Stack(
-        children: <Widget>[
-          tabBar,
-          Align(
-            child: Container(
-              child: Container(
-                child: Align(
-                  child: Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: <Widget>[points],
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                ),
-                width: 40,
-                height: 30,
-                decoration: BoxDecoration(
-                    color: Color.fromRGBO(255, 255, 255, 1),
-                    borderRadius: BorderRadius.all(Radius.circular(5))),
-
-              ),
-              padding: EdgeInsets.fromLTRB(0, 0, 0, 5),
+    return FutureBuilder(builder: (context, snapshot) {
+      if (!canSeeRPlan) {
+        return new Scaffold(
+          appBar: AppBar(),
+          body: Center(
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: Text("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!"),
             ),
-            alignment: Alignment.bottomCenter,
-          )
-        ],
-      ),
-    );
+          ),
+        );
+      }
+      return Container();
+    }, future: _preLoad(),);
   }
 
   Future _preLoad() async {
@@ -198,7 +149,8 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     });
   }
 
-  Future _showFilterOptions() async {
+  static Future _showFilterOptions(BuildContext context) async {
+    String searchedTeacher;
     TextEditingController teacher = TextEditingController(text: searchedTeacher);
     showDialog(
         context: context,
@@ -245,7 +197,7 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
                   searchedTeacher = teacher.text;
                   preferences.setString(SP_FILTER, searchedTeacher);
                 }
-                loadRPlan(force: true);
+                //loadRPlan(force: true);
                 Navigator.pop(context);
               },
               child: Container(
@@ -386,6 +338,156 @@ class RPlanState extends State<RPlan> with AutomaticKeepAliveClientMixin<RPlan>,
     });
   }
 
+}
+**/
+
+class RPlanViewWidget extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() {
+    return RPlan();
+  }
+}
+
+class RPlan extends State {
+
+  bool hasTeacherPlan = false, canSeeRPlan = false;
+
+  int _loaded = -1; // -1 = Not Preloaded, 0 = Not loaded, 3 = loaded
+
+  String searchedTeacher;
+
+  List<DayWidget> _days;
+
+  static const SP_FILTER  = "RPlan_filter";
+
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loaded == 3) {
+      if (_days.length == 0) {
+        return ErrorTextHolder(hasTeacherPlan ?
+        // Teacher Error Message
+        "Es gibt keine Vertretungen für Sie. Sollte dies unerwartet sein und Sie einen Filter konfiguriert haben, so überprüfen sie bitte das eingebene Kürzel." :
+        // Student Error Message
+        "Es gibt keine Vertretung für dich.", barActions: [TeacherKuerzelButton()], barTitle: "VPlan");
+      }
+
+      //TODO choose the right one automatically
+      return RPlanListView(_days);
+    } else if (_loaded == 0 && !canSeeRPlan) {
+      return ErrorTextHolder("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!", barTitle: "VPlan");
+    } else {
+      return ErrorTextHolder("Der Vertretungsplan wird noch geladen.", barTitle: "VPlan");
+    }
+  }
+  
+  static RPlan of(BuildContext context) {
+    return context.findAncestorStateOfType<RPlan>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadOptions().then((value) {
+      if (canSeeRPlan) {
+        _loaded = 0;
+        loadRPlan();
+      }
+    });
+  }
+
+  Future _loadOptions() async {
+    // Load searched Teacher
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    if (preferences.containsKey(SP_FILTER)) {
+      searchedTeacher = preferences.getString(SP_FILTER);
+    }
+
+    // Load Settings
+    var api = await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS);
+    var groups = api.getGroups();
+    hasTeacherPlan = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
+
+    canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
+  }
+
+  // Get Data
+  Future loadRPlan() async{
+    _days = [];
+    await _loadDay(APIAction.GET_RPLAN_TODAY);
+    await _loadDay(APIAction.GET_RPLAN_TOMORROW);
+    if (hasTeacherPlan) {
+      _loadDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW);
+    } else {
+      _loaded++;
+    }
+  }
+
+  Future _loadDay(APIAction action) async {
+    var rplanRequest = await KAGApp.api.getAPIRequest(action);
+    if (rplanRequest == null) return;
+
+    var rplanTwo; // ignore: prefer_typing_uninitialized_variables
+
+    var rplanText = await rplanRequest.getRAWRPlan("lehrer", searchedTeacher);
+    var rplan = rplanText != null ? jsonDecode(rplanText) : null;
+    if (searchedTeacher != null) {
+      var rplanTwoText = await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher);
+      rplanTwo = rplanTwoText != null ? jsonDecode(rplanTwoText) : null;
+    }
+    var newLessons = <Widget>[];
+
+    newLessons.addAll(_preProcessLessonData(rplan));
+    newLessons.addAll(_preProcessLessonData(rplanTwo));
+
+    setState(() {
+      //TODO ASYNCHRONOUS!
+      if (!newLessons.isEmpty) _days.add(DayWidget(lessons: newLessons, date: _getRPlanDate(rplan, rplanTwo)));
+      // Only set to loaded if really loaded
+      if (_loaded != 3) _loaded++;
+    });
+  }
+
+  // TODO This method should definitely not be needed anymore after a rework of api.dart
+  static String _getRPlanDate(rplan, rplanTwo) {
+    int seconds = rplan['entities'].length > 0 ? int.parse(rplan['entities'][0]['vplan']) : int.parse(rplanTwo['entities'][0]['vplan']);
+    var datetime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+    return "${datetime.day}.${datetime.month}";
+  }
+
+  List<Lesson> _preProcessLessonData(rplan) {
+    List<Lesson> newLessons = [];
+    if (rplan != null && rplan['entities'].length > 0) {
+      var notPrint = [];
+      for (int a = 0; a < rplan['entities'].length; a++) {
+        for (int b = a + 1; b < rplan['entities'].length; b++) {
+          if (rplan['entities'][a]['v_fach'] ==
+              rplan['entities'][b]['v_fach'] &&
+              rplan['entities'][a]['v_raum'] ==
+                  rplan['entities'][b]['v_raum'] &&
+              rplan['entities'][a]['v_klasse'] ==
+                  rplan['entities'][b]['v_klasse'] &&
+              rplan['entities'][a]['art'] == rplan['entities'][b]['art'] &&
+              rplan['entities'][a]['fach'] == rplan['entities'][b]['fach'] &&
+              rplan['entities'][a]['raum'] == rplan['entities'][b]['raum'] &&
+              rplan['entities'][a]['lehrer'] ==
+                  rplan['entities'][b]['lehrer'] &&
+              rplan['entities'][a]['v_lehrer'] ==
+                  rplan['entities'][b]['v_lehrer']) {
+            notPrint.add(b);
+            rplan['entities'][a]['stunde'] += "-${rplan['entities'][b]['stunde']}";
+          }
+        }
+      }
+      for (int i = 0; i < rplan['entities'].length; i++) {
+        if (!notPrint.contains(i)) {
+          newLessons.add(Lesson(rplan['entities'][i]));
+        }
+      }
+    }
+    return newLessons;
+  }
 }
 
 // ignore: must_be_immutable

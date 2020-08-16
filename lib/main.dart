@@ -158,7 +158,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     if (_isVPlanApp) {
       setState(() {
         tabContents = <Widget>[
-          new RPlan.RPlan(),
+          new RPlan.RPlanViewWidget(),
           new User.User(),
         ];
       });
@@ -166,7 +166,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
       setState(() {
         tabContents = <Widget>[
           new Calendar.Calendar(),
-          new RPlan.RPlan(),
+          new RPlan.RPlanViewWidget(),
           new Home.Home(),
           new User.User(),
           new News.News(),

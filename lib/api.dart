@@ -459,6 +459,7 @@ class _APIRequest {
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
+  /// TODO When returning the object in future it should return the calculated date, too
   Future<String> getRAWRPlan(String teacherType, String teacher, {bool force=false}) async {
     _actionExecution(APIAction.GET_RPLAN_TODAY);
     Map<String, String> params = {};
