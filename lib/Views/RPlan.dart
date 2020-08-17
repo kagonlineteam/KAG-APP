@@ -37,7 +37,7 @@ class RPlan extends State {
         // Student Error Message
         "Es gibt keine Vertretung für dich.", barActions: [TeacherKuerzelButton()], barTitle: "VPlan");
       }
-      bool isDesktop = !(Theme.of(context).platform == TargetPlatform.android || Theme.of(context).platform == TargetPlatform.iOS);
+      bool isDesktop = kIsWeb && MediaQuery.of(context).size.width > 1000;
       return isDesktop ? RPlanListView(_days) : RPlanTabBar(_days);
     } else if (_loaded == 0 && !canSeeRPlan) {
       return ErrorTextHolder("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!", barTitle: "VPlan");
