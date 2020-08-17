@@ -1,37 +1,48 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Views/RPlan.dart';
 
-class DayWidget extends StatelessWidget {
+class ListViewDay extends StatelessWidget {
+  ListViewDay(this.day);
 
-  final List<dynamic> lessons;
-  final bool canSeeAllDays;
-  final RPlanState rPlan;
-
-  const DayWidget({Key key, this.lessons, this.canSeeAllDays, this.rPlan}) : super(key: key);
+  final DayWidget day;
 
   @override
   Widget build(BuildContext context) {
-    var row = <Widget>[
-      Expanded(
-        child: ListView(
-            children: lessons
-        ),
-      ),
-    ];
+    return Column(
+      children: [
+        Text(day.date, style: TextStyle(fontSize: 40)),
+        day
+      ],
+    );
+  }
+}
+
+class DayWidget extends StatelessWidget {
+
+  final List<Widget> lessons;
+  final DateTime dateTime;
+
+  const DayWidget({Key key, this.lessons, this.dateTime}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var row = new List<Widget>.from(lessons);
 
     if (MediaQuery.of(context).size.width >= 1000) {
-      row.insert(0, DataTableHeader(isFullPlan: canSeeAllDays));
+      row.insert(0, DataTableHeader(isFullPlan: RPlan.of(context).hasTeacherPlan));
     }
 
-   return GestureDetector(
-      child: RefreshIndicator(
-          child: Column(
-            children: row,
-          ),
-          onRefresh: () => rPlan.loadRPlan(force: true)
-      ),
-    );
+   return Column(
+     children: row,
+   );
+  }
+
+  // ignore: type_annotate_public_apis
+  get date {
+    return "${dateTime.day}.${dateTime.month}";
   }
 
 }
@@ -40,6 +51,9 @@ class Lesson extends StatelessWidget {
   Lesson(this.lesson);
 
   final dynamic lesson;
+
+  static const normalText   = TextStyle(fontSize: 20);
+  static const bigText      = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
@@ -86,14 +100,14 @@ class Lesson extends StatelessWidget {
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(lesson['klasse'],
-                              style: RPlanState.bigText, textAlign: TextAlign.left),
+                              style: bigText, textAlign: TextAlign.left),
                         ),
                         Container(
                           width: elementWidth,
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(bottomLeftText,
-                              style: RPlanState.normalText, textAlign: TextAlign.left),
+                              style: normalText, textAlign: TextAlign.left),
                         ),
                       ],
                     ),
@@ -108,14 +122,14 @@ class Lesson extends StatelessWidget {
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(lesson['fach'],
-                              style: RPlanState.bigText, textAlign: TextAlign.center),
+                              style: bigText, textAlign: TextAlign.center),
                         ),
                         Container(
                           width: elementWidth,
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(bottomCenterText,
-                              style: RPlanState.normalText, textAlign: TextAlign.center),
+                              style: normalText, textAlign: TextAlign.center),
                         ),
                       ],
                     ),
@@ -130,14 +144,14 @@ class Lesson extends StatelessWidget {
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(lesson['stunde'],
-                              style: RPlanState.bigText, textAlign: TextAlign.right),
+                              style: bigText, textAlign: TextAlign.right),
                         ),
                         Container(
                           width: elementWidth,
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
                           child: Text(bottomRightText,
-                              style: RPlanState.normalText, textAlign: TextAlign.right),
+                              style: normalText, textAlign: TextAlign.right),
                         ),
                       ],
                     ),
@@ -154,7 +168,7 @@ class Lesson extends StatelessWidget {
         _DataTableEntry(lesson['v_raum'])
       ];
 
-      if (lesson['lehrer'] != null || lesson['v_lehrer'] != null) {
+      if (RPlan.of(context).hasTeacherPlan) {
         row.add(_DataTableEntry(lesson['lehrer']));
         row.add(_DataTableEntry(lesson['v_lehrer']));
       }
@@ -245,5 +259,84 @@ class _DataTableEntry extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class TeacherKuerzelButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: RPlan.of(context).hasTeacherPlan,
+      child: Padding(
+        padding: EdgeInsets.all(10),
+          child: RaisedButton(
+              onPressed: () => _showFilterOptions(context),
+              child: Text(
+                "Filtern",
+                style: TextStyle(color: Colors.white),)
+          )
+      )
+    );
+  }
+
+  Future _showFilterOptions(BuildContext context) async {
+    TextEditingController teacher = TextEditingController(text: RPlan.of(context).searchedTeacher);
+    showDialog(
+        context: context,
+        // ignore: deprecated_member_use
+        child: CupertinoAlertDialog(
+          content: Column(
+            children: <Widget>[
+              Container(
+                child: CupertinoTextField(
+                  placeholder: "Kürzel",
+                  placeholderStyle:
+                  TextStyle(color: Color.fromRGBO(150, 150, 150, 1)),
+                  controller: teacher,
+                  decoration: BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                              color: Color.fromRGBO(47, 109, 29, 1)))),
+                ),
+              ),
+              Container(
+                child: Text(
+                  "Bitte geben Sie ihr Lehrer Kürzel ein um den Plan zu filtern.",
+                ),
+                margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            MaterialButton(
+              onPressed: () => Navigator.pop(context),
+              child: Container(
+                child: Text("Abbrechen",
+                    style: TextStyle(color: CupertinoColors.activeBlue)),
+              ),
+            ),
+            MaterialButton(
+              onPressed: () async {
+                SharedPreferences preferences =
+                await SharedPreferences.getInstance();
+                if (teacher.text == "") {
+                  RPlan.of(context).searchedTeacher = null;
+                  preferences.remove(RPlan.SP_FILTER);
+                } else {
+                  RPlan.of(context).searchedTeacher = teacher.text;
+                  preferences.setString(RPlan.SP_FILTER, RPlan.of(context).searchedTeacher);
+                }
+                RPlan.of(context).loadRPlan();
+                Navigator.pop(context);
+              },
+              child: Container(
+                child: Text(
+                  "Anwenden",
+                  style: TextStyle(color: CupertinoColors.activeBlue),
+                ),
+              ),
+            ),
+          ],
+        ));
   }
 }
