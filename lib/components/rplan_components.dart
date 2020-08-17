@@ -23,13 +23,13 @@ class ListViewDay extends StatelessWidget {
 class DayWidget extends StatelessWidget {
 
   final List<Widget> lessons;
-  final String date;
+  final DateTime dateTime;
 
-  const DayWidget({Key key, this.lessons, this.date}) : super(key: key);
+  const DayWidget({Key key, this.lessons, this.dateTime}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var row = lessons;
+    var row = new List<Widget>.from(lessons);
 
     if (MediaQuery.of(context).size.width >= 1000) {
       row.insert(0, DataTableHeader(isFullPlan: RPlan.of(context).hasTeacherPlan));
@@ -38,6 +38,11 @@ class DayWidget extends StatelessWidget {
    return Column(
      children: row,
    );
+  }
+
+  // ignore: type_annotate_public_apis
+  get date {
+    return "${dateTime.day}.${dateTime.month}";
   }
 
 }
@@ -163,7 +168,7 @@ class Lesson extends StatelessWidget {
         _DataTableEntry(lesson['v_raum'])
       ];
 
-      if (lesson['lehrer'] != null || lesson['v_lehrer'] != null) {
+      if (RPlan.of(context).hasTeacherPlan) {
         row.add(_DataTableEntry(lesson['lehrer']));
         row.add(_DataTableEntry(lesson['v_lehrer']));
       }

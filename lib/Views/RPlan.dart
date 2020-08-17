@@ -79,8 +79,8 @@ class RPlan extends State {
   // Get Data
   Future loadRPlan() async{
     _days = [];
-    await _loadDay(APIAction.GET_RPLAN_TODAY);
-    await _loadDay(APIAction.GET_RPLAN_TOMORROW);
+    _loadDay(APIAction.GET_RPLAN_TODAY);
+    _loadDay(APIAction.GET_RPLAN_TOMORROW);
     if (hasTeacherPlan) {
       _loadDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW);
     } else {
@@ -106,19 +106,19 @@ class RPlan extends State {
     newLessons.addAll(_preProcessLessonData(rplanTwo));
 
     setState(() {
-      //TODO ASYNCHRONOUS!
-      if (!newLessons.isEmpty) _days.add(DayWidget(lessons: newLessons, date: _getRPlanDate(rplan, rplanTwo)));
+      if (!newLessons.isEmpty) {
+        _days.add(DayWidget(
+          lessons: newLessons,
+          // TODO this should already be saved after rework of api.dart
+          dateTime: DateTime.fromMillisecondsSinceEpoch((rplan['entities'].length > 0 ? int.parse(rplan['entities'][0]['vplan']) : int.parse(rplanTwo['entities'][0]['vplan'])) * 1000)
+        ));
+      }
+      _days.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       // Only set to loaded if really loaded
       if (_loaded != 3) _loaded++;
     });
   }
 
-  // TODO This method should definitely not be needed anymore after a rework of api.dart
-  static String _getRPlanDate(rplan, rplanTwo) {
-    int seconds = rplan['entities'].length > 0 ? int.parse(rplan['entities'][0]['vplan']) : int.parse(rplanTwo['entities'][0]['vplan']);
-    var datetime = DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
-    return "${datetime.day}.${datetime.month}";
-  }
 
   List<Lesson> _preProcessLessonData(rplan) {
     List<Lesson> newLessons = [];
@@ -126,19 +126,15 @@ class RPlan extends State {
       var notPrint = [];
       for (int a = 0; a < rplan['entities'].length; a++) {
         for (int b = a + 1; b < rplan['entities'].length; b++) {
-          if (rplan['entities'][a]['v_fach'] ==
-              rplan['entities'][b]['v_fach'] &&
-              rplan['entities'][a]['v_raum'] ==
-                  rplan['entities'][b]['v_raum'] &&
-              rplan['entities'][a]['v_klasse'] ==
-                  rplan['entities'][b]['v_klasse'] &&
+          if (rplan['entities'][a]['v_fach'] == rplan['entities'][b]['v_fach'] &&
+              rplan['entities'][a]['v_raum'] == rplan['entities'][b]['v_raum'] &&
+              rplan['entities'][a]['v_klasse'] ==  rplan['entities'][b]['v_klasse'] &&
+              rplan['entities'][a]['klasse'] ==  rplan['entities'][b]['klasse'] &&
               rplan['entities'][a]['art'] == rplan['entities'][b]['art'] &&
               rplan['entities'][a]['fach'] == rplan['entities'][b]['fach'] &&
               rplan['entities'][a]['raum'] == rplan['entities'][b]['raum'] &&
-              rplan['entities'][a]['lehrer'] ==
-                  rplan['entities'][b]['lehrer'] &&
-              rplan['entities'][a]['v_lehrer'] ==
-                  rplan['entities'][b]['v_lehrer']) {
+              rplan['entities'][a]['lehrer'] == rplan['entities'][b]['lehrer'] &&
+              rplan['entities'][a]['v_lehrer'] == rplan['entities'][b]['v_lehrer']) {
             notPrint.add(b);
             rplan['entities'][a]['stunde'] += "-${rplan['entities'][b]['stunde']}";
           }
