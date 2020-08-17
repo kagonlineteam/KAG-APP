@@ -17,8 +17,8 @@ class ErrorTextHolder extends StatelessWidget {
       appBar: AppBar(actions: barActions, title: Text(barTitle)),
       body: Center(
         child: Padding(
-          padding: EdgeInsets.all(10),
-          child: Text(_error),
+          padding: EdgeInsets.all(20),
+          child: Text(_error, textAlign: TextAlign.center, style: TextStyle(fontSize: 15)),
         ),
       ),
     );
