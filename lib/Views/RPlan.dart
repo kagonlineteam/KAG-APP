@@ -21,7 +21,7 @@ class RPlanViewWidget extends StatefulWidget {
 class RPlan extends State {
   static const SP_FILTER  = "RPlan_filter";
 
-  bool hasTeacherPlan = false, canSeeRPlan = false;
+  bool hasTeacherPlan = false;
   int _loaded = -1; // -1 = Not Preloaded, 0 = Not loaded, 3 = loaded
   String searchedTeacher;
 
@@ -39,8 +39,6 @@ class RPlan extends State {
       }
       bool isDesktop = kIsWeb && MediaQuery.of(context).size.width > 1000;
       return isDesktop ? RPlanListView(_days) : RPlanTabBar(_days);
-    } else if (_loaded == 0 && !canSeeRPlan) {
-      return ErrorTextHolder("Der Vertretungsplan ist Oberstufenschüler*innen vorbehalten!", barTitle: "VPlan");
     } else {
       return ErrorTextHolder("Der Vertretungsplan wird noch geladen.", barTitle: "VPlan");
     }
@@ -54,10 +52,8 @@ class RPlan extends State {
   void initState() {
     super.initState();
     _loadOptions().then((value) {
-      if (canSeeRPlan) {
         _loaded = 0;
         loadRPlan();
-      }
     });
   }
 
@@ -72,8 +68,6 @@ class RPlan extends State {
     var api = await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS);
     var groups = api.getGroups();
     hasTeacherPlan = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
-
-    canSeeRPlan = !groups.contains("ROLE_UNTERSTUFE");
   }
 
   // Get Data
