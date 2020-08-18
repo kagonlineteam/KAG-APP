@@ -463,7 +463,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
       if (_selectedEvents.length == 1) {
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => CalendarDetail(_selectedEvents[0])));
-      } else {
+      } else if (_selectedEvents.length > 1) {
         _showEventListModal();
       }
     });
@@ -503,9 +503,6 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
         dayBuilder: (context, date, list) {
           return _buildDay(date, list);
         },
-        selectedDayBuilder: (context, date, list) {
-          return _buildDay(date, list, selected: true);
-        },
         markersBuilder: (context, date, hlist, dlist) {
           return [new Container(), new Container()];
         },
@@ -528,16 +525,19 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
     );
   }
 
-
-  Widget _buildDay(date, events, {today=false, selected=false}) {
+  Widget _buildDay(date, events, {today=false}) {
     return Container(
       margin: const EdgeInsets.all(4.0),
       padding: const EdgeInsets.only(top: 5.0, left: 6.0),
       child: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.all(3.0),
+            decoration: today ? new BoxDecoration(borderRadius: new BorderRadius.circular(16.0), color: Theme.of(context).accentColor) : null,
+            child:
           Text(
               '${date.day}',
-              style: (today ? TextStyle().copyWith(fontSize: 16.0, color: Colors.red) : TextStyle().copyWith(fontSize: 16.0))
+              style: TextStyle().copyWith(fontSize: 16.0)),
           ),
           _buildEventsList(events)
         ],
