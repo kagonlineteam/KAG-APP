@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:universal_html/html.dart' as browser;
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
@@ -12,6 +11,8 @@ import './Views/RPlan.dart'     as RPlan;
 import './Views/User.dart'      as User;
 
 import 'api.dart';
+
+import 'dynimports/webinfo.dart' if (dart.library.html) 'dart:html' as webinfo;
 import 'push_notifications.dart';
 
 
@@ -49,8 +50,7 @@ class KAGApp extends StatefulWidget {
 }
 
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
-  // ignore: prefer_final_fields
-  static final _isVPlanApp = kIsWeb && browser.window.location.host.startsWith("vplan.");
+  static final _isVPlanApp = kIsWeb && webinfo.window.location.host.startsWith("vplan.");
   static int _index = _isVPlanApp ? 0 : 2; // ignore: prefer_final_fields
   bool isLoading = false;
   TabController controller;
