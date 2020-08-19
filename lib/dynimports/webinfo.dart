@@ -1,3 +1,4 @@
+// ignore: type_annotate_public_apis
 var window = new Window();
 
 class Window {
