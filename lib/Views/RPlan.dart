@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
-import '../api.dart';
+import '../api/api.dart';
 import '../components/helpers.dart';
 import '../components/rplan_components.dart';
 import '../components/rplan_structure.dart';
@@ -65,8 +65,7 @@ class RPlan extends State {
     }
 
     // Load Settings
-    var api = await KAGApp.api.getAPIRequest(APIAction.GET_GROUPS);
-    var groups = api.getGroups();
+    var groups = await KAGApp.api.requests.getGroups();
     hasTeacherPlan = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
   }
 
@@ -74,25 +73,22 @@ class RPlan extends State {
   Future loadRPlan() async{
     if (_loaded == 3) _loaded = 0;
     _days = [];
-    _loadDay(APIAction.GET_RPLAN_TODAY);
-    _loadDay(APIAction.GET_RPLAN_TOMORROW);
+    _loadDay(0);
+    _loadDay(1);
     if (hasTeacherPlan) {
-      _loadDay(APIAction.GET_RPLAN_DAYAFTERTOMMOROW);
+      _loadDay(2);
     } else {
       _loaded++;
     }
   }
 
-  Future _loadDay(APIAction action) async {
-    var rplanRequest = await KAGApp.api.getAPIRequest(action);
-    if (rplanRequest == null) return;
-
+  Future _loadDay(int day) async {
     var rplanTwo; // ignore: prefer_typing_uninitialized_variables
 
-    var rplanText = await rplanRequest.getRAWRPlan("lehrer", searchedTeacher);
+    var rplanText = await KAGApp.api.requests.getRAWRPlan("lehrer", searchedTeacher, day);
     var rplan = rplanText != null ? jsonDecode(rplanText) : null;
     if (searchedTeacher != null) {
-      var rplanTwoText = await rplanRequest.getRAWRPlan("v_lehrer", searchedTeacher);
+      var rplanTwoText = await KAGApp.api.requests.getRAWRPlan("v_lehrer", searchedTeacher, day);
       rplanTwo = rplanTwoText != null ? jsonDecode(rplanTwoText) : null;
     }
     var newLessons = <Widget>[];

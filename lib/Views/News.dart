@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api.dart';
+import '../api/api.dart';
 import '../main.dart';
 
 
@@ -42,8 +42,7 @@ class NewsState extends State<News> {
 
 
   Future _load() async {
-    var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    var response = await request.getArticles(page: page);
+    var response = await KAGApp.api.requests.getArticles(page: page);
     if (response == null) return;
     var entries = jsonDecode(response)['entities'];
     var entryRows = List<Widget>.from(articles);
@@ -194,8 +193,7 @@ class ArticleDetailState extends State<ArticleDetail> {
   }
 
   Future<void> loadArticle() async {
-    var request = await KAGApp.api.getAPIRequest(APIAction.GET_ARTICLE);
-    var response = await request.getArticle(article);
+    var response = await KAGApp.api.requests.getArticle(article);
     if (response == null) return;
     var articleContent = jsonDecode(response)['entity'];
     var htmlData = """<h1>${articleContent['title']}</h1><br><br> ${decodeBase64(articleContent['body'])}""";
