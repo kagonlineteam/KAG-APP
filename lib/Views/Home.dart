@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flip_panel/flip_panel.dart';
 
-import '../api.dart';
+import '../api/api.dart';
+import '../api/api_models.dart';
 import '../components/menu.dart';
 import '../main.dart';
 
@@ -236,14 +237,12 @@ class HomeState extends State<Home> {
   }
 
   Future _load() async {
-    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
-        .getHolidayUnixTimestamp()
+    KAGApp.api.requests.getHolidayUnixTimestamp()
         .then((timestamp) {
       holiday = timestamp;
       calculateTimer();
     });
-    (await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR))
-        .getNextCalendarEntries()
+    KAGApp.api.requests.getNextCalendarEntries()
         .then((entries) {
           rawCalendarEntries = entries;
     });
