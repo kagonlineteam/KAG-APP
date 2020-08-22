@@ -5,7 +5,8 @@ import 'package:table_calendar/table_calendar.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api.dart';
+import '../api/api.dart';
+import '../api/api_models.dart';
 import '../main.dart';
 
 
@@ -179,9 +180,8 @@ class _ListCalendarState extends State {
   }
 
   Future loadEntries() async {
-    var entriesRequest = await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR);
-    if (entriesRequest != null) {
-      final entries = await entriesRequest.getCalendarEntriesSoon(page);
+    final entries = await KAGApp.api.requests.getCalendarEntriesSoon(page);
+    if (entries != null) {
       var entryRows = List<Widget>.from(rows);
       for (var entry in entries) {
           entryRows.add(await _generateRow(entry));
@@ -258,8 +258,7 @@ class CalendarDetailState extends State {
   }
 
   void loadTerminInfos() async {
-    var req = await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR);
-    var entry = await req.getCalenderEntryById(this.entry.id);
+    var entry = await KAGApp.api.requests.getCalenderEntryById(this.entry.id);
     setState(() {
       this.entry = entry;
     });
@@ -412,8 +411,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
 
   void fillCalendar(int month, int year) async {
     _loadedMonths.add(month.toString() + year.toString());
-    var req = await KAGApp.api.getAPIRequest(APIAction.GET_CALENDAR);
-    List<Termin> termine = await req.getCalendarForMonth(month, year);
+    List<Termin> termine = await KAGApp.api.requests.getCalendarForMonth(month, year);
     for (var termin in termine) {
       var terminDate = DateTime.fromMillisecondsSinceEpoch(termin.start*1000);
       var date = new DateTime(terminDate.year, terminDate.month, terminDate.day);

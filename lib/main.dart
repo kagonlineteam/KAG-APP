@@ -10,7 +10,7 @@ import './Views/News.dart'      as News;
 import './Views/RPlan.dart'     as RPlan;
 import './Views/User.dart'      as User;
 
-import 'api.dart';
+import 'api/api.dart';
 
 import 'dynimports/webinfo.dart' if (dart.library.html) 'dart:html' as webinfo;
 import 'push_notifications.dart';
