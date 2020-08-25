@@ -193,39 +193,42 @@ class _APIRequests {
   }
 
   ///
-  /// Returns RPlan
+  /// Returns VPlan
   /// Date specified as method
   /// If teacher is null all will be shown
   ///
   /// param day should be a integer value 0 to 2
   ///
-  /// TODO When returning the object in future it should return the calculated date, too
-  Future<String> getRAWRPlan(String teacherType, String teacher, int day, {bool force=false}) async {
+  Future<models.VPlan> getVPlan(String teacher, int day) async {
     await _actionExecution(APIAction.GET_VPLAN);
     Map<String, String> params = {};
-    var vplan = await _getIDForRPlanDay(day);
+    models.VPlan vplan = await _getVPlanObject(day);
     if (vplan == null) return null;
 
-    if (teacher != null) {
-      params[teacherType] = "eq-${Uri.encodeComponent(teacher)}";
-    }
-
     params["orderby"] = "asc-stunde";
-    params["vplan"] = "eq-$vplan";
+    params["vplan"] = "eq-${vplan.id}";
     params["view"] = "canonical";
     params["limit"] = "100";
 
-    String response = await http.getFromAPI(
-        "vertretungen", params, _api._user.getJWT());
-    return response;
+    if (teacher != null) {
+      var paramsOne = Map.of(params);
+      paramsOne.addAll({"lehrer": "eq-${Uri.encodeComponent(teacher)}"});
+      await jsonDecode(await http.getFromAPI("vertretungen", paramsOne, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
+      var paramsTwo = Map.of(params);
+      paramsOne.addAll({"v_lehrer": "eq-${Uri.encodeComponent(teacher)}"});
+      await jsonDecode(await http.getFromAPI("vertretungen", paramsTwo, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
+    } else {
+      await jsonDecode(await http.getFromAPI("vertretungen", params, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
+    }
+
+    return vplan;
   }
 
   ///
   /// Returns the ID for the current Action of the RPlan
   /// This ID is needed to filter for days
   ///
-  Future<String> _getIDForRPlanDay(int day) async {
-
+  Future<models.VPlan> _getVPlanObject(int day) async {
     int days;
     if (day == 0) {
       days = 0;
@@ -239,9 +242,9 @@ class _APIRequests {
     DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
     // Adding the days
     int time = requestTime.millisecondsSinceEpoch ~/ 1000 + (days * 86400);
-    var plans = jsonDecode(await http.getFromAPI("vplans", {"date": "eq-${time.toString()}"}, _api._user.getJWT()));
-    if (plans['entities'].length == 0) return null;
-    return plans['entities'][0]['id'];
+    var response  = jsonDecode(await http.getFromAPI("vplans", {"date": "eq-${time.toString()}", "view": "canonical"}, _api._user.getJWT()))['entities'];
+    if (response.length == 0) return null;
+    return models.VPlan.fromJSON(response[0]);
   }
 
   ///

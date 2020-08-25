@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/api_models.dart' as api_model;
+
 import '../Views/RPlan.dart';
 
 class ListViewDay extends StatelessWidget {
@@ -50,7 +52,7 @@ class DayWidget extends StatelessWidget {
 class Lesson extends StatelessWidget {
   Lesson(this.lesson);
 
-  final dynamic lesson;
+  final api_model.Lesson lesson;
 
   static const normalText   = TextStyle(fontSize: 20);
   static const bigText      = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
@@ -64,23 +66,23 @@ class Lesson extends StatelessWidget {
       List<_DataTableEntry> row = [];
 
       if (RPlan.of(context).hasTeacherPlan) {
-        row.add(_DataTableEntry(lesson['v_lehrer']));
-        row.add(_DataTableEntry(lesson['klasse'] != "" ? lesson['klasse'] : lesson['v_klasse']));
-        row.add(_DataTableEntry(lesson['v_fach']));
-        row.add(_DataTableEntry(lesson['v_raum']));
-        row.add(_DataTableEntry(lesson['stunde']));
-        row.add(_DataTableEntry(lesson['lehrer']));
-        row.add(_DataTableEntry(lesson['fach']));
-        row.add(_DataTableEntry(lesson['art']));
-        row.add(_DataTableEntry(lesson['infos']));
+        row.add(_DataTableEntry(lesson.v_lehrer));
+        row.add(_DataTableEntry(lesson.klasse != "" ? lesson.klasse : lesson.v_klasse));
+        row.add(_DataTableEntry(lesson.v_fach));
+        row.add(_DataTableEntry(lesson.v_raum));
+        row.add(_DataTableEntry(lesson.stunde));
+        row.add(_DataTableEntry(lesson.lehrer));
+        row.add(_DataTableEntry(lesson.fach));
+        row.add(_DataTableEntry(lesson.type));
+        row.add(_DataTableEntry(lesson.infos));
       } else {
-        row.add(_DataTableEntry(lesson['klasse'] != "" ? lesson['klasse'] : lesson['v_klasse']));
-        row.add(_DataTableEntry(lesson['fach']));
-        row.add(_DataTableEntry(lesson['v_fach']));
-        row.add(_DataTableEntry(lesson['stunde']));
-        row.add(_DataTableEntry(lesson['v_raum']));
-        row.add(_DataTableEntry(lesson['art']));
-        row.add(_DataTableEntry(lesson['infos']));
+        row.add(_DataTableEntry(lesson.klasse != "" ? lesson.klasse : lesson.v_klasse));
+        row.add(_DataTableEntry(lesson.fach));
+        row.add(_DataTableEntry(lesson.v_fach));
+        row.add(_DataTableEntry(lesson.stunde));
+        row.add(_DataTableEntry(lesson.v_raum));
+        row.add(_DataTableEntry(lesson.type));
+        row.add(_DataTableEntry(lesson.infos));
       }
 
       return GestureDetector(
@@ -124,9 +126,9 @@ class MobileLesson extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(child: Text(lesson['klasse'], style: bigText, textAlign: TextAlign.left)),
-                      Expanded(child: Text(lesson['fach'], style: bigText, textAlign: TextAlign.center)),
-                      Expanded(child: Text(lesson['stunde'], style: bigText, textAlign: TextAlign.right))
+                      Expanded(child: Text(lesson.klasse, style: bigText, textAlign: TextAlign.left)),
+                      Expanded(child: Text(lesson.fach, style: bigText, textAlign: TextAlign.center)),
+                      Expanded(child: Text(lesson.stunde, style: bigText, textAlign: TextAlign.right))
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -136,15 +138,15 @@ class MobileLesson extends StatelessWidget {
                     children: [
                       Expanded(child: Visibility(
                         visible: RPlan.of(context).hasTeacherPlan,
-                        child: Text("${lesson['lehrer']} -> ${lesson['v_lehrer'] == null || lesson['v_lehrer'] == "" ? "-" : lesson['v_lehrer']}", style: normalText, textAlign: TextAlign.left),
+                        child: Text("${lesson.lehrer} -> ${lesson.v_lehrer == null || lesson.v_lehrer == "" ? "-" : lesson.v_lehrer}", style: normalText, textAlign: TextAlign.left),
                       )),
                       Expanded(child: Visibility(
                         visible: !RPlan.of(context).hasTeacherPlan,
-                        child: Text(lesson['art'], style: normalText, textAlign: TextAlign.center),
+                        child: Text(lesson.art, style: normalText, textAlign: TextAlign.center),
                       )),
                       Expanded(child: Visibility(
                         visible: RPlan.of(context).hasTeacherPlan,
-                        child: Text(lesson['art'], style: normalText, textAlign: TextAlign.right),
+                        child: Text(lesson.art, style: normalText, textAlign: TextAlign.right),
                       ))
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
