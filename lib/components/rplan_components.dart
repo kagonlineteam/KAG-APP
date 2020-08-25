@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/api_models.dart' as api_model;
+
 import '../Views/RPlan.dart';
 
 class ListViewDay extends StatelessWidget {
@@ -50,7 +52,7 @@ class DayWidget extends StatelessWidget {
 class Lesson extends StatelessWidget {
   Lesson(this.lesson);
 
-  final dynamic lesson;
+  final api_model.Lesson lesson;
 
   static const normalText   = TextStyle(fontSize: 20);
   static const bigText      = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
@@ -64,14 +66,14 @@ class Lesson extends StatelessWidget {
 
     if (width < 1000) {
       var bottomLeftText = "";
-      var bottomCenterText = lesson['art'];
+      var bottomCenterText = lesson.type;
       var bottomRightText = "";
 
-      if (lesson['lehrer'] != null || lesson['v_lehrer'] != null) {
-        if (lesson['lehrer'] != null) bottomLeftText = lesson['lehrer'];
-        if (lesson['v_lehrer'] != null) bottomLeftText += " -> ${lesson['v_lehrer']}";
+      if (RPlan.of(context).hasTeacherPlan) {
+        if (lesson.lehrer != null) bottomLeftText = lesson.lehrer;
+        if (lesson.v_lehrer != null) bottomLeftText += " -> ${lesson.v_lehrer}";
         bottomCenterText = "";
-        bottomRightText = lesson['art'];
+        bottomRightText = lesson.type;
       }
 
       return new Container(
@@ -99,7 +101,7 @@ class Lesson extends StatelessWidget {
                           width: elementWidth,
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(lesson['klasse'],
+                          child: Text(lesson.klasse,
                               style: bigText, textAlign: TextAlign.left),
                         ),
                         Container(
@@ -121,7 +123,7 @@ class Lesson extends StatelessWidget {
                           width: elementWidth,
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(lesson['fach'],
+                          child: Text(lesson.fach,
                               style: bigText, textAlign: TextAlign.center),
                         ),
                         Container(
@@ -143,7 +145,7 @@ class Lesson extends StatelessWidget {
                           width: elementWidth,
                           height: elementHeight,
                           margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(lesson['stunde'],
+                          child: Text(lesson.stunde,
                               style: bigText, textAlign: TextAlign.right),
                         ),
                         Container(
@@ -162,19 +164,19 @@ class Lesson extends StatelessWidget {
       );
     } else {
       var row = [
-        _DataTableEntry(lesson['klasse']),
-        _DataTableEntry(lesson['fach']),
-        _DataTableEntry(lesson['stunde']),
-        _DataTableEntry(lesson['v_raum'])
+        _DataTableEntry(lesson.klasse),
+        _DataTableEntry(lesson.fach),
+        _DataTableEntry(lesson.stunde),
+        _DataTableEntry(lesson.v_raum)
       ];
 
       if (RPlan.of(context).hasTeacherPlan) {
-        row.add(_DataTableEntry(lesson['lehrer']));
-        row.add(_DataTableEntry(lesson['v_lehrer']));
+        row.add(_DataTableEntry(lesson.lehrer));
+        row.add(_DataTableEntry(lesson.v_lehrer));
       }
 
-      row.add(_DataTableEntry(lesson['art']));
-      row.add(_DataTableEntry(lesson['infos']));
+      row.add(_DataTableEntry(lesson.type));
+      row.add(_DataTableEntry(lesson.infos));
 
       return GestureDetector(
           onTap: () => Navigator.push(context,
