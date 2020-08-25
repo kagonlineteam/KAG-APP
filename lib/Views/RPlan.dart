@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
-import '../api/api.dart';
+import '../api/api_models.dart' as api_models;
 import '../components/helpers.dart';
 import '../components/rplan_components.dart';
 import '../components/rplan_structure.dart';
@@ -83,25 +83,16 @@ class RPlan extends State {
   }
 
   Future _loadDay(int day) async {
-    var rplanTwo; // ignore: prefer_typing_uninitialized_variables
-
-    var rplanText = await KAGApp.api.requests.getRAWRPlan("lehrer", searchedTeacher, day);
-    var rplan = rplanText != null ? jsonDecode(rplanText) : null;
-    if (searchedTeacher != null) {
-      var rplanTwoText = await KAGApp.api.requests.getRAWRPlan("v_lehrer", searchedTeacher, day);
-      rplanTwo = rplanTwoText != null ? jsonDecode(rplanTwoText) : null;
-    }
+    api_models.VPlan vplan = await KAGApp.api.requests.getVPlan(searchedTeacher, day);
     var newLessons = <Widget>[];
 
-    newLessons.addAll(_preProcessLessonData(rplan));
-    newLessons.addAll(_preProcessLessonData(rplanTwo));
+    newLessons.addAll(_preProcessLessonData(vplan));
 
     setState(() {
       if (!newLessons.isEmpty) {
         _days.add(DayWidget(
           lessons: newLessons,
-          // TODO this should already be saved after rework of api.dart
-          dateTime: DateTime.fromMillisecondsSinceEpoch((rplan['entities'].length > 0 ? int.parse(rplan['entities'][0]['vplan']) : int.parse(rplanTwo['entities'][0]['vplan'])) * 1000)
+          dateTime: vplan.date,
         ));
       }
       _days.sort((a, b) => a.dateTime.compareTo(b.dateTime));
@@ -111,29 +102,29 @@ class RPlan extends State {
   }
 
 
-  List<Lesson> _preProcessLessonData(rplan) {
+  List<Lesson> _preProcessLessonData(api_models.VPlan vplan) {
     List<Lesson> newLessons = [];
-    if (rplan != null && rplan['entities'].length > 0) {
+    if (vplan  != null && vplan.lessons.length > 0) {
       var notPrint = [];
-      for (int a = 0; a < rplan['entities'].length; a++) {
-        for (int b = a + 1; b < rplan['entities'].length; b++) {
-          if (rplan['entities'][a]['v_fach'] == rplan['entities'][b]['v_fach'] &&
-              rplan['entities'][a]['v_raum'] == rplan['entities'][b]['v_raum'] &&
-              rplan['entities'][a]['v_klasse'] ==  rplan['entities'][b]['v_klasse'] &&
-              rplan['entities'][a]['klasse'] ==  rplan['entities'][b]['klasse'] &&
-              rplan['entities'][a]['art'] == rplan['entities'][b]['art'] &&
-              rplan['entities'][a]['fach'] == rplan['entities'][b]['fach'] &&
-              rplan['entities'][a]['raum'] == rplan['entities'][b]['raum'] &&
-              rplan['entities'][a]['lehrer'] == rplan['entities'][b]['lehrer'] &&
-              rplan['entities'][a]['v_lehrer'] == rplan['entities'][b]['v_lehrer']) {
+      for (int a = 0; a < vplan.lessons.length; a++) {
+        for (int b = a + 1; b < vplan.lessons.length; b++) {
+          if (vplan.lessons[a].v_fach == vplan.lessons[b].v_fach &&
+              vplan.lessons[a].v_raum == vplan.lessons[b].v_raum &&
+              vplan.lessons[a].v_klasse ==  vplan.lessons[b].v_klasse &&
+              vplan.lessons[a].klasse ==  vplan.lessons[b].klasse &&
+              vplan.lessons[a].type == vplan.lessons[b].type &&
+              vplan.lessons[a].fach == vplan.lessons[b].fach &&
+              vplan.lessons[a].raum == vplan.lessons[b].raum &&
+              vplan.lessons[a].lehrer == vplan.lessons[b].lehrer &&
+              vplan.lessons[a].v_lehrer == vplan.lessons[b].v_lehrer) {
             notPrint.add(b);
-            rplan['entities'][a]['stunde'] += "-${rplan['entities'][b]['stunde']}";
+            vplan.lessons[a].stunde = "${vplan.lessons[a].stunde}-${vplan.lessons[b].stunde}";
           }
         }
       }
-      for (int i = 0; i < rplan['entities'].length; i++) {
+      for (int i = 0; i < vplan.lessons.length; i++) {
         if (!notPrint.contains(i)) {
-          newLessons.add(Lesson(rplan['entities'][i]));
+          newLessons.add(Lesson(vplan.lessons[i]));
         }
       }
     }
@@ -145,31 +136,29 @@ class RPlan extends State {
 class RPlanDetail extends StatelessWidget {
   RPlanDetail(this.lesson);
 
-  Map<String, dynamic> lesson;
+  api_models.Lesson lesson;
   double width;
   static const TextStyle textStyle  = const TextStyle(fontSize: 25);
   static const TextStyle titleStyle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
-    if (lesson['lehrer'] == null) lesson['lehrer'] = "";
-    if (lesson['v_lehrer'] == null) lesson['v_lehrer'] = "";
     width = MediaQuery.of(context).size.width;
 
     List<Widget> widgets = [
-      element("Art", lesson['art'], ""),
-      element("Stunde", lesson['stunde'], ""),
-      element("Fach", lesson['fach'], lesson['v_fach']),
-      element("Raum", lesson['raum'], lesson['v_raum']),
-      element("Infos", lesson['infos'], ""),
+      element("Art", lesson.type, ""),
+      element("Stunde", lesson.stunde, ""),
+      element("Fach", lesson.fach, lesson.v_fach),
+      element("Raum", lesson.raum, lesson.v_raum),
+      element("Infos", lesson.infos, ""),
     ];
 
-    if (getTeacherText(lesson['lehrer'], lesson['v_lehrer']).compareTo("") != 0) {
+    if (getTeacherText(lesson.lehrer, lesson.v_lehrer).compareTo("") != 0) {
       widgets.insert(1,
-          element(getTeacherText(lesson['lehrer'],
-              lesson['v_lehrer']),
-              lesson['lehrer'],
-              lesson['v_lehrer']));
+          element(getTeacherText(lesson.lehrer,
+              lesson.v_lehrer),
+              lesson.lehrer,
+              lesson.v_lehrer));
     }
 
     return Scaffold(
@@ -244,10 +233,10 @@ class RPlanDetail extends StatelessWidget {
   }
 
   String getAppBarText() {
-    String returnString = lesson['klasse'];
+    String returnString = lesson.klasse;
 
-    if (lesson['klasse'] != "" && lesson['fach'] != "") returnString += " - ";
-    returnString += lesson['fach'];
+    if (lesson.klasse != "" && lesson.fach != "") returnString += " - ";
+    returnString += lesson.fach;
     return returnString;
   }
 
