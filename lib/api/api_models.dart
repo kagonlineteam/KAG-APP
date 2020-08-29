@@ -113,3 +113,39 @@ class Lesson {
     _stunde = value;
   }
 }
+
+class KAGUser {
+  KAGUser(this._lastName, this._givenName, this._stufe, this._klasse, this._roles);
+
+  KAGUser.fromJSON(Map<dynamic, dynamic> rawJSON) {
+    if (rawJSON.containsKey("firstname")) _givenName = rawJSON['firstname'];
+    if (rawJSON.containsKey("lastname")) _lastName = rawJSON['lastname'];
+    if (rawJSON.containsKey("stufe")) _stufe = rawJSON['stufe'];
+    if (rawJSON.containsKey("roles")) _roles = rawJSON['roles'].cast<String>();
+  }
+
+  String _givenName, _lastName, _stufe, _klasse;
+  List<String> _roles;
+
+  String get appropriateName {
+    if (_roles.contains("ROLE_LEHRER")) {
+      return _lastName;
+    }
+    return _givenName;
+  }
+
+  List<String> get roles => _roles;
+
+  String get klasse => _klasse;
+
+  String get stufe => _stufe;
+
+  String get name => _lastName;
+
+  String get givenName => _givenName;
+
+  // ignore: unnecessary_getters_setters
+  set klasse(String value) {
+    _klasse = value;
+  }
+}
