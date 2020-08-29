@@ -17,12 +17,17 @@ enum APIAction {
 }
 
 class API {
-  _User _user;
+  User _user;
   _APIRequests _requests;
 
   API() {
-    _user = _User();
+    _user = User();
     _requests = new _APIRequests(this);
+  }
+
+  API.asMock(User user, _APIRequests requests) {
+    _user = user;
+    _requests = requests;
   }
 
   ///
@@ -293,7 +298,7 @@ class _APIRequests {
 
 }
 
-class _User {
+class User {
   String _jwt;
   String _refreshJWT;
   // The boolean does indicate if a login process is currently happening
