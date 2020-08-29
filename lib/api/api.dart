@@ -251,12 +251,14 @@ class _APIRequests {
   ///
   /// It directly returns the Information as String
   ///
-  Future <String> getUserInfo() async {
+  Future <models.KAGUser> getUserInfo() async {
     await _actionExecution(APIAction.GET_USER_INFO);
-    String response;
-    response = await http.getFromAPI(
+    String response = await http.getFromAPI(
         "users/${_api._user.getUsername()}", null, _api._user.getJWT());
-    return response;
+    models.KAGUser user = models.KAGUser.fromJSON(jsonDecode(response)['entity']);
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    user.klasse = preferences.getString("klasse");
+    return user;
   }
 
   Future <String> getArticles({int page=0}) async {
