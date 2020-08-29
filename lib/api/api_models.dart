@@ -1,5 +1,12 @@
 import 'dart:convert';
 
+/// This file contains the models for the API
+/// Evey model has a fromJSON Constructor which parses the JSON Map
+/// To the model
+/// This constructor can also be called like api_helpers.fromJSON<Termin>({"title": "test"});
+/// When creating a new Model please also add it to api_helpers.formJSON (in api_helpers.dart)
+
+
 class Termin {
   String _title, _id, _description;
   int _start, _stop;
