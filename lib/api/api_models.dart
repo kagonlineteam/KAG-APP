@@ -156,3 +156,12 @@ class KAGUser {
     _klasse = value;
   }
 }
+
+
+///
+/// This model is only used in UnitTests, as it only saves data
+///
+class MockModel {
+  final Map<dynamic, dynamic> rawJSON;
+  MockModel.fromJSON(this.rawJSON);
+}

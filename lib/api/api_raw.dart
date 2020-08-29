@@ -6,6 +6,9 @@ import '../main.dart';
 
 const API = "https://api.kag-langenfeld.de/";
 
+// This is here so it is possible to have a mock client
+http.Client client = http.Client();
+
 ///
 /// Makes Login request.
 /// Returns an Object with token and refresh token
@@ -13,7 +16,7 @@ const API = "https://api.kag-langenfeld.de/";
 Future<Map<String, String>> login(String username, String password) async {
   var loginBody = jsonEncode(
       {"username": username, "password": password, "client": "appclient"});
-  var response = await http.post("${API}login?type=refresh",
+  var response = await client.post("${API}login?type=refresh",
       body: loginBody, headers: {"Content-Type": "application/json"});
   if (response.statusCode == 200) {
     var res = jsonDecode(response.body);
@@ -33,7 +36,7 @@ Future<Map<String, String>> refreshLogin(
     "refresh_token": refreshToken,
     "client": "appclient"
   });
-  var response = await http.post("${API}refresh?type=refresh",
+  var response = await client.post("${API}refresh?type=refresh",
       body: loginBody, headers: {"Content-Type": "application/json"});
   if (response.statusCode == 200) {
     var res = jsonDecode(response.body);
@@ -58,10 +61,11 @@ Future<String> getFromAPI(
       query += "$name=$value";
     });
   }
-  KAGApp.app.setLoading();
-  var request = (await http.get("$API$path$query",
+  // Check that app is not null. So that tests work
+  if (KAGApp.app != null) KAGApp.app.setLoading();
+  var request = (await client.get("$API$path$query",
           headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null))
       .body;
-  KAGApp.app.setLoading(loading: false);
+  if (KAGApp.app != null) KAGApp.app.setLoading(loading: false);
   return request;
 }
