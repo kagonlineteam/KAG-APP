@@ -12,3 +12,4 @@ jobs:
       with:
         channel: 'beta'
     - run: flutter analyze
+    - run: flutter test
