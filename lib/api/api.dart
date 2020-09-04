@@ -17,14 +17,14 @@ enum APIAction {
 
 class API {
   User _user;
-  _APIRequests _requests;
+  APIRequests _requests;
 
   API() {
     _user = User();
-    _requests = new _APIRequests(this);
+    _requests = new APIRequests(this);
   }
 
-  API.asMock(User user, _APIRequests requests) {
+  API.asMock(User user, APIRequests requests) {
     _user = user;
     _requests = requests;
   }
@@ -67,10 +67,10 @@ class API {
     return await _user.setLoginCredentials(username, password);
   }
 
-  _APIRequests get requests => _requests;
+  APIRequests get requests => _requests;
 }
 
-class _APIRequests {
+class APIRequests {
   APIAction _endpoint;
   API _api;
 
@@ -79,7 +79,7 @@ class _APIRequests {
   /// Login status should be already checked.
   /// Throws exception if different method is executed than specified as Action
   ///
-  _APIRequests(API api) {
+  APIRequests(API api) {
     _api = api;
   }
 
