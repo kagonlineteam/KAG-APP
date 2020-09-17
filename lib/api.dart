@@ -497,9 +497,9 @@ class _APIRequest {
     if (_endpoint == APIAction.GET_RPLAN_TODAY) {
       days = 0;
     } else if (_endpoint == APIAction.GET_RPLAN_TOMORROW) {
-      days = DateTime.now().weekday > 5 ?  1 + (8-DateTime.now().weekday) : 1;
+      days = DateTime.now().weekday >= 5 ? 8 - DateTime.now().weekday : 1;
     } else {
-      days = DateTime.now().weekday > 5 ?  2 + (8-DateTime.now().weekday) : 2;
+      days = DateTime.now().weekday == 4 ? 4 : DateTime.now().weekday >= 5 ? 9 - DateTime.now().weekday : 2;
     }
     // Calculating today at 8o clock
     DateTime now = new DateTime.now();
