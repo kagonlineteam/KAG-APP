@@ -58,108 +58,8 @@ class Lesson extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double elementWidth = (width - 60) / 3;
-    double elementHeight = 25;
-
-
     if (width < 1000) {
-      var bottomLeftText = "";
-      var bottomCenterText = lesson['art'];
-      var bottomRightText = "";
-
-      if (lesson['lehrer'] != null || lesson['v_lehrer'] != null) {
-        if (lesson['lehrer'] != null) bottomLeftText = lesson['lehrer'];
-        if (lesson['v_lehrer'] != null) bottomLeftText += " -> ${lesson['v_lehrer']}";
-        bottomCenterText = "";
-        bottomRightText = lesson['art'];
-      }
-
-      return new Container(
-        color: Colors.white,
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-        child: GestureDetector(
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RPlanDetail(lesson))),
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(
-                          color: Color.fromRGBO(235, 235, 235, 1), width: 2)
-                  )
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Container(
-                    width: elementWidth,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          width: elementWidth,
-                          height: elementHeight,
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(lesson['klasse'],
-                              style: bigText, textAlign: TextAlign.left),
-                        ),
-                        Container(
-                          width: elementWidth,
-                          height: elementHeight,
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(bottomLeftText,
-                              style: normalText, textAlign: TextAlign.left),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: elementWidth,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          width: elementWidth,
-                          height: elementHeight,
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(lesson['fach'],
-                              style: bigText, textAlign: TextAlign.center),
-                        ),
-                        Container(
-                          width: elementWidth,
-                          height: elementHeight,
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(bottomCenterText,
-                              style: normalText, textAlign: TextAlign.center),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: elementWidth,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Container(
-                          width: elementWidth,
-                          height: elementHeight,
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(lesson['stunde'],
-                              style: bigText, textAlign: TextAlign.right),
-                        ),
-                        Container(
-                          width: elementWidth,
-                          height: elementHeight,
-                          margin: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                          child: Text(bottomRightText,
-                              style: normalText, textAlign: TextAlign.right),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            )),
-      );
+      return MobileLesson(lesson);
     } else {
       var row = [
         _DataTableEntry(lesson['klasse']),
@@ -194,6 +94,66 @@ class Lesson extends StatelessWidget {
       );
     }
   }
+}
+
+class MobileLesson extends StatelessWidget {
+  MobileLesson(this.lesson);
+
+  final dynamic lesson;
+
+  static const bigText      = TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
+  static const normalText   = TextStyle(fontSize: 20);
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(margin: EdgeInsets.all(2)),
+        InkWell(
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(25, 5, 25, 5),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(child: Text(lesson['klasse'], style: bigText, textAlign: TextAlign.left)),
+                      Expanded(child: Text(lesson['fach'], style: bigText, textAlign: TextAlign.center)),
+                      Expanded(child: Text(lesson['stunde'], style: bigText, textAlign: TextAlign.right))
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                  ),
+                  Container(margin: EdgeInsets.all(5)),
+                  Row(
+                    children: [
+                      Expanded(child: Visibility(
+                        visible: RPlan.of(context).hasTeacherPlan,
+                        child: Text("${lesson['lehrer']} -> ${lesson['v_lehrer'] == null || lesson['v_lehrer'] == "" ? "-" : lesson['v_lehrer']}", style: normalText, textAlign: TextAlign.left),
+                      )),
+                      Expanded(child: Visibility(
+                        visible: !RPlan.of(context).hasTeacherPlan,
+                        child: Text(lesson['art'], style: normalText, textAlign: TextAlign.center),
+                      )),
+                      Expanded(child: Visibility(
+                        visible: RPlan.of(context).hasTeacherPlan,
+                        child: Text(lesson['art'], style: normalText, textAlign: TextAlign.right),
+                      ))
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                ],
+              ),
+            ),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => RPlanDetail(lesson)))
+        ),
+        Container(margin: EdgeInsets.all(8), decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey, width: 2)))),
+      ],
+    );
+  }
+
 }
 
 class DataTableHeader extends StatelessWidget {
