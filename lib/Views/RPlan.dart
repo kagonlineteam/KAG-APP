@@ -72,6 +72,7 @@ class RPlan extends State {
 
   // Get Data
   Future loadRPlan() async{
+    if (_loaded == 3) _loaded = 0;
     _days = [];
     _loadDay(APIAction.GET_RPLAN_TODAY);
     _loadDay(APIAction.GET_RPLAN_TOMORROW);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../Views/RPlan.dart';
 import 'rplan_components.dart';
 
 class RPlanTabBar extends StatelessWidget {
@@ -18,7 +19,10 @@ class RPlanTabBar extends StatelessWidget {
             ),
           ),
           body: TabBarView(
-            children: _days.map((day) => ListView(children: [day],)).toList(),
+            children: _days.map((day) => RefreshIndicator(
+              onRefresh: () => RPlan.of(context).loadRPlan(),
+              child: ListView(children: [day],),
+            )).toList(),
           ),
         )
     );
@@ -37,8 +41,11 @@ class RPlanListView extends StatelessWidget {
       appBar: AppBar(title: Text("VPlan"), actions: [TeacherKuerzelButton()]),
       body: Padding(
         padding: EdgeInsets.only(top: 10),
-        child: ListView(
-          children: _days.map((day) => ListViewDay(day)).toList(),
+        child: RefreshIndicator(
+          onRefresh: () => RPlan.of(context).loadRPlan(),
+          child: ListView(
+            children: _days.map((day) => ListViewDay(day)).toList(),
+          ),
         ),
       ),
     );
