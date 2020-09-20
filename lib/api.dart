@@ -69,6 +69,8 @@ class API {
   Future<_APIRequest> getAPIRequest(APIAction action) async {
     if (_isLogInNeeded(action) && !_user.isLoggedIn()) {
       if (!await _user.login()) {
+        _user.setLoginCredentials(null, null);
+        KAGApp.app.setLoggedOut();
         return null;
       }
     }
