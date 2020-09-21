@@ -64,6 +64,7 @@ class Lesson extends StatelessWidget {
       var row = [
         _DataTableEntry(lesson['klasse']),
         _DataTableEntry(lesson['fach']),
+        _DataTableEntry(lesson['v_fach']),
         _DataTableEntry(lesson['stunde']),
         _DataTableEntry(lesson['v_raum'])
       ];
@@ -166,6 +167,7 @@ class DataTableHeader extends StatelessWidget {
     var header = [
       _DataTableEntry("Klasse", bold: true),
       _DataTableEntry("Kurs", bold: true),
+      _DataTableEntry("V-Fach", bold: true),
       _DataTableEntry("Stunde", bold: true),
       _DataTableEntry("V-Raum", bold: true)
     ];
