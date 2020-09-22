@@ -300,7 +300,7 @@ class HomeState extends State<Home> {
           child: Row(
             children: <Widget>[
               Container(
-                width: 90,
+                width: 95,
                 height: 36,
                 margin: EdgeInsets.fromLTRB(0, 0, 10, 0),
                 child: Material(
