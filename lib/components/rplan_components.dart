@@ -61,21 +61,27 @@ class Lesson extends StatelessWidget {
     if (width < 1000) {
       return MobileLesson(lesson);
     } else {
-      var row = [
-        _DataTableEntry(lesson['klasse']),
-        _DataTableEntry(lesson['fach']),
-        _DataTableEntry(lesson['v_fach']),
-        _DataTableEntry(lesson['stunde']),
-        _DataTableEntry(lesson['v_raum'])
-      ];
+      List<_DataTableEntry> row = [];
 
       if (RPlan.of(context).hasTeacherPlan) {
-        row.add(_DataTableEntry(lesson['lehrer']));
         row.add(_DataTableEntry(lesson['v_lehrer']));
+        row.add(_DataTableEntry(lesson['klasse'] != "" ? lesson['klasse'] : lesson['v_klasse']));
+        row.add(_DataTableEntry(lesson['v_fach']));
+        row.add(_DataTableEntry(lesson['v_raum']));
+        row.add(_DataTableEntry(lesson['stunde']));
+        row.add(_DataTableEntry(lesson['lehrer']));
+        row.add(_DataTableEntry(lesson['fach']));
+        row.add(_DataTableEntry(lesson['art']));
+        row.add(_DataTableEntry(lesson['infos']));
+      } else {
+        row.add(_DataTableEntry(lesson['klasse'] != "" ? lesson['klasse'] : lesson['v_klasse']));
+        row.add(_DataTableEntry(lesson['fach']));
+        row.add(_DataTableEntry(lesson['v_fach']));
+        row.add(_DataTableEntry(lesson['stunde']));
+        row.add(_DataTableEntry(lesson['v_raum']));
+        row.add(_DataTableEntry(lesson['art']));
+        row.add(_DataTableEntry(lesson['infos']));
       }
-
-      row.add(_DataTableEntry(lesson['art']));
-      row.add(_DataTableEntry(lesson['infos']));
 
       return GestureDetector(
           onTap: () => Navigator.push(context,
@@ -164,21 +170,27 @@ class DataTableHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var header = [
-      _DataTableEntry("Klasse", bold: true),
-      _DataTableEntry("Kurs", bold: true),
-      _DataTableEntry("V-Fach", bold: true),
-      _DataTableEntry("Stunde", bold: true),
-      _DataTableEntry("V-Raum", bold: true)
-    ];
+    List<_DataTableEntry> header = [];
 
     if (isFullPlan) {
-      header.add(_DataTableEntry("Lehrer", bold: true));
       header.add(_DataTableEntry("V-Lehrer", bold: true));
+      header.add(_DataTableEntry("Klasse", bold: true));
+      header.add(_DataTableEntry("V-Fach", bold: true));
+      header.add(_DataTableEntry("V-Raum", bold: true));
+      header.add(_DataTableEntry("Stunde", bold: true));
+      header.add(_DataTableEntry("Lehrer", bold: true));
+      header.add(_DataTableEntry("Fach", bold: true));
+      header.add(_DataTableEntry("Art", bold: true));
+      header.add(_DataTableEntry("Infos", bold: true));
+    } else {
+      header.add(_DataTableEntry("Klasse", bold: true));
+      header.add(_DataTableEntry("Fach", bold: true));
+      header.add(_DataTableEntry("V-Fach", bold: true));
+      header.add(_DataTableEntry("Stunde", bold: true));
+      header.add(_DataTableEntry("V-Raum", bold: true));
+      header.add(_DataTableEntry("Art", bold: true));
+      header.add(_DataTableEntry("Infos", bold: true));
     }
-
-    header.add(_DataTableEntry("Art", bold: true));
-    header.add(_DataTableEntry("Infos", bold: true));
 
     return Container(
       margin: EdgeInsets.only(left: 5, right: 5, top: 10),
