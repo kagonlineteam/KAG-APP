@@ -45,7 +45,7 @@ class HomeState extends State<Home> {
   Widget build(BuildContext context) {
     isTablet = MediaQuery.of(context).size.longestSide > 1000;
     eventDate            = TextStyle(fontSize: 30, color: Colors.white);
-    eventTitle           = TextStyle(fontSize: 30);
+    eventTitle           = TextStyle(fontSize: isTablet ? 30 : 23);
     titleStyle           = TextStyle(fontSize: (isTablet ? 33 : 28), fontWeight: FontWeight.bold);
     countDownSize = isTablet ? 50 : 35;
     rebuildCalendarEntries();
