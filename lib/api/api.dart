@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -295,6 +296,11 @@ class _APIRequests {
     return "";
   }
 
+
+  Future <Uint8List> getFile(String id) async {
+    var resp = await http.client.get("${http.API}files/$id", headers: _api._user.isLoggedIn() ? {'Authorization': 'Bearer ${_api._user.getJWT()}'} : {});
+    return resp.bodyBytes;
+  }
 
 }
 

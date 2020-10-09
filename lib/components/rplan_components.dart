@@ -2,9 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Views/RPlan.dart';
 import '../api/api_models.dart' as api_model;
 
-import '../Views/RPlan.dart';
+import '../dynimports/apifile/dynapifile.dart'
+if (dart.library.html) '../dynimports/apifile/webapifile.dart'
+if (dart.library.io) '../dynimports/apifile/mobileapifile.dart' as apifile;
 
 class ListViewDay extends StatelessWidget {
   ListViewDay(this.day);
@@ -15,19 +18,52 @@ class ListViewDay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(day.date, style: TextStyle(fontSize: 40)),
+        Row(children: [
+          Padding(
+            child: Text(day.date, style: TextStyle(fontSize: 40)),
+            padding: EdgeInsets.all(10),
+          ),
+          DownloadFileButton(day.pdfFile)
+        ],
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ),
         day
       ],
     );
   }
 }
 
+class TabViewDay extends StatelessWidget {
+  TabViewDay(this.day);
+
+  final DayWidget day;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: () => RPlan.of(context).loadRPlan(),
+        child: ListView(children: [day]),
+      ),
+      floatingActionButton: Visibility(
+        visible: RPlan.of(context).hasTeacherPlan && day.pdfFile != null,
+        child: FloatingActionButton(
+          onPressed: () => apifile.openFile(context, day.pdfFile, 'application/pdf'),
+          child: Icon(Icons.file_download),
+        ),
+      ),
+    );
+  }
+
+}
+
 class DayWidget extends StatelessWidget {
 
   final List<Widget> lessons;
   final DateTime dateTime;
+  final String pdfFile;
 
-  const DayWidget({Key key, this.lessons, this.dateTime}) : super(key: key);
+  const DayWidget({Key key, this.lessons, this.dateTime, this.pdfFile}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -234,6 +270,29 @@ class _DataTableEntry extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class DownloadFileButton extends StatelessWidget {
+
+  final String file;
+
+  DownloadFileButton(this.file);
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+        visible: RPlan.of(context).hasTeacherPlan && file != null,
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: RaisedButton(
+                onPressed: () => apifile.openFile(context, file, 'application/pdf'),
+                child: Text(
+                  "Als PDF",
+                  style: TextStyle(color: Colors.white),)
+            )
+        )
     );
   }
 }

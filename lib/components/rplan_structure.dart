@@ -19,10 +19,7 @@ class RPlanTabBar extends StatelessWidget {
             ),
           ),
           body: TabBarView(
-            children: _days.map((day) => RefreshIndicator(
-              onRefresh: () => RPlan.of(context).loadRPlan(),
-              child: ListView(children: [day],),
-            )).toList(),
+            children: _days.map((day) => TabViewDay(day)).toList(),
           ),
         )
     );
