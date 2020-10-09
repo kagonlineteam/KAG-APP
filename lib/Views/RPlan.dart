@@ -10,6 +10,7 @@ import '../components/rplan_components.dart';
 import '../components/rplan_structure.dart';
 import '../main.dart';
 
+
 class RPlanViewWidget extends StatefulWidget {
 
   @override
@@ -84,6 +85,7 @@ class RPlan extends State {
 
   Future _loadDay(int day) async {
     api_models.VPlan vplan = await KAGApp.api.requests.getVPlan(searchedTeacher, day);
+
     var newLessons = <Widget>[];
 
     newLessons.addAll(_preProcessLessonData(vplan));
@@ -93,6 +95,7 @@ class RPlan extends State {
         _days.add(DayWidget(
           lessons: newLessons,
           dateTime: vplan.date,
+          pdfFile: vplan.file
         ));
       }
       _days.sort((a, b) => a.dateTime.compareTo(b.dateTime));

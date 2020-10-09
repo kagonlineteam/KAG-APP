@@ -50,11 +50,14 @@ class VPlan {
   // ignore: prefer_final_fields
   DateTime _date;
   // ignore: prefer_final_fields
+  String _file;
+  // ignore: prefer_final_fields
   List<Lesson> _lessons;
 
   VPlan.fromJSON(Map<dynamic, dynamic> rawJson) {
     if (rawJson.containsKey("id")) _id = rawJson['id'];
     if (rawJson.containsKey("date")) _date = DateTime.fromMillisecondsSinceEpoch(int.parse(rawJson['date']) * 1000);
+    if (rawJson.containsKey("files") && rawJson['files'].length > 0) _file = rawJson['files'][0]['id'];
     _lessons = [];
   }
 
@@ -63,6 +66,8 @@ class VPlan {
   }
 
   String get id => _id;
+
+  String get file => _file;
 
   DateTime get date => _date;
 
