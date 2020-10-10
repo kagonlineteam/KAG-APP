@@ -22,7 +22,7 @@ class ListResource<Resource> {
   
   
   Future<void> loadMore() async {
-    //TODO if authenticated paths are required set jwt here
+    //TODO if authenticated paths are required set jwt here, call API Execution method here
     String rawResponse = await getFromAPI(path, {"limit": limit.toString(), "offset": _loaded.toString()}..addAll(params), null);
     // If not JSON just tell the Stream
     if (!rawResponse.startsWith("{")) {
@@ -65,6 +65,8 @@ Resource fromJSON<Resource>(Map<dynamic, dynamic> rawJSON) {
       return Lesson.fromJSON(rawJSON) as Resource;
     case KAGUser:
       return KAGUser.fromJSON(rawJSON) as Resource;
+    case Article:
+      return Article.fromJSON(rawJSON) as Resource;
     case MockModel:
       return MockModel.fromJSON(rawJSON) as Resource;
     default:

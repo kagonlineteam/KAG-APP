@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
+import 'api_helpers.dart';
 import 'api_models.dart' as models;
 import 'api_raw.dart' as http;
 
@@ -270,30 +271,23 @@ class _APIRequests {
     return user;
   }
 
-  Future <String> getArticles({int page=0}) async {
-    await _actionExecution(APIAction.GET_ARTICLE);
+  ListResource<models.Article> getArticles() {
+    // Not calling actionExecution here, because login not needed and needs async
     Map<String, String> params = {};
     params['view'] = "preview-with-image";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
     params['orderby'] = "desc-changed";
-    params['limit'] = 25.toString();
-    params['offset'] = (25 * page).toString();
 
-    String response = await http.getFromAPI("articles", params, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
-    if (response != null) {
-      return response;
-    }
-    return "";
+    return new ListResource<models.Article>.load("articles", params);
   }
 
-  Future <String> getArticle(String id) async {
+  Future<models.Article> getArticle(String id) async {
     await _actionExecution(APIAction.GET_ARTICLE);
 
     String response = await http.getFromAPI("articles/$id", null, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
-    if (response != null) {
-      return response;
-    }
-    return "";
+    var jsonResponse = jsonDecode(response);
+    if (!jsonResponse.containsKey('entity')) return null;
+    return models.Article.fromJSON(jsonResponse['entity']);
   }
 
 
