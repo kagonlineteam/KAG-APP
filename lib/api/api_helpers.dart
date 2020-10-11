@@ -13,6 +13,7 @@ class ListResource<Resource> {
   final StreamController _stream = new StreamController();
   List<Resource> _content = [];
   int _loaded = 0;
+  bool _loading = false;
 
   ListResource(this.path, this.params, {this.limit=20});
   
@@ -22,11 +23,14 @@ class ListResource<Resource> {
   
   
   Future<void> loadMore() async {
+    if (_loading) return;
+    _loading = true;
     //TODO if authenticated paths are required set jwt here, call API Execution method here
     String rawResponse = await getFromAPI(path, {"limit": limit.toString(), "offset": _loaded.toString()}..addAll(params), null);
     // If not JSON just tell the Stream
     if (!rawResponse.startsWith("{")) {
       _stream.addError("Invalid API Response. API Response is not JSON");
+      _loading = false;
       return;
     }
     // Parse JSON
@@ -37,6 +41,7 @@ class ListResource<Resource> {
       }
     }
     _loaded = _loaded + resp['found'];
+    _loading = false;
     _stream.add(_content);
   }
   
