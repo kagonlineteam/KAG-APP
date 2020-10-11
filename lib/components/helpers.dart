@@ -39,8 +39,7 @@ class ResourceListBuilder<Resource> extends StatelessWidget {
       resource = resourceFunction(),
       scrollController = ScrollController() {
     scrollController.addListener(() {
-      if (scrollController.position.atEdge &&
-          scrollController.position.pixels != 0) {
+      if (scrollController.position.pixels / scrollController.position.maxScrollExtent > 0.9) {
         resource.loadMore();
       }
     });
