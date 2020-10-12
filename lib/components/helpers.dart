@@ -28,6 +28,17 @@ class ErrorTextHolder extends StatelessWidget {
   String get error => _error;
 }
 
+class WaitingWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Center(child: Image.asset("assets/eule-rund.png")),
+      Center(child: CircularProgressIndicator())
+    ]);
+  }
+
+}
+
 class ResourceListBuilder<Resource> extends StatelessWidget {
 
   final ListResource resource;
@@ -54,12 +65,11 @@ class ResourceListBuilder<Resource> extends StatelessWidget {
           stream: resource.stream,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
+              // Not using ErrorTextHolder here, because
+              // RessourceListBuilder is already in AppBar
               return Center(child: Text(errorMessage));
             } else if (!snapshot.hasData) {
-              return Stack(children: [
-                Center(child: Image.asset("assets/eule-rund.png")),
-                Center(child: CircularProgressIndicator())
-              ]);
+              return WaitingWidget();
             } else {
               return builder(snapshot.data, scrollController);
             }
