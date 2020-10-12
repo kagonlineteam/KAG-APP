@@ -8,7 +8,7 @@ import 'dart:convert';
 
 
 class Termin {
-  String _title, _id, _description;
+  String _title, _id, _description, _preview;
   int _start, _stop;
   List<String> _tags;
 
@@ -20,6 +20,7 @@ class Termin {
     if (rawJson.containsKey("start")) _start = rawJson['start'];
     if (rawJson.containsKey("stop")) _stop = rawJson['stop'];
     if (rawJson.containsKey("description") && rawJson['description'] != null && rawJson['description'].containsKey("body")) _description = utf8.decode(base64Decode(rawJson['description']['body']));
+    if (rawJson.containsKey("description") && rawJson['description'] != null && rawJson['description'].containsKey("preview")) _preview = rawJson['description']['preview'];
     if (rawJson.containsKey("tags") && rawJson['tags'] != null && rawJson['tags'].length > 0) {
       for (var tag in rawJson['tags']) {
         if (tag != null && tag.containsKey('title') && tag['title'] != null) {
@@ -30,8 +31,10 @@ class Termin {
   }
 
   int get stop => _stop;
+  DateTime get stopDatetime => new DateTime.fromMillisecondsSinceEpoch(_stop * 1000);
 
   int get start => _start;
+  DateTime get startDatetime => new DateTime.fromMillisecondsSinceEpoch(_start * 1000);
 
   String get id => _id;
 
@@ -40,6 +43,7 @@ class Termin {
   List<String> get tags => _tags;
 
   String get description => _description;
+  String get preview => _preview;
 }
 
 class VPlan {

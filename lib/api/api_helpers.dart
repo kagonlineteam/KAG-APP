@@ -78,3 +78,11 @@ Resource fromJSON<Resource>(Map<dynamic, dynamic> rawJSON) {
       throw UnimplementedError("This type is not implemented in fromJSON");
   }
 }
+
+// Adds a leading 0 to a number
+String addLeadingZero(int originalNumber) {
+  if (originalNumber < 10) {
+    return "0$originalNumber";
+  }
+  return "$originalNumber";
+}

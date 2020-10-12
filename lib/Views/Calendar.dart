@@ -9,6 +9,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api_models.dart';
 import '../components/helpers.dart';
+import '../components/terminlist.dart';
 import '../main.dart';
 
 // This class is used as a way to convince
@@ -77,173 +78,23 @@ class _Calendar extends StatelessWidget {
   }
 
 }
-
-class _ListCalendar extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _ListCalendarState();
-  }
-}
-
-class _ListCalendarState extends State {
-  static const dateStyle = const TextStyle(fontSize: 20, color: Colors.white);
-  static const titleStyle = const TextStyle(fontSize: 25, fontWeight: FontWeight.bold, letterSpacing: 1);
-  static const descriptionStyle = const TextStyle(fontSize: 15);
-  int page = 0;
-  List<Widget> rows = <Widget>[];
-  ScrollController controller = ScrollController();
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class _ListCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-          child: GestureDetector(
-            child: Container(
-              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              child: ListView(
-                controller: controller,
-                children: rows,
-              ),
-            )
-        )
-    );
-  }
-
-  Future<Widget> _generateRow(entry) async {
-    var descriptionText = entry['description'] != null ? entry['description']['preview'] : "";
-    var dateOne     = new DateTime.fromMillisecondsSinceEpoch(entry['start'] * 1000);
-    var dateTwo     = new DateTime.fromMillisecondsSinceEpoch(entry['stop'] * 1000);
-    var dateOneText = "${betterNumbers(dateOne.day)}.${betterNumbers(dateOne.month)}.";
-    var dateTwoText = "${betterNumbers(dateTwo.day)}.${betterNumbers(dateTwo.month)}.";
-
-    return Container(
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(
-                  color: Color.fromRGBO(172, 172, 172, 1), width: 2))),
-      child: GestureDetector(
-        child: Row(
-          children: <Widget>[
-              Container(
-                  margin: EdgeInsets.fromLTRB(10, 5, 30, 10),
-                  width: 80,
-                  height: 85,
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: generateDateWidget(dateOneText, dateTwoText),
-                  )
-              ),
-            Flexible(
-              fit: FlexFit.loose,
-              child: Container(
-                margin: EdgeInsets.fromLTRB(0, 0, 10, 10),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      child: Text(entry['title'], style: titleStyle),
-                      alignment: Alignment.topLeft,
-                    ),
-                    Container(
-                      child: Text(getShortedLongDescription(descriptionText),
-                          style: descriptionStyle,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 2),
-                      alignment: Alignment.topLeft,
-                      height: 50,
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-          mainAxisAlignment: MainAxisAlignment.center,
-        ),
-        onTap: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CalendarDetail(new Termin.fromJSON(entry)))),
-      ),
-    );
-  }
-
-  Widget generateDateWidget(String dateOneText, String dateTwoText) {
-    if (dateOneText == dateTwoText) {
-      return Container(
-        color: Color.fromRGBO(47, 109, 29, 1),
-        child: Center(
-          child: Container(
-            child: Text(dateOneText, style: dateStyle),
+    return ResourceListBuilder(
+      KAGApp.api.requests.getFutureCalendarEntries,
+          (data, controller) =>
+          ListView(
+            itemExtent: 120,
+            controller: controller,
+            children: data.map((termin) => TerminWidget(termin)).toList(),
           ),
-        ),
-        width: 100,
-        height: 50,
-      );
-    }
-    return Container(
-      color: Color.fromRGBO(47, 109, 29, 1),
-      child: Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-            child: Text(dateOneText, style: dateStyle),
-          ),
-          Container(
-            child: Image.asset("assets/arrow.png"),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-            child: Text(dateTwoText, style: dateStyle),
-          )
-        ],
-      ),
-      width: 100,
-      height: 100,
     );
-  }
-
-  Future loadEntries() async {
-    final entries = await KAGApp.api.requests.getCalendarEntriesSoon(page);
-    if (entries != null) {
-      var entryRows = List<Widget>.from(rows);
-      for (var entry in entries) {
-          entryRows.add(await _generateRow(entry));
-      }
-      setState(() {
-        rows = entryRows;
-      }
-      );
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    controller.addListener(() {
-      if (controller.position.atEdge) {
-        if (controller.position.pixels != 0) {
-            page++;
-            loadEntries();
-          }
-    }
-    });
-    loadEntries();
-  }
-
-  String getShortedLongDescription(String text) {
-    if (text == null) return "";
-    if (text.length > 300) {
-      return "${text.substring(0, 300)}...";
-    } else {
-      return text;
-    }
-  }
-
-  String betterNumbers(int originalNumber) {
-    if (originalNumber < 10) {
-      return "0$originalNumber";
-    }
-    return "$originalNumber";
   }
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class CalendarDetail extends StatefulWidget {
   CalendarDetail(final this.entry);
   final Termin entry;

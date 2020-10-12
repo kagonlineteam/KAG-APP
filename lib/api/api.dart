@@ -166,13 +166,11 @@ class _APIRequests {
   }
 
   ///
-  /// Returns calendar entries which occur "soon"
+  /// Returns calendar entries which occur in the future
   ///
-  Future<List<dynamic>> getCalendarEntriesSoon(int page) async {
-    await _actionExecution(APIAction.GET_CALENDAR);
-    String response = await http.getFromAPI("termine",
-        {"limit": "20", "offset": (page * 20).toString(), "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
-    return jsonDecode(response)['entities'];
+  ListResource<models.Termin> getFutureCalendarEntries() {
+    return ListResource<models.Termin>.load("termine",
+        {"view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"});
   }
 
   ///
