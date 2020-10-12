@@ -1,59 +1,79 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-
 import 'package:url_launcher/url_launcher.dart';
 
-import '../api/api.dart';
 import '../api/api_models.dart';
+import '../components/helpers.dart';
 import '../main.dart';
 
-
-class Calendar extends StatefulWidget {
-
+// This class is used as a way to convince
+// flutter to only re-build this widget and not _Calendar
+// which would cause a issue with double subscribing to
+// a stream
+// TODO this should probably be removed and a better
+// solution found
+class Calendar extends StatelessWidget {
   @override
-  State<StatefulWidget> createState() {
-    return _CalendarState();
+  Widget build(BuildContext context) {
+    return _Calendar();
   }
+
 }
 
-class _CalendarState extends State<Calendar> {
-  bool showList = false;
+// This Widget is used to switch between ListView and TableView
+class _Calendar extends StatelessWidget {
+
+  static const String SP_LOAD_TERMIN_LIST = "load_termine_as_list";
+
+  final StreamController controller;
+
+  _Calendar():
+      controller = new StreamController() {
+    SharedPreferences.getInstance().then((sp) => controller.add(sp.containsKey(SP_LOAD_TERMIN_LIST)? sp.getBool(SP_LOAD_TERMIN_LIST) : false));
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            title: Align(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Align(
-            child: Text("Termine",
-                style: TextStyle(fontSize: 30)),
-            alignment: Alignment.centerLeft,
-          ),
-           RaisedButton(
-              onPressed: _switchView,
-              child: Container(
-                child: Text(showList ? "Als Kalender" : "Als Liste",
-                    style: TextStyle(fontSize: 15, color: Colors.white)),
-                margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                alignment: Alignment.centerRight,
-              )
-          ),
-        ],
-      ),
-      alignment: Alignment.centerLeft,
-    )),
-    body: showList ? _ListCalendar() : _TableCalendar(),);
+    return StreamBuilder(
+      stream: controller.stream,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return Scaffold(
+              appBar: AppBar(
+                  title: Align(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text("Termine"),
+                        RaisedButton(
+                            onPressed: () => _switchView(!snapshot.data),
+                            child: Container(
+                              child: Text(snapshot.data ? "Als Kalender" : "Als Liste",
+                                  style: TextStyle(fontSize: 15, color: Colors.white)),
+                              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                              alignment: Alignment.centerRight,
+                            )
+                        ),
+                      ],
+                    ),
+                    alignment: Alignment.centerLeft,
+                  )),
+              body: snapshot.data ? _ListCalendar() : _TableCalendar());
+        } else {
+          return WaitingWidget();
+        }
+      },
+    );
   }
 
-  void _switchView() {
-    setState(() {
-      showList = !showList;
-    });
+  void _switchView(bool showList) {
+    SharedPreferences.getInstance().then((sp) => sp.setBool(SP_LOAD_TERMIN_LIST, showList));
+    controller.add(showList);
   }
 
 }
