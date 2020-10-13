@@ -23,7 +23,7 @@ class RPlan extends State {
   static const SP_FILTER  = "RPlan_filter";
 
   bool hasTeacherPlan = false;
-  int _loaded = -1; // -1 = Not Preloaded, 0 = Not loaded, 3 = loaded
+  int _loaded = -1; // -2 = Error, -1 = Not Preloaded, 0 = Not loaded, 3 = loaded
   String searchedTeacher;
 
   List<DayWidget> _days;
@@ -40,8 +40,15 @@ class RPlan extends State {
       }
       bool isDesktop = kIsWeb && MediaQuery.of(context).size.width > 1000;
       return isDesktop ? RPlanListView(_days) : RPlanTabBar(_days);
+    } else if (_loaded  == -2) {
+      return ErrorTextHolder("Der Vertretungsplan ist momentan nicht verfügbar.", barTitle: "VPlan");
     } else {
-      return ErrorTextHolder("Der Vertretungsplan wird noch geladen.", barTitle: "VPlan");
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("VPlan"),
+        ),
+        body: WaitingWidget(),
+      );
     }
   }
   
@@ -84,24 +91,30 @@ class RPlan extends State {
   }
 
   Future _loadDay(int day) async {
-    api_models.VPlan vplan = await KAGApp.api.requests.getVPlan(searchedTeacher, day);
+    try {
+      api_models.VPlan vplan = await KAGApp.api.requests.getVPlan(searchedTeacher, day);
 
-    var newLessons = <Widget>[];
+      var newLessons = <Widget>[];
 
-    newLessons.addAll(_preProcessLessonData(vplan));
+      newLessons.addAll(_preProcessLessonData(vplan));
 
-    setState(() {
-      if (!newLessons.isEmpty) {
-        _days.add(DayWidget(
-          lessons: newLessons,
-          dateTime: vplan.date,
-          pdfFile: vplan.file
-        ));
-      }
-      _days.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-      // Only set to loaded if really loaded
-      if (_loaded != 3) _loaded++;
-    });
+      setState(() {
+        if (!newLessons.isEmpty) {
+          _days.add(DayWidget(
+              lessons: newLessons,
+              dateTime: vplan.date,
+              pdfFile: vplan.file
+          ));
+        }
+        _days.sort((a, b) => a.dateTime.compareTo(b.dateTime));
+        // Only set to loaded if really loaded
+        if (_loaded != 3  && _loaded != -2) _loaded++;
+      });
+    } on Exception catch (_) {
+      setState(() {
+        _loaded = -2;
+      });
+    }
   }
 
 
