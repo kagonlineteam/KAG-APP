@@ -25,24 +25,30 @@ class ListResource<Resource> {
   Future<void> loadMore() async {
     if (_loading) return;
     _loading = true;
-    //TODO if authenticated paths are required set jwt here, call API Execution method here
-    String rawResponse = await getFromAPI(path, {"limit": limit.toString(), "offset": _loaded.toString()}..addAll(params), null);
-    // If not JSON just tell the Stream
-    if (!rawResponse.startsWith("{")) {
-      _stream.addError("Invalid API Response. API Response is not JSON");
-      _loading = false;
-      return;
-    }
-    // Parse JSON
-    Map<dynamic, dynamic> resp = jsonDecode(rawResponse);
-    if (resp['entities'].length > 0) {
-      for (var entity in resp['entities']) {
-        _content.add(fromJSON<Resource>(entity));
+    try {
+      //TODO if authenticated paths are required set jwt here, call API Execution method here
+      String rawResponse = await getFromAPI(path, {"limit": limit.toString(), "offset": _loaded.toString()}..addAll(params), null);
+      // If not JSON just tell the Stream
+      if (!rawResponse.startsWith("{")) {
+        _stream.addError("Invalid API Response. API Response is not JSON");
+        _loading = false;
+        return;
       }
+      // Parse JSON
+      Map<dynamic, dynamic> resp = jsonDecode(rawResponse);
+      if (resp['entities'].length > 0) {
+        for (var entity in resp['entities']) {
+          _content.add(fromJSON<Resource>(entity));
+        }
+      }
+      _loaded = _loaded + resp['found'];
+      _loading = false;
+      _stream.add(_content);
+    } on Exception catch (error) {
+      _stream.addError(error);
+    } finally {
+      _loading = false;
     }
-    _loaded = _loaded + resp['found'];
-    _loading = false;
-    _stream.add(_content);
   }
   
   void reload() {
