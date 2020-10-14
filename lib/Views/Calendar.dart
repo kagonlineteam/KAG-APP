@@ -95,174 +95,32 @@ class _ListCalendar extends StatelessWidget {
   }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-class CalendarDetail extends StatefulWidget {
-  CalendarDetail(final this.entry);
-  final Termin entry;
+class CalendarDetail extends StatelessWidget {
+  CalendarDetail(this.originalTermin);
 
-  @override
-  State<StatefulWidget> createState() {
-    return new CalendarDetailState(entry);
-  }
-
-}
-
-class CalendarDetailState extends State {
-  CalendarDetailState(this.entry);
-
-  Termin entry;
-  static const dateStyle        = const TextStyle(fontSize: 25, color: Colors.white);
-  static const titleStyle       = const TextStyle(fontSize: 35, fontWeight: FontWeight.bold, letterSpacing: 1);
-  static const tagStyle         = const TextStyle(fontSize: 16, color: Colors.white);
-  static const timeStyle        = const TextStyle(fontSize: 16, color: Colors.white);
-
-  @override
-  void initState() {
-    super.initState();
-    loadTerminInfos();
-  }
-
-  String betterNumbers(int originalNumber) {
-    if (originalNumber < 10) {
-      return "0$originalNumber";
-    }
-    return "$originalNumber";
-  }
-
-  void loadTerminInfos() async {
-    var entry = await KAGApp.api.requests.getCalenderEntryById(this.entry.id);
-    setState(() {
-      this.entry = entry;
-    });
-  }
-
-  // Build design
+  final Termin originalTermin;
 
   @override
   Widget build(BuildContext context) {
-    var title = entry.title;
-
-    DateTime dateObjectOne = DateTime.fromMillisecondsSinceEpoch(entry.start * 1000);
-    DateTime dateObjectTwo = DateTime.fromMillisecondsSinceEpoch(
-        entry.stop * 1000);
-
-    // Support both. One less second and one less millisecond
-    bool allDay = dateObjectTwo.difference(dateObjectOne).inMilliseconds == (1000 * 60 * 60 * 24) - 1 || dateObjectTwo.difference(dateObjectOne).inMilliseconds == (1000 * 60 * 60 * 24) - 1000;
-
-    var dateOne = "${betterNumbers(dateObjectOne.day)}.${betterNumbers(
-        dateObjectOne.month)}.";
-    var dateTwo = "${betterNumbers(dateObjectTwo.day)}.${betterNumbers(
-        dateObjectTwo.month)}.";
-    var timeOne = "${betterNumbers(dateObjectOne.hour)}:${betterNumbers(dateObjectOne.minute)} Uhr";
-    var timeTwo = "${betterNumbers(dateObjectTwo.hour)}:${betterNumbers(dateObjectTwo.minute)} Uhr";
-
-    Widget description = Text("");
-    if (entry.description != null) {
-      description = Html(data: entry.description.replaceAll('\n', ''), onLinkTap: launch);
-    }
-
-    List<Widget> tags = [];
-
-    if (entry.tags != null) {
-      for (String tagString in entry.tags) {
-        tags.add(createTag(tagString));
-      }
-    }
-
-    return Scaffold(
-      appBar: AppBar(),
-      body: SafeArea(
-          child: Container(
-            child: ListView(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Container(
-                      child: Text(
-                        title,
-                        style: titleStyle,
-                      ),
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                      alignment: Alignment.centerLeft,
-                    ),
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            child: Column(
-                              children: <Widget>[
-                                Text(
-                                  dateOne,
-                                  style: dateStyle,
-                                ),
-                                !allDay ? Text(
-                                  timeOne,
-                                  style: timeStyle,
-                                ) : Container()
-                              ],
-                            ),
-                            margin: EdgeInsets.fromLTRB(20, 10, 0, 10),
-                          ),
-                          Container(
-                            child: Image.asset("assets/arrow_horizontal.png"),
-                          ),
-                          Container(
-                            child: Column(
-                              children: <Widget>[
-                                Text(
-                                  dateTwo,
-                                  style: dateStyle,
-                                ),
-                                !allDay ? Text(
-                                  timeTwo,
-                                  style: timeStyle,
-                                ) : Container()
-                              ],
-                            ),
-                            margin: EdgeInsets.fromLTRB(0, 10, 20, 10),
-                          )
-                        ],
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      ),
-                      height: 70,
-                      color: Color.fromRGBO(47, 109, 29, 1),
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                    ),
-                    /*Container(
-                  child: Row(
-                    children: tags,
-                  ),
-                  margin: EdgeInsets.fromLTRB(10, 10, 20, 10),
-                ),*/
-                    Container(
-                      child: description,
-                      margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-                      alignment: Alignment.topLeft,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          )),
+    return FutureBuilder(
+      future: KAGApp.api.requests.getTermin(originalTermin.id),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return CalendarDetailWidget(snapshot.data);
+        } else if (!snapshot.hasError) {
+          return Stack(
+            children: [
+              CalendarDetailWidget(originalTermin),
+              Center(child: CircularProgressIndicator())
+            ],
+          );
+        } else {
+          return CalendarDetailWidget(originalTermin);
+        }
+      },
     );
   }
 
-
-
-  Widget createTag(String title) {
-    return Container(
-      child: Container(
-        child: Text(
-          title,
-          style: tagStyle,
-        ),
-        margin: EdgeInsets.fromLTRB(10, 2, 10, 2),
-      ),
-      margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
-      decoration: BoxDecoration(
-          color: Color.fromRGBO(47, 109, 29, 1),
-          borderRadius: BorderRadius.all(Radius.circular(20))),
-    );
-  }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class _TableCalendar extends StatefulWidget{
