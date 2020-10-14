@@ -43,6 +43,7 @@ class Termin {
   List<String> get tags => _tags;
 
   String get description => _description;
+  bool get hasDescription =>  _description != null;
   String get preview => _preview;
 }
 

@@ -144,7 +144,7 @@ class _APIRequests {
   ///
   /// Return a single Termin in canonical view
   ///
-  Future<models.Termin> getCalenderEntryById(String id) async {
+  Future<models.Termin> getTermin(String id) async {
     await _actionExecution(APIAction.GET_CALENDAR);
     String response = await http.getFromAPI(
         "termine/$id",
