@@ -43,6 +43,13 @@ class ArticleDetail extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ArticleDetailWidget(snapshot.data);
+        } else if (!snapshot.hasError) {
+          return Stack(
+            children: [
+              ArticleDetailWidget(originArticle),
+              Center(child: CircularProgressIndicator())
+            ],
+          );
         } else {
           return ArticleDetailWidget(originArticle);
         }

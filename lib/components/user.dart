@@ -5,7 +5,7 @@ import 'timetable.dart';
 class UserPage extends StatelessWidget {
   UserPage(this.shownName, this.timeTable);
 
-  final TimeTable timeTable;
+  final Widget timeTable;
   final String shownName;
 
   @override

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:kag/components/helpers.dart';
 import 'package:kag/components/timetable.dart';
 import 'package:kag/components/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,8 +18,10 @@ class User extends StatelessWidget {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return UserPage(snapshot.data.appropriateName, snapshot.data.stufe != null ? TimeTable(snapshot.data.klasse != null ? snapshot.data.stufe + snapshot.data.klasse : snapshot.data.stufe) : null);
+          } else if (!snapshot.hasError) {
+            return UserPage(null, WaitingWidget());
           } else {
-            return UserPage(null, null);
+            return ErrorTextHolder("Die Nutzer Seite ist zur Zeit leider nicht verfügbar");
           }
         });
   }
