@@ -62,10 +62,8 @@ Future<String> getFromAPI(
     });
   }
   // Check that app is not null. So that tests work
-  if (KAGApp.app != null) KAGApp.app.setLoading();
   var response = await client.get("$API$path$query",
           headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null);
-  if (KAGApp.app != null) KAGApp.app.setLoading(loading: false);
   if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
   return response.body;
 }
