@@ -52,20 +52,7 @@ class KAGApp extends StatefulWidget {
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   static final _isVPlanApp = kIsWeb && webinfo.window.location.host.startsWith("vplan.");
   static int _index = _isVPlanApp ? 0 : 2; // ignore: prefer_final_fields
-  bool isLoading = false;
   TabController controller;
-
-  void setLoading({bool loading=true}) {
-    if (loading) {
-      setState(() {
-        isLoading = true;
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
 
   @override
   void initState() {
@@ -83,9 +70,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        DefaultTabController(
+    return DefaultTabController(
           length: _isVPlanApp ? 2 : 5,
           child: Scaffold(
               body: TabBarView(
@@ -143,11 +128,6 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
               )
             //backgroundColor: Colors.green,
           ),
-        ),
-        isLoading ? Center(
-          child: CircularProgressIndicator(),
-        ) : Container()
-      ],
     );
 
 
