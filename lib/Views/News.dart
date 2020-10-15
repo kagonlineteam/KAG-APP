@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kag/api/api.dart';
 import 'package:kag/components/helpers.dart';
 
 import '../api/api_helpers.dart';
@@ -15,7 +16,7 @@ class News extends StatelessWidget {
             title: Text("Aktuelles"),
         ),
         body: ResourceListBuilder(
-            KAGApp.api.requests.getArticles,
+            API.of(context).requests.getArticles,
             (data, controller) => ListView(
               controller: controller,
               children: [
@@ -39,7 +40,7 @@ class ArticleDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: KAGApp.api.requests.getArticle(originArticle.id),
+      future: API.of(context).requests.getArticle(originArticle.id),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return ArticleDetailWidget(snapshot.data);

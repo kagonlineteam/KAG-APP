@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:kag/api/api_helpers.dart';
 
 import './Views/Calendar.dart'	as Calendar;
 import './Views/Home.dart'      as Home;
@@ -20,18 +21,21 @@ void main() {
   // This does not need to be waited on as we do not use it in HomeScreen
   initializeDateFormatting("de_DE");
 
+  API api = new API();
+  //TODO preload
   runApp(
-    MaterialApp(
-      title: 'KAG',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Color.fromRGBO(0, 112, 1, 1),
-        accentColor: Color.fromRGBO(255, 145, 10, 1),
-        backgroundColor: Color.fromRGBO(47, 47, 47, 1),
-        buttonColor: Color.fromRGBO(0, 82, 1, 1),
-      ),
-      home: KAGApp(),
-    ),
+    APIHolder(
+        MaterialApp(
+          title: 'KAG',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primaryColor: Color.fromRGBO(0, 112, 1, 1),
+            accentColor: Color.fromRGBO(255, 145, 10, 1),
+            backgroundColor: Color.fromRGBO(47, 47, 47, 1),
+            buttonColor: Color.fromRGBO(0, 82, 1, 1),
+          ),
+          home: KAGApp(),
+        ), api),
   );
   if (!kIsWeb) {
     new PushNotificationsManager().init();
@@ -39,7 +43,6 @@ void main() {
 }
 
 class KAGApp extends StatefulWidget {
-  static final API api = new API();
   static KAGAppState app;
 
   @override
@@ -177,7 +180,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   }
 
   Future checkLogin() async {
-    if (!(await KAGApp.api.hasLoginCredentials())) {
+    if (!(await API.of(context).hasLoginCredentials())) {
       setLoggedOut();
     } else {
       setLoggedIn();

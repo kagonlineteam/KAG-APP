@@ -14,7 +14,7 @@ class User extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: KAGApp.api.requests.getUserInfo(),
+        future: API.of(context).requests.getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return UserPage(snapshot.data.appropriateName, snapshot.data.stufe != null ? TimeTable(snapshot.data.klasse != null ? snapshot.data.stufe + snapshot.data.klasse : snapshot.data.stufe) : null);
@@ -27,7 +27,7 @@ class User extends StatelessWidget {
   }
 
   static void logout(BuildContext context) {
-    KAGApp.api.setLoginCredentials(null, null);
+    API.of(context).setLoginCredentials(null, null);
     KAGApp.app.setLoggedOut();
     SharedPreferences.getInstance().then((instance) => instance.remove("klasse"));
     Scaffold.of(context).showSnackBar(SnackBar(

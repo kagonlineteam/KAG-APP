@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:kag/api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import '../api/api_models.dart' as api_models;
@@ -73,7 +74,7 @@ class RPlan extends State {
     }
 
     // Load Settings
-    var groups = await KAGApp.api.requests.getGroups();
+    var groups = await API.of(context).requests.getGroups();
     hasTeacherPlan = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
   }
 
@@ -92,7 +93,7 @@ class RPlan extends State {
 
   Future _loadDay(int day) async {
     try {
-      api_models.VPlan vplan = await KAGApp.api.requests.getVPlan(searchedTeacher, day);
+      api_models.VPlan vplan = await API.of(context).requests.getVPlan(searchedTeacher, day);
 
       var newLessons = <Widget>[];
 

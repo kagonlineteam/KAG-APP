@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../api/api.dart';
 import '../main.dart';
 
 class Login extends StatefulWidget {
@@ -32,7 +33,7 @@ class LoginState extends State<Login>
       ),
     );
     bool success =
-        await KAGApp.api.setLoginCredentials(username.text, password.text);
+        await API.of(context).setLoginCredentials(username.text, password.text);
     Navigator.pop(context);
     if (success) {
       KAGApp.app.setLoggedIn();
