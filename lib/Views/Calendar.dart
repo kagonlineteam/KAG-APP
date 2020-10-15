@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:kag/api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -84,7 +85,7 @@ class _ListCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ResourceListBuilder(
-      KAGApp.api.requests.getFutureCalendarEntries,
+      API.of(context).requests.getFutureCalendarEntries,
           (data, controller) =>
           ListView(
             itemExtent: 120,
@@ -103,7 +104,7 @@ class CalendarDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: KAGApp.api.requests.getTermin(originalTermin.id),
+      future: API.of(context).requests.getTermin(originalTermin.id),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return CalendarDetailWidget(snapshot.data);
@@ -140,7 +141,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
 
   void fillCalendar(int month, int year) async {
     _loadedMonths.add(month.toString() + year.toString());
-    List<Termin> termine = await KAGApp.api.requests.getCalendarForMonth(month, year);
+    List<Termin> termine = await API.of(context).requests.getCalendarForMonth(month, year);
     for (var termin in termine) {
       var terminDate = DateTime.fromMillisecondsSinceEpoch(termin.start*1000);
       var date = new DateTime(terminDate.year, terminDate.month, terminDate.day);

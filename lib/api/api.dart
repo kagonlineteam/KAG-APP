@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
@@ -30,6 +31,13 @@ class API {
   API.asMock(User user, _APIRequests requests) {
     _user = user;
     _requests = requests;
+  }
+
+  ///
+  /// Of Method is used to get the API when APIHolder is used
+  ///
+  static API of(BuildContext context)  {
+    return context.findAncestorWidgetOfExactType<APIHolder>().api;
   }
 
   ///

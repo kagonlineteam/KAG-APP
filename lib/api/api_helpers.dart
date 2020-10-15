@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:kag/api/api.dart';
+
 import 'api_models.dart';
 import 'api_raw.dart' show getFromAPI;
 
@@ -91,4 +94,17 @@ String addLeadingZero(int originalNumber) {
     return "0$originalNumber";
   }
   return "$originalNumber";
+}
+
+class APIHolder extends InheritedWidget  {
+  APIHolder(Widget child, this.api, /*this.options*/) : super(child: child);
+
+  final API api;
+  //final APPOptions options;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return false;
+  }
+
 }
