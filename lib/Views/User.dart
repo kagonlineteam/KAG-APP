@@ -28,12 +28,12 @@ class User extends StatelessWidget {
 
   static void logout(BuildContext context) {
     API.of(context).setLoginCredentials(null, null);
-    KAGApp.app.setLoggedOut();
+    KAGAppState.app.setLoggedOut();
     SharedPreferences.getInstance().then((instance) => instance.remove("klasse"));
     Scaffold.of(context).showSnackBar(SnackBar(
         content: Text("Logged out!"),
         action: SnackBarAction(
-            label: 'Zurück zum Start!', onPressed: () => KAGApp.app.goToPage(2))
+            label: 'Zurück zum Start!', onPressed: () => KAGAppState.app.goToPage(2))
     ));
   }
 

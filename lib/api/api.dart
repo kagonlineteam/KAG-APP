@@ -108,7 +108,7 @@ class _APIRequests {
     if (_api._isLogInNeeded(action) && !_api._user.isLoggedIn()) {
       if (!await _api._user.login()) {
         _api._user.setLoginCredentials(null, null);
-        KAGApp.app.setLoggedOut();
+        KAGAppState.app.setLoggedOut();
         throw Exception("Login to API is not possible");
       }
     }
