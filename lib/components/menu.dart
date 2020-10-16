@@ -38,3 +38,65 @@ class ExtraOptionsMenu extends StatelessWidget {
   }
 
 }
+
+class BottomNavigationBarMenu extends StatelessWidget {
+  BottomNavigationBarMenu({this.isVPlanApp = false, this.controller});
+
+  final bool isVPlanApp;
+  final TabController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Color.fromRGBO(244, 244, 244, 1),
+      child: TabBar(
+        controller: controller,
+        tabs: isVPlanApp ?
+        // VPlan App
+        <Widget>[
+          Tab(
+            text: "VPlan",
+            icon: Icon(Icons.compare_arrows),
+          ),
+          Tab(
+            text: "SPlan",
+            icon: Icon(Icons.person),
+          ),
+        ] :
+        // Normal App
+        <Widget>[
+          Tab(
+            text: "Termine",
+            icon: Icon(Icons.event),
+          ),
+          Tab(
+            text: "VPlan",
+            icon: Icon(Icons.compare_arrows),
+          ),
+          Tab(
+            text: "Home",
+            icon: Icon(Icons.home),
+          ),
+          Tab(
+            text: "User",
+            icon: Icon(Icons.person),
+          ),
+          Tab(
+            text: "News",
+            icon: Icon(Icons.public),
+          ),
+        ],
+        isScrollable: false,
+        labelColor: Color.fromRGBO(47, 109, 29, 1),
+        unselectedLabelColor: Colors.grey,
+        indicatorColor: Colors.transparent,
+        labelStyle: TextStyle(
+          fontSize: 10,
+        ),
+      ),
+    );
+  }
+
+
+
+}

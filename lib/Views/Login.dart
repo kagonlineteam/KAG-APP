@@ -36,7 +36,7 @@ class LoginState extends State<Login>
         await API.of(context).setLoginCredentials(username.text, password.text);
     Navigator.pop(context);
     if (success) {
-      KAGApp.app.setLoggedIn();
+      KAGAppState.app.setLoggedIn();
     } else {
       showDialog(
           context: context,
@@ -158,7 +158,7 @@ class NotLoggedIn extends StatelessWidget {
       appBar: AppBar(),
       body: Center(
         child: RaisedButton(
-            onPressed: () => KAGApp.app.goToPage(3),
+            onPressed: () => KAGAppState.app.goToPage(3),
             child: Text("Bitte melde dich an!", style: TextStyle(color: Colors.white))),
       ),
     );
