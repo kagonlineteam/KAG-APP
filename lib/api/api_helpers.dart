@@ -108,3 +108,12 @@ class APIHolder extends InheritedWidget  {
   }
 
 }
+
+class HomeScreenData {
+  HomeScreenData(this.termine, this.countdown);
+
+  final List<Termin> termine;
+  final Termin countdown;
+
+  DateTime get ferienDatetime => countdown.startDatetime;
+}
