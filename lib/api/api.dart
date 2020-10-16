@@ -164,16 +164,6 @@ class _APIRequests {
   }
 
   ///
-  /// Returns the next Calendar Entry
-  ///
-  Future<List<dynamic>> getNextCalendarEntries() async {
-    await _actionExecution(APIAction.GET_CALENDAR);
-    String response = await http.getFromAPI(
-        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
-    return jsonDecode(response)['entities'];
-  }
-
-  ///
   /// Returns calendar entries which occur in the future
   ///
   ListResource<models.Termin> getFutureCalendarEntries() {
@@ -182,27 +172,44 @@ class _APIRequests {
   }
 
   ///
+  /// Returns the next Calendar Entry
+  ///
+  Future<List<models.Termin>> _getNextCalendarEntries() async {
+    await _actionExecution(APIAction.GET_CALENDAR);
+    var response = await http.getFromAPI(
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
+    if (response != null) {
+      var jsonResponse = json.decode(response)['entities'];
+      List<models.Termin> entries = [];
+      for (var entity in jsonResponse) {
+        entries.add(new models.Termin.fromJSON(entity));
+      }
+      return entries;
+    }
+    return [];
+  }
+
+  ///
   /// Returns Holiday Timestamp
   ///
   /// Cache is not validated here because it is validated afterwards by checking if the holidays already began
   ///
-  Future<int> getHolidayUnixTimestamp() async {
+  Future<models.Termin> _getNextFerienEvent() async {
     await _actionExecution(APIAction.GET_CALENDAR);
     var jsonResponse = jsonDecode(await http.getFromAPI(
         "termine",
         {
           "limit": "1",
           "tags": "eq-6spaDnbYlZttaWosETA8vU",
-          "stop": "gte-${new DateTime.now().millisecondsSinceEpoch ~/ 1000}",
+          "start": "gte-${new DateTime.now().millisecondsSinceEpoch ~/ 1000}",
           "view": "runtime",
           "orderby": "asc-start"
         },
         _api._user.isLoggedIn() ? _api._user.getJWT() : null))['entities'];
     if (jsonResponse.length > 0) {
-      String response = jsonResponse[0]['start'].toString();
-      return int.parse(response);
+      return models.Termin.fromJSON(jsonResponse[0]);
     }
-    return 0;
+    return null;
   }
 
   ///
@@ -300,6 +307,13 @@ class _APIRequests {
   Future <Uint8List> getFile(String id) async {
     var resp = await http.client.get("${http.API}files/$id", headers: _api._user.isLoggedIn() ? {'Authorization': 'Bearer ${_api._user.getJWT()}'} : {});
     return resp.bodyBytes;
+  }
+
+  Future<HomeScreenData> getHomescreen() async {
+    List<models.Termin> termine = await _getNextCalendarEntries();
+    models.Termin ferien = await _getNextFerienEvent();
+    HomeScreenData homescreen = HomeScreenData(termine, ferien);
+    return homescreen;
   }
 
 }
