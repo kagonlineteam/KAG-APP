@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../Views/User.dart';
-import 'timetable.dart';
 
 class UserPage extends StatelessWidget {
   UserPage(this.shownName, this.timeTable);

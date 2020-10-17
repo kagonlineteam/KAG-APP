@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:kag/api/api.dart';
 
+import 'api.dart';
 import 'api_models.dart';
 import 'api_raw.dart' show getFromAPI;
 

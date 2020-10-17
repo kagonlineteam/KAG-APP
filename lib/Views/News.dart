@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:kag/api/api.dart';
-import 'package:kag/components/helpers.dart';
 
-import '../api/api_helpers.dart';
+import '../api/api.dart';
 import '../api/api_models.dart';
+import '../components/helpers.dart';
 import '../components/news.dart';
-import '../main.dart';
 
 class News extends StatelessWidget {
 

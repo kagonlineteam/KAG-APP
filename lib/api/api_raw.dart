@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../main.dart';
-
 const API = "https://api.kag-langenfeld.de/";
 
 // This is here so it is possible to have a mock client
