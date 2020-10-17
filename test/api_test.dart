@@ -20,7 +20,7 @@ void main() {
     when(raw.client.get("${raw.API}request?test=errorCode", headers: null)).thenAnswer((_) async => http.Response('testResponse3', 400));
     expect(await raw.getFromAPI("request", {"test": "param", "param": "test"}, "123"), "testResponse1");
     expect(await raw.getFromAPI("request", {"test": "param", "param": "test"}, null), "testResponse2");
-    expect(await raw.getFromAPI("request", {"test": "errorCode"}, null), "testResponse3"); // At the current time it can not be noticed that there is a error
+    expect(() => raw.getFromAPI("request", {"test": "errorCode"}, null), throwsException);
   });
 
   test('test API internal', () async {
