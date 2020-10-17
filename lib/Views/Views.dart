@@ -14,7 +14,7 @@ import './User.dart'      as User; // ignore: library_prefixes
 List<Widget> AppViews({bool loggedIn = true}) {
   return <Widget>[
     new Calendar.Calendar(),
-    new RPlan.RPlanViewWidget(),
+    loggedIn ? new RPlan.RPlanViewWidget() : new Login.NotLoggedIn(),
     new Home.Home(),
     loggedIn ? new User.User() : new Login.Login(),
     new News.News(),
@@ -24,7 +24,7 @@ List<Widget> AppViews({bool loggedIn = true}) {
 // ignore: non_constant_identifier_names
 List<Widget> VPlanAppViews({bool loggedIn = true}) {
   return <Widget>[
-    new RPlan.RPlanViewWidget(),
+    loggedIn ? new RPlan.RPlanViewWidget() : new Login.Login(),
     loggedIn ? new User.User() : new Login.Login(),
   ];
 }
