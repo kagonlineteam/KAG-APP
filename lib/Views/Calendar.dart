@@ -2,16 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
-import 'package:kag/api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../api/api.dart';
 import '../api/api_models.dart';
 import '../components/helpers.dart';
 import '../components/terminlist.dart';
-import '../main.dart';
 
 // This class is used as a way to convince
 // flutter to only re-build this widget and not _Calendar

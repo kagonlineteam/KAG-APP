@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:kag/components/helpers.dart';
-import 'package:kag/components/timetable.dart';
-import 'package:kag/components/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api.dart';
+import '../components/helpers.dart';
+import '../components/timetable.dart';
+import '../components/user.dart';
 import '../main.dart';
 
 class User extends StatelessWidget {

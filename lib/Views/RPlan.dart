@@ -1,15 +1,15 @@
 import 'dart:async';
-import 'dart:convert';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:kag/api/api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/cupertino.dart';
+
+import '../api/api.dart';
 import '../api/api_models.dart' as api_models;
 import '../components/helpers.dart';
 import '../components/rplan_components.dart';
 import '../components/rplan_structure.dart';
-import '../main.dart';
 
 
 class RPlanViewWidget extends StatefulWidget {
@@ -220,25 +220,25 @@ class RPlanDetail extends StatelessWidget {
           Row(
             children: <Widget>[
               Flexible(
-                child: Container(
-                  child: Text(first, style: textStyle, textAlign: TextAlign.left),
-                  height: 30,
-                ),
-                fit: FlexFit.loose
+                  child: Container(
+                    child: Text(first, style: textStyle, textAlign: TextAlign.left),
+                    height: 30,
+                  ),
+                  fit: FlexFit.loose
               ),
               Flexible(
                 child: Container(
-                    child: Text(arrow, style: textStyle, textAlign: TextAlign.center),
-                    height: 30,
-                  ),
+                  child: Text(arrow, style: textStyle, textAlign: TextAlign.center),
+                  height: 30,
+                ),
                 flex: 0,
               ),
               Flexible(
-                child: Container(
-                  child: Text(second, style: textStyle, textAlign: TextAlign.right),
-                  height: 30,
-                ),
-                fit: FlexFit.loose
+                  child: Container(
+                    child: Text(second, style: textStyle, textAlign: TextAlign.right),
+                    height: 30,
+                  ),
+                  fit: FlexFit.loose
               )
             ],
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -124,8 +124,10 @@ class Lesson {
 
   String get infos => _infos;
 
+  // ignore: unnecessary_getters_setters
   String get stunde => _stunde;
 
+  // ignore: unnecessary_getters_setters
   set stunde(String value) {
     _stunde = value;
   }
@@ -153,6 +155,7 @@ class KAGUser {
 
   List<String> get roles => _roles;
 
+  // ignore: unnecessary_getters_setters
   String get klasse => _klasse;
 
   String get stufe => _stufe;
