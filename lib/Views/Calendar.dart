@@ -218,6 +218,8 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
   Widget _buildTableCalendar() {
     return TableCalendar(
       locale: 'de_DE',
+      availableGestures: AvailableGestures.horizontalSwipe,                                       //----------
+      initialCalendarFormat: CalendarFormat.month,
       calendarController: _calendarController,
       events: _events,
       startingDayOfWeek: StartingDayOfWeek.monday,
@@ -238,6 +240,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
+        formatButtonVisible: false,                                                               //----------
         formatButtonTextStyle: TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
           color: Color.fromRGBO(255, 145, 10, 1),
