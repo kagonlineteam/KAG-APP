@@ -10,7 +10,7 @@ class ExtraOptionsMenu extends StatelessWidget {
           showAboutDialog(
               context: context,
               applicationName: "KAG App",
-              applicationVersion: "1.0",
+              applicationVersion: "1.1",
               applicationLegalese: "Copyright KAG OnlineTeam 2019-2020\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
               applicationIcon: Image.asset("assets/icon.png", width: 64,)
           );
