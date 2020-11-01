@@ -178,11 +178,11 @@ class MobileLesson extends StatelessWidget {
                       )),
                       Expanded(child: Visibility(
                         visible: !RPlan.of(context).hasTeacherPlan,
-                        child: Text(lesson.art, style: normalText, textAlign: TextAlign.center),
+                        child: Text(lesson.type, style: normalText, textAlign: TextAlign.center),
                       )),
                       Expanded(child: Visibility(
                         visible: RPlan.of(context).hasTeacherPlan,
-                        child: Text(lesson.art, style: normalText, textAlign: TextAlign.right),
+                        child: Text(lesson.type, style: normalText, textAlign: TextAlign.right),
                       ))
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
