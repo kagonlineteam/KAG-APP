@@ -260,7 +260,7 @@ class TerminList extends StatelessWidget {
     return Column(
       children: [
         Container(
-          child: Text("Ferien-Countdown", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          child: Text("Die nächsten Termine", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
         )
