@@ -258,7 +258,7 @@ class RPlanDetail extends StatelessWidget {
   }
 
   String getTeacherText(String teacher, String vTeacher) {
-    if (teacher.isEmpty && vTeacher.isEmpty) {
+    if ((teacher == null || teacher.isEmpty) && (vTeacher == null || vTeacher.isEmpty)) {
       return "";
     }
     return "Lehrer";
