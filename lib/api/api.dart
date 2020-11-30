@@ -278,9 +278,10 @@ class _APIRequests {
     await _actionExecution(APIAction.GET_USER_INFO);
     String response = await http.getFromAPI(
         "users/${_api._user.getUsername()}", null, _api._user.getJWT());
-    models.KAGUser user = models.KAGUser.fromJSON(jsonDecode(response)['entity']);
+    var serverResponse = jsonDecode(response)['entity'];
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    user.klasse = preferences.getString("klasse");
+    serverResponse['klasse'] = preferences.getString("klasse");
+    models.KAGUser user = models.KAGUser.fromJSON(serverResponse);
     return user;
   }
 

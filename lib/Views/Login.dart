@@ -36,7 +36,33 @@ class LoginState extends State<Login>
         await API.of(context).setLoginCredentials(username.text, password.text);
     Navigator.pop(context);
     if (success) {
-      KAGAppState.app.setLoggedIn();
+      var userInfo = await API.of(context).requests.getUserInfo();
+      if (userInfo.roles.contains("ROLE_UNTERSTUFE") && userInfo.klasse == null) {
+        var inputController = TextEditingController();
+        showDialog(
+          context: context,
+          child: new CupertinoAlertDialog(
+            title: Text("Bitte gebe deine Klasse ein"),
+            content: CupertinoTextField(
+              controller: inputController,
+              placeholder: "z.B. a",
+              maxLength: 1,
+            ),
+            actions: [
+              MaterialButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  userInfo.klasse = inputController.text;
+                  KAGAppState.app.setLoggedIn();
+                },
+                child: Text("Speichern"),
+              ),
+            ],
+          )
+        );
+      } else {
+        KAGAppState.app.setLoggedIn();
+      }
     } else {
       showDialog(
           context: context,
