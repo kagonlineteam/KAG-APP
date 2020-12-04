@@ -41,7 +41,7 @@ class LoginState extends State<Login>
         var inputController = TextEditingController();
         showDialog(
           context: context,
-          child: new CupertinoAlertDialog(
+          builder: (context) => new CupertinoAlertDialog(
             title: Text("Bitte gebe deine Klasse ein"),
             content: CupertinoTextField(
               controller: inputController,
