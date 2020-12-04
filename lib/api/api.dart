@@ -235,7 +235,7 @@ class _APIRequests {
       paramsOne.addAll({"lehrer": "eq-${Uri.encodeComponent(teacher)}"});
       await jsonDecode(await http.getFromAPI("vertretungen", paramsOne, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
       var paramsTwo = Map.of(params);
-      paramsOne.addAll({"v_lehrer": "eq-${Uri.encodeComponent(teacher)}"});
+      paramsTwo.addAll({"v_lehrer": "eq-${Uri.encodeComponent(teacher)}"});
       await jsonDecode(await http.getFromAPI("vertretungen", paramsTwo, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
     } else {
       await jsonDecode(await http.getFromAPI("vertretungen", params, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
