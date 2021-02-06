@@ -21,8 +21,7 @@ class LoginState extends State<Login>
     showDialog(
       context: context,
       barrierDismissible: false,
-      // ignore: deprecated_member_use
-      child: new Dialog(
+      builder: (context) => Dialog(
         child: new Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -30,7 +29,7 @@ class LoginState extends State<Login>
             new Text("Anmelden"),
           ],
         ),
-      ),
+      )
     );
     bool success =
         await API.of(context).setLoginCredentials(username.text, password.text);
@@ -66,8 +65,7 @@ class LoginState extends State<Login>
     } else {
       showDialog(
           context: context,
-          // ignore: deprecated_member_use
-          child: new CupertinoAlertDialog(
+          builder: (context) => new CupertinoAlertDialog(
             title: Text("Login nicht möglich"),
             content: Text(
                 "Konnte Login nicht durchführen.\n Ist dein Benutzername oder Passwort falsch?\n Bitte achte auf die Groß- und Kleinschreibung (z.b. MMax16)"),
@@ -82,7 +80,8 @@ class LoginState extends State<Login>
                 child: Text("Erneut versuchen"),
               )
             ],
-          ));
+          )
+      );
     }
   }
 

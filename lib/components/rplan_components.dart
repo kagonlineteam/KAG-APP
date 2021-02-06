@@ -318,8 +318,7 @@ class TeacherKuerzelButton extends StatelessWidget {
     TextEditingController teacher = TextEditingController(text: RPlan.of(context).searchedTeacher);
     showDialog(
         context: context,
-        // ignore: deprecated_member_use
-        child: CupertinoAlertDialog(
+        builder: (context) => CupertinoAlertDialog(
           content: Column(
             children: <Widget>[
               Container(
@@ -372,6 +371,7 @@ class TeacherKuerzelButton extends StatelessWidget {
               ),
             ),
           ],
-        ));
+        )
+    );
   }
 }
