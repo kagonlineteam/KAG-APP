@@ -75,3 +75,5 @@ ios/Flutter/flutter_export_environment.sh
 
 
 **/android/key.properties
+
+generated_plugin_registrant.dart
