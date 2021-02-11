@@ -65,3 +65,26 @@ Future<String> getFromAPI(
   if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
   return response.body;
 }
+
+///
+/// Sends an empty Post Request to API
+/// Makes request, returns response body
+/// If not successful returns null
+/// Will not send authorization header if jwt is null
+///
+Future<String> sendEmptyPostToAPI(
+    String path, Map<String, String> params, String jwt) async {
+  String query = "";
+  if (params != null) {
+    query = "?";
+    params.forEach((name, value) {
+      if (query != "?") query += "&";
+      query += "$name=$value";
+    });
+  }
+  // Check that app is not null. So that tests work
+  var response = await client.post("$API$path$query",
+      headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null);
+  if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
+  return response.body;
+}

@@ -81,6 +81,8 @@ Resource fromJSON<Resource>(Map<dynamic, dynamic> rawJSON) {
       return KAGUser.fromJSON(rawJSON) as Resource;
     case Article:
       return Article.fromJSON(rawJSON) as Resource;
+    case MailSettings:
+      return MailSettings.fromJSON(rawJSON) as Resource;
     case MockModel:
       return MockModel.fromJSON(rawJSON) as Resource;
     default:

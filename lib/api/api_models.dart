@@ -195,6 +195,26 @@ class Article {
   String get htmlBody => _htmlBody;
 }
 
+class MailSettings {
+  String _primaryMail;
+  bool _exists;
+  bool _consent;
+
+  // ignore: avoid_positional_boolean_parameters
+  MailSettings(this._primaryMail, this._exists, this._consent);
+
+  MailSettings.fromJSON(Map<dynamic, dynamic> rawJSON) {
+    if (rawJSON.containsKey("mail") && rawJSON['mail'] is List && rawJSON['mail'].length > 0) _primaryMail = rawJSON['mail'][0];
+    if (rawJSON.containsKey("exists")) _exists = rawJSON['exists'];
+    if (rawJSON.containsKey("consent")) _consent = rawJSON['consent'];
+  }
+
+  bool get exists => _exists;
+  bool get consent => _consent;
+
+  String get primaryMail => _primaryMail;
+}
+
 ///
 /// This model is only used in UnitTests, as it only saves data
 ///

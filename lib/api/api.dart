@@ -15,8 +15,8 @@ enum APIAction {
   GET_CALENDAR,
   GET_VPLAN,
   GET_USER_INFO,
-  GET_ARTICLE
-
+  GET_ARTICLE,
+  MAIL,
 }
 
 class API {
@@ -58,6 +58,8 @@ class API {
         return true;
       case APIAction.GET_ARTICLE:
         return false;
+      case APIAction.MAIL:
+        return true;
     }
     return true;
   }
@@ -315,6 +317,20 @@ class _APIRequests {
     models.Termin ferien = await _getNextFerienEvent();
     HomeScreenData homescreen = HomeScreenData(termine, ferien);
     return homescreen;
+  }
+
+  Future<models.MailSettings> getMailSettings() async {
+    await _actionExecution(APIAction.MAIL);
+    String response = await http.getFromAPI(
+        "mail", null, _api._user.getJWT());
+   return models.MailSettings.fromJSON(jsonDecode(response));
+  }
+
+  Future<String> resetMailPassword() async {
+    await _actionExecution(APIAction.MAIL);
+    String response = await http.sendEmptyPostToAPI(
+        "mail", null, _api._user.getJWT());
+    return jsonDecode(response)['password'];
   }
 
 }
