@@ -99,6 +99,8 @@ class UserMenu extends StatelessWidget {
           });
         } else if (value == "webmail") {
           launch("https://mailhost.kag-langenfeld.de/SoGO");
+        } else if (value == "mailconfig") {
+          launch("https://mailhost.kag-langenfeld.de/mobileconfig.php?only_email");
         } else if (value == "logout") {
           User.logout(context);
         }
@@ -112,6 +114,10 @@ class UserMenu extends StatelessWidget {
           PopupMenuItem(
             value: "webmail",
             child: Text("Webmail"),
+          ),
+          PopupMenuItem(
+            value: "mailconfig",
+            child: Text("Mail Config für iOS"),
           ),
           PopupMenuItem(
             value: "logout",
