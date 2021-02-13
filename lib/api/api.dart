@@ -8,6 +8,7 @@ import '../main.dart';
 import 'api_helpers.dart';
 import 'api_models.dart' as models;
 import 'api_raw.dart' as http;
+import 'ios_mailconfig.dart';
 
 enum APIAction {
   GET_USERNAME,
@@ -331,6 +332,14 @@ class _APIRequests {
     String response = await http.sendEmptyPostToAPI(
         "mail", null, _api._user.getJWT());
     return jsonDecode(response)['password'];
+  }
+
+  Future<Mailconfig> getIOSMailConfig() async {
+    await _actionExecution(APIAction.MAIL);
+    String response = await http.sendEmptyPostToAPI(
+        "mail/app", {"name": "ios-mailconfig-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._user.getJWT());
+    String password = jsonDecode(response)['password'];
+    return Mailconfig((await getMailSettings()).primaryMail, password, _api._user.getUsername());
   }
 
 }

@@ -15,3 +15,12 @@ void openFile(BuildContext context, String file, String type) async {
   await File(tempFile).writeAsBytes(await API.of(context).requests.getFile(file));
   OpenFile.open(tempFile);
 }
+
+void openIOSConfigFile(BuildContext context, String data) async {
+  String tempFile = "${(await getApplicationDocumentsDirectory()).path}/kag_mail.mobileconfig";
+  if (await File(tempFile).exists()) {
+    await File(tempFile).delete();
+  }
+  await File(tempFile).writeAsString(data);
+  OpenFile.open(tempFile, type: ".mobileconfig");
+}

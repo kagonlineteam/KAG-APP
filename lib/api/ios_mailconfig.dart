@@ -1,0 +1,106 @@
+import 'dart:convert';
+import 'package:crypto/crypto.dart';
+
+class Mailconfig {
+
+  // ignore: prefer_final_fields
+  String _email, _password, _name;
+
+  static const String _mailhost = "mailhost.kag-langenfeld.de";
+  static const int _imapPort = 143, _smtpPort = 465;
+
+  Mailconfig(this._email, this._password, this._name);
+
+  String genUUID(String identifier) {
+    return md5.convert(utf8.encode("${DateTime.now().microsecondsSinceEpoch}kagmail$identifier")).toString();
+  }
+
+  String get config =>
+      '<?xml version="1.0" encoding="UTF-8"?>'
+      '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">'
+      '<plist version="1.0">'
+      '  <dict>'
+      '    <key>PayloadContent</key>'
+      '    <array>'
+      '      <dict>'
+      '        <key>EmailAccountDescription</key>'
+      '        <string>$_email</string>'
+      '        <key>EmailAccountType</key>'
+      '        <string>EmailTypeIMAP</string>'
+      '        <key>EmailAccountName</key>'
+      '        <string>$_name</string>'
+      '        <key>EmailAddress</key>'
+      '        <string>$_email</string>'
+      '        <key>IncomingMailServerAuthentication</key>'
+      '        <string>EmailAuthPassword</string>'
+      '        <key>IncomingMailServerHostName</key>'
+      '        <string>$_mailhost</string>'
+      '        <key>IncomingMailServerPortNumber</key>'
+      '        <integer>$_imapPort</integer>'
+      '        <key>IncomingMailServerUseSSL</key>'
+      '        <true/>'
+      '        <key>OutgoingMailServerAuthentication</key>'
+      '        <string>EmailAuthPassword</string>'
+      '        <key>IncomingMailServerUsername</key>'
+      '        <string>$_email</string>'
+      '        <key>IncomingPassword</key>'
+      '        <string>$_password</string>'
+      '        <key>OutgoingMailServerHostName</key>'
+      '        <string>$_mailhost</string>'
+      '        <key>OutgoingMailServerPortNumber</key>'
+      '        <integer>$_smtpPort</integer>'
+      '        <key>OutgoingMailServerUseSSL</key>'
+      '        <true/>'
+      '        <key>OutgoingMailServerUsername</key>'
+      '        <string>$_email</string>'
+      '        <key>OutgoingPasswordSameAsIncomingPassword</key>'
+      '        <true/>'
+      '        <key>PayloadDescription</key>'
+      '        <string>Konfiguriert KAG Mail Account.</string>'
+      '        <key>PayloadDisplayName</key>'
+      '        <string>IMAP Account ($_email)</string>'
+      '        <key>PayloadIdentifier</key>'
+      '        <string>de.kaglangenfeld.mail</string>'
+      '        <key>PayloadOrganization</key>'
+      '        <string>Konrad Adenauer Gymnasium Langenfeld</string>'
+      '        <key>PayloadType</key>'
+      '        <string>com.apple.mail.managed</string>'
+      '        <key>PayloadUUID</key>'
+      '        <string>${genUUID('mail')}</string>'
+      '        <key>PayloadVersion</key>'
+      '        <integer>1</integer>'
+      '        <key>PreventAppSheet</key>'
+      '        <false/>'
+      '        <key>PreventMove</key>'
+      '        <false/>'
+      '        <key>SMIMESigningUserOverrideable</key>'
+      '        <true/>'
+      '        <key>SMIMESigningCertificateUUIDUserOverrideable</key>'
+      '        <true/>'
+      '        <key>SMIMEEncryptByDefaultUserOverrideable</key>'
+      '        <true/>'
+      '        <key>SMIMEEncryptionCertificateUUIDUserOverrideable</key>'
+      '        <true/>'
+      '        <key>SMIMEEnableEncryptionPerMessageSwitch</key>'
+      '        <true/>'
+      '      </dict>'
+      '     </array>'
+      '    <key>PayloadDescription</key>'
+      '    <string>Installiert KAG Mail Account</string>'
+      '    <key>PayloadDisplayName</key>'
+      '    <string>$_email</string>'
+      '    <key>PayloadIdentifier</key>'
+      '    <string>de.kag-langenfeld</string>'
+      '    <key>PayloadOrganization</key>'
+      '    <string>Konrad Adenauer Gymnasium Langenfeld</string>'
+      '    <key>PayloadRemovalDisallowed</key>'
+      '    <false/>'
+      '    <key>PayloadType</key>'
+      '    <string>Configuration</string>'
+      '    <key>PayloadUUID</key>'
+      '    <string>${genUUID('main')}</string>'
+      '    <key>PayloadVersion</key>'
+      '    <integer>1</integer>'
+      '  </dict>'
+      '</plist>';
+}

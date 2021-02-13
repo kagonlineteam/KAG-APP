@@ -6,6 +6,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../Views/User.dart';
 import '../api/api.dart' as api;
 
+import '../dynimports/apifile/dynapifile.dart'
+if (dart.library.html) '../dynimports/apifile/webapifile.dart'
+if (dart.library.io) '../dynimports/apifile/mobileapifile.dart' as file;
+
 class UserPage extends StatelessWidget {
   UserPage(this.shownName, this.timeTable);
 
@@ -100,7 +104,20 @@ class UserMenu extends StatelessWidget {
         } else if (value == "webmail") {
           launch("https://mailhost.kag-langenfeld.de/SoGO");
         } else if (value == "mailconfig") {
-          launch("https://mailhost.kag-langenfeld.de/mobileconfig.php?only_email");
+          showCupertinoDialog(
+              builder: (context) => CupertinoAlertDialog(
+                content: Column(
+                  children: [
+                    Text("Unter iOS muss die folgende Datei gespeichert werden und dann über die Dateien App geöffnet."),
+                    Text("Unter MacOS wird die Datei automatisch heruntergeladen und muss geöffnet werden.")
+                  ],
+                ),
+                actions: [
+                  CupertinoButton(child: Text("OK"), onPressed: () => api.API.of(context).requests.getIOSMailConfig().then((config) => file.openIOSConfigFile(context, config.config)))
+                ],
+              ),
+              context: context
+          );
         } else if (value == "logout") {
           User.logout(context);
         }
@@ -117,7 +134,7 @@ class UserMenu extends StatelessWidget {
           ),
           PopupMenuItem(
             value: "mailconfig",
-            child: Text("Mail Config für iOS"),
+            child: Text("Mail in iOS/MacOS installieren"),
           ),
           PopupMenuItem(
             value: "logout",
