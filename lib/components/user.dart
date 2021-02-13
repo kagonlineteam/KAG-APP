@@ -53,7 +53,7 @@ class UserMenu extends StatelessWidget {
                             builder: (context) => CupertinoAlertDialog(
                               content: Column(
                                 children: [
-                                  Text(mailInfos.exists ? "Das neue Passwort ist:" : "Wir haben wir Dir/Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für WebMail oder SMTP/IMAP möglich."),
+                                  Text(mailInfos.exists ? "Das neue Passwort ist:" : "Wir haben wir Dir/Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für WebMail oder SMTP/IMAP möglich. Deine Mail Adresse ist ${mailInfos.primaryMail}"),
                                   Stack(
                                     children: [
                                       CupertinoTextField(
