@@ -167,6 +167,8 @@ class KAGUser {
 
   String get givenName => _givenName;
 
+  bool get isTeacher => _roles.contains("ROLE_LEHRER") || _roles.contains("ROLE_ADMINISTRATOR");
+
   set klasse(String value) {
     _klasse = value;
     SharedPreferences.getInstance().then((prefs) => prefs.setString('klasse', value));
@@ -232,10 +234,10 @@ class SPlan {
 }
 
 class Lehrstunde {
-  String _id, _class, _course, _room;
+  String _id, _class, _course, _room, _teacher;
   int _period, _dayOfWeek;
 
-  Lehrstunde(this._id, this._class, this._course, this._room, this._period,
+  Lehrstunde(this._id, this._class, this._course, this._room, this._period, this._teacher,
       this._dayOfWeek);
 
   Lehrstunde.fromJSON(Map<dynamic, dynamic> rawJSON) {
@@ -244,6 +246,7 @@ class Lehrstunde {
     if (rawJSON.containsKey("course")) _course = rawJSON['course'];
     if (rawJSON.containsKey("room")) _room = rawJSON['room'];
     if (rawJSON.containsKey("period")) _period = rawJSON['period'];
+    if (rawJSON.containsKey("teacher")) _teacher = rawJSON['teacher'];
     if (rawJSON.containsKey("day_of_week")) _dayOfWeek = rawJSON['day_of_week'];
   }
 
@@ -252,6 +255,7 @@ class Lehrstunde {
   String get room => _room;
   String get course => _course;
   String get klasse => _class;
+  String get teacher => _teacher;
   String get id => _id;
 }
 

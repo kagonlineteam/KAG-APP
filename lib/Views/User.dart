@@ -7,14 +7,19 @@ import '../components/timetable.dart';
 import '../components/user.dart';
 import '../main.dart';
 
+// ignore: must_be_immutable
 class User extends StatelessWidget {
+
+  TimeTable timeTable;
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: API.of(context).requests.getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            return UserPage(snapshot.data.appropriateName, TimeTable(snapshot.data.klasse != null ? snapshot.data.stufe + snapshot.data.klasse : null));
+            if (timeTable == null) timeTable = TimeTable(snapshot.data.klasse != null ? snapshot.data.stufe + snapshot.data.klasse : null, isTeacher: snapshot.data.isTeacher);
+            return UserPage(snapshot.data.appropriateName, timeTable, isTeacher: snapshot.data.isTeacher);
           } else if (!snapshot.hasError) {
             return UserPage(null, WaitingWidget());
           } else {

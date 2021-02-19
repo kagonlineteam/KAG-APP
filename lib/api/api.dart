@@ -137,6 +137,14 @@ class _APIRequests {
   }
 
   ///
+  /// Checks if user has Teacher permissions
+  ///
+  Future<bool> isTeacher() async {
+    var groups = await getGroups();
+    return groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR");
+  }
+
+  ///
   /// Returns Termin entries for Month
   ///
   Future<List<models.Termin>> getCalendarForMonth(int month, int year) async {
