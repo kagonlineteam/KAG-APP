@@ -140,7 +140,8 @@ class TimeTableListEntry extends StatelessWidget {
       title: Text(lehrstunde.course),
       subtitle: Text(
           lehrstunde.room +
-              (isTeacher ? ", ${lehrstunde.klasse}" : "") +
+              // We check for null and empty string to avoid the , showing in Bereitschaftsstunden
+              (isTeacher && lehrstunde.klasse != null && lehrstunde.klasse.isNotEmpty ? ", ${lehrstunde.klasse}" : "") +
               // We do check isTeacher here to avoid a situation where a mistake in the API could be exposed
               (isTeacher && lehrstunde.teacher != null && !hideTeacher ? ", ${lehrstunde.teacher}" : "")
       ),
