@@ -18,6 +18,7 @@ enum APIAction {
   GET_USER_INFO,
   GET_ARTICLE,
   MAIL,
+  GET_SPLAN,
 }
 
 class API {
@@ -60,6 +61,8 @@ class API {
       case APIAction.GET_ARTICLE:
         return false;
       case APIAction.MAIL:
+        return true;
+      case APIAction.GET_SPLAN:
         return true;
     }
     return true;
@@ -340,6 +343,27 @@ class _APIRequests {
         "mail/app", {"name": "ios-mailconfig-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._user.getJWT());
     String password = jsonDecode(response)['password'];
     return Mailconfig((await getMailSettings()).primaryMail, password, _api._user.getUsername());
+  }
+
+  Future<models.SPlan> getUserSPlan() async {
+    await _actionExecution(APIAction.GET_SPLAN);
+    String response = await http.getFromAPI(
+        "stundenplan", null, _api._user.getJWT());
+    return models.SPlan.fromJSON(jsonDecode(response));
+  }
+
+  Future<models.SPlan> getClassSPlan(String klasse) async {
+    await _actionExecution(APIAction.GET_SPLAN);
+    String response = await http.getFromAPI(
+        "stundenplan/klasse/$klasse", null, _api._user.getJWT());
+    return models.SPlan.fromJSON(jsonDecode(response));
+  }
+
+  Future<models.SPlan> getRoomSPlan(String room) async {
+    await _actionExecution(APIAction.GET_SPLAN);
+    String response = await http.getFromAPI(
+        "stundenplan/raum/$room", null, _api._user.getJWT());
+    return models.SPlan.fromJSON(jsonDecode(response));
   }
 
 }
