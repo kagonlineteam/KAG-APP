@@ -1,5 +1,8 @@
 
+import 'dart:io' show Platform;
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -69,14 +72,16 @@ class UserMenu extends StatelessWidget {
             child: Text("Webmail"),
           ),
           PopupMenuItem(
-            value: "mailconfig",
-            child: Text("Mail in iOS/MacOS installieren"),
-          ),
-          PopupMenuItem(
             value: "logout",
             child: Text("Abmelden"),
           )
         ];
+        if (kIsWeb || Platform.isIOS) {
+          items.insert(2, PopupMenuItem(
+            value: "mailconfig",
+            child: Text("Mail in iOS/MacOS installieren"),
+          ));
+        }
         String pdf = context.findAncestorWidgetOfExactType<User>().timeTable.currentData.pdf;
         if (pdf != null) {
           items.insert(0, PopupMenuItem(
