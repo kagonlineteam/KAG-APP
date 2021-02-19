@@ -83,6 +83,10 @@ Resource fromJSON<Resource>(Map<dynamic, dynamic> rawJSON) {
       return Article.fromJSON(rawJSON) as Resource;
     case MailSettings:
       return MailSettings.fromJSON(rawJSON) as Resource;
+    case SPlan:
+      return SPlan.fromJSON(rawJSON) as Resource;
+    case Lehrstunde:
+      return Lehrstunde.fromJSON(rawJSON) as Resource;
     case MockModel:
       return MockModel.fromJSON(rawJSON) as Resource;
     default:
@@ -96,6 +100,28 @@ String addLeadingZero(int originalNumber) {
     return "0$originalNumber";
   }
   return "$originalNumber";
+}
+
+String getWeekdayByNumber(int weekday) {
+  switch (weekday) {
+    case 1:
+      return "Montag";
+    case 2:
+      return "Dienstag";
+    case 3:
+      return "Mittwoch";
+    case 4:
+      return "Donnerstag";
+    case 5:
+      return "Freitag";
+    case 6:
+      return "Samstag";
+    case 0:
+    case 7:
+      return "Sonntag";
+    default:
+      throw Exception("Invalid number for Weekday");
+  }
 }
 
 class APIHolder extends InheritedWidget  {

@@ -167,6 +167,8 @@ class KAGUser {
 
   String get givenName => _givenName;
 
+  bool get isTeacher => _roles.contains("ROLE_LEHRER") || _roles.contains("ROLE_ADMINISTRATOR");
+
   set klasse(String value) {
     _klasse = value;
     SharedPreferences.getInstance().then((prefs) => prefs.setString('klasse', value));
@@ -213,6 +215,48 @@ class MailSettings {
   bool get consent => _consent;
 
   String get primaryMail => _primaryMail;
+}
+
+class SPlan {
+  String _pdf;
+  List<Lehrstunde> _lessons;
+
+  SPlan(this._pdf, this._lessons);
+
+  SPlan.fromJSON(Map<dynamic, dynamic> rawJSON) {
+    if (rawJSON.containsKey("pdf") && rawJSON["pdf"] is Map<dynamic, dynamic> && rawJSON["pdf"].containsKey("id")) _pdf = rawJSON['pdf']['id'];
+    if (rawJSON.containsKey("lessons")) _lessons = rawJSON['lessons'].map((d) => Lehrstunde.fromJSON(d)).toList().cast<Lehrstunde>();
+  }
+
+  List<Lehrstunde> get lessons => _lessons;
+  String get pdf => _pdf;
+
+}
+
+class Lehrstunde {
+  String _id, _class, _course, _room, _teacher;
+  int _period, _dayOfWeek;
+
+  Lehrstunde(this._id, this._class, this._course, this._room, this._period, this._teacher,
+      this._dayOfWeek);
+
+  Lehrstunde.fromJSON(Map<dynamic, dynamic> rawJSON) {
+    if (rawJSON.containsKey("id")) _id = rawJSON['id'];
+    if (rawJSON.containsKey("class")) _class = rawJSON['class'];
+    if (rawJSON.containsKey("course")) _course = rawJSON['course'];
+    if (rawJSON.containsKey("room")) _room = rawJSON['room'];
+    if (rawJSON.containsKey("period")) _period = rawJSON['period'];
+    if (rawJSON.containsKey("teacher")) _teacher = rawJSON['teacher'];
+    if (rawJSON.containsKey("day_of_week")) _dayOfWeek = rawJSON['day_of_week'];
+  }
+
+  int get dayOfWeek => _dayOfWeek;
+  int get period => _period;
+  String get room => _room;
+  String get course => _course;
+  String get klasse => _class;
+  String get teacher => _teacher;
+  String get id => _id;
 }
 
 ///
