@@ -14,6 +14,8 @@ if (dart.library.html) '../dynimports/apifile/webapifile.dart'
 if (dart.library.io) '../dynimports/apifile/mobileapifile.dart' as file;
 import 'timetable.dart';
 
+const int SPLAN_PHONE_WIDTH = 800;
+
 class UserPage extends StatelessWidget {
   UserPage(this.shownName, this.timeTable, {this.isTeacher = false});
 
@@ -24,13 +26,26 @@ class UserPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     int weekday = DateTime.now().weekday - 1;
-    return DefaultTabController(length: 5, initialIndex: weekday > 4 ? 0 : weekday, child: Scaffold(
-      appBar: AppBar(actions: [UserMenu(isTeacher: isTeacher)],
-        title: Text(shownName != null ? shownName : ""),
-        bottom: timeTableTabBar(),
-      ),
-      body: timeTable,
-    ));
+    return LayoutBuilder(builder: (context, constraints) {
+      return constraints.maxWidth <= SPLAN_PHONE_WIDTH ?
+      // Phone Rendering
+      DefaultTabController(length: 5, initialIndex: weekday > 4 ? 0 : weekday, child: Scaffold(
+        appBar: AppBar(actions: [UserMenu(isTeacher: isTeacher)],
+          title: Text(shownName != null ? shownName : ""),
+          bottom: timeTableTabBar(context),
+        ),
+        body: timeTable,
+      ))
+          :
+      // Tablet Rendering
+      Scaffold(
+        appBar: AppBar(actions: [UserMenu(isTeacher: isTeacher)],
+          title: Text(shownName != null ? shownName : ""),
+          bottom: timeTableTabBar(context, isTablet: true),
+        ),
+        body: timeTable,
+      );
+    });
   }
 }
 
