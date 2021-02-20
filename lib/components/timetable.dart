@@ -7,6 +7,7 @@ import '../dynimports/apifile/dynapifile.dart'
 if (dart.library.html) '../dynimports/apifile/webapifile.dart'
 if (dart.library.io) '../dynimports/apifile/mobileapifile.dart' as apifile;
 import 'helpers.dart';
+import 'user.dart';
 
 
 // ignore: must_be_immutable
@@ -50,27 +51,55 @@ class TimeTableView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TabBarView(
-      children: [1,2,3,4,5].map((day) => ListView(
-        children: splan.lessons.where((e) => e.dayOfWeek == day).map((e) => TimeTableListEntry(e, isTeacher: isTeacher, hideTeacher: hideTeacher),
+    if (MediaQuery.of(context).size.width <= SPLAN_PHONE_WIDTH) {
+      return TabBarView(
+        children: [1,2,3,4,5].map((day) =>
+            ListView(children: splan.lessons.where((e) => e.dayOfWeek == day).map((e) =>
+                TimeTableListEntry(e, isTeacher: isTeacher, hideTeacher: hideTeacher)
+            ).toList())
         ).toList(),
-      )).toList(),
-    );
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [1,2,3,4,5].map((day) =>
+            Container(child: ListView(children: splan.lessons.where((e) => e.dayOfWeek == day).map((e) =>
+                TimeTableListEntry(e, isTeacher: isTeacher, hideTeacher: hideTeacher)
+            ).toList()), width: MediaQuery.of(context).size.width / 5)
+        ).toList(),
+      );
+    }
   }
 
 }
 
 
-TabBar timeTableTabBar() {
-  return TabBar(
-    tabs: [
-      Tab(text: "Mo"),
-      Tab(text: "Di"),
-      Tab(text: "Mi"),
-      Tab(text: "Do"),
-      Tab(text: "Fr") ,
-    ],
-  );
+PreferredSizeWidget timeTableTabBar(BuildContext context, {bool isTablet = false}) {
+  if (isTablet) {
+    return PreferredSize(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            TabletTimeTableDay("Montag"),
+            TabletTimeTableDay("Dienstag"),
+            TabletTimeTableDay("Mittwoch"),
+            TabletTimeTableDay("Donnerstag"),
+            TabletTimeTableDay("Freitag")
+          ],
+        ),
+        preferredSize: Size.fromHeight(20)
+    );
+  } else {
+    return TabBar(
+      tabs: [
+        Tab(text: "Mo"),
+        Tab(text: "Di"),
+        Tab(text: "Mi"),
+        Tab(text: "Do"),
+        Tab(text: "Fr") ,
+      ],
+    );
+  }
 }
 
 class TimeTablePage extends StatelessWidget {
@@ -83,20 +112,35 @@ class TimeTablePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int weekday = DateTime.now().weekday - 1;
-    return DefaultTabController(length: 5, initialIndex: weekday > 4 ? 0 : weekday, child: Scaffold(
-      appBar: AppBar(
-        title: Text("Stundenplan"),
-        bottom: timeTableTabBar(),
-        actions: splan.pdf != null ? [
-          Padding(
-            padding: EdgeInsets.all(10),
-            child: RaisedButton(onPressed: () => apifile.openFile(context, splan.pdf, "application/pdf"), child: Text("Als PDF", style: TextStyle(color: Colors.white))),
-          )
-        ] : [],
-      ),
-      body: TimeTableView(splan, isTeacher: isTeacher),
-    ));
+    List<Widget> actions = splan.pdf != null ? [
+      Padding(
+        padding: EdgeInsets.all(10),
+        child: RaisedButton(onPressed: () => apifile.openFile(context, splan.pdf, "application/pdf"), child: Text("Als PDF", style: TextStyle(color: Colors.white))),
+      )
+    ] : [];
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth > SPLAN_PHONE_WIDTH) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text("Stundenplan"),
+            bottom: timeTableTabBar(context, isTablet: true),
+            actions: actions,
+          ),
+          body: TimeTableView(splan, isTeacher: isTeacher),
+        );
+      } else {
+        int weekday = DateTime.now().weekday - 1;
+        return DefaultTabController(length: 5, initialIndex: weekday > 4 ? 0 : weekday, child: Scaffold(
+          appBar: AppBar(
+            title: Text("Stundenplan"),
+            bottom: timeTableTabBar(context),
+            actions: actions,
+          ),
+          body: TimeTableView(splan, isTeacher: isTeacher),
+        ));
+      }
+    });
+
   }
 
 }
@@ -170,6 +214,39 @@ class TimeTableListEntry extends StatelessWidget {
           );
         }
       },
+    );
+  }
+
+}
+
+class TabletTimeTableDay extends StatelessWidget {
+
+  final String _day;
+
+  TabletTimeTableDay(this._day);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+            border: Border(
+                right: BorderSide(
+                    color: Colors.white
+                ),
+                left: BorderSide(
+                    color: Colors.white
+                ),
+                top: BorderSide(
+                    color: Colors.white
+                )
+            )
+        ),
+        padding: EdgeInsets.all(10),
+        child: Center(
+          child: Text(_day, style: TextStyle(color: Colors.white)),
+        ),
+      ),
     );
   }
 
