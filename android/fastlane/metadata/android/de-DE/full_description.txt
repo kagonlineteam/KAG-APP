@@ -1,16 +1,17 @@
-Die KAG-Mobile App ermöglicht Schülern und Lehrern des Konrad-Adenauer-Gymnasiums in Langenfeld von überall aus den Vertretungsplan* aufzurufen oder die neusten Informationen zu erhalten.
+Die KAG-Mobile App ermöglicht Schülern und Lehrern des Konrad-Adenauer-Gymnasiums in Langenfeld von überall aus den Vertretungsplan* aufzurufen und die neusten Informationen zu erhalten.
 
 Funktionen:
  - Vertretungsplan (der eigenen Stufe)*
- - Termine
+ - Kalender mit Schulterminen
  - Aktuelle Neuigkeiten
- - Link zur Moodle App**
+ - Stundenplan bzw. Stundenraster*
+ - Verwaltung der Schul Mail Adresse*
  - Feriencountdown
- - Stundenraster der Stufe*
+ - Link zur Moodle App**
 
 Wir würden uns sehr über eine Rezension freuen!
 
-* Diese Funktion ist angemeldeten Oberstufen-schüler*innen und Lehrern vorbehalten
+* Diese Funktion ist angemeldeten Schüler*innen und Lehrern vorbehalten
 ** separat erhältlich
 
-(c) Copyright 2019/2020 Konrad-Adenauer-Gymnasium Langenfeld, KAG-Online-Team
+(c) Copyright 2019-2021 Konrad-Adenauer-Gymnasium Langenfeld, KAG-Online-Team
