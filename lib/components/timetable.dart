@@ -203,11 +203,17 @@ class TimeTableListEntry extends StatelessWidget {
                 child: Column(children: [
                   ListTile(
                     title: Text("Raumplan anzeigen"),
-                    onTap: () => openRoomPlanPage(context, lehrstunde.room),
+                    onTap: () {
+                      Navigator.pop(context);
+                      openRoomPlanPage(context, lehrstunde.room);
+                    },
                   ),
                   ListTile(
                     title: Text("Klassenplan anzeigen"),
-                    onTap: () => openClassPlanPage(context, lehrstunde.klasse),
+                    onTap: () {
+                      Navigator.pop(context);
+                      openClassPlanPage(context, lehrstunde.klasse);
+                    },
                   )
                 ])),
           ),

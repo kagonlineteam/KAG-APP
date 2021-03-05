@@ -155,6 +155,9 @@ void _openMailDialog(BuildContext context) {
                           )
                         ],
                       ),
+                      actions: [
+                        CupertinoButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
+                      ],
                     ),
                     barrierDismissible: true,
                     context: context
@@ -173,6 +176,9 @@ void _openMailDialog(BuildContext context) {
       showCupertinoDialog(
           builder: (context) => CupertinoAlertDialog(
             content: Text("Wir können dir leider keine Mailadresse erstellen, solange du nicht den Mail Bogen im Sekretariat abgegeben hast."),
+            actions: [
+              CupertinoButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
+            ],
           ),
           barrierDismissible: true,
           context: context
@@ -191,7 +197,10 @@ void _openMailiOSConfig(BuildContext context) {
           ],
         ),
         actions: [
-          CupertinoButton(child: Text("OK"), onPressed: () => api.API.of(context).requests.getIOSMailConfig().then((config) => file.openIOSConfigFile(context, config.config)))
+          CupertinoButton(child: Text("OK"), onPressed: () {
+            api.API.of(context).requests.getIOSMailConfig().then((config) => file.openIOSConfigFile(context, config.config));
+            Navigator.pop(context);
+          })
         ],
       ),
       context: context
@@ -211,7 +220,10 @@ void _openRoomDialog(BuildContext context) {
           ],
         ),
         actions: [
-          CupertinoButton(child: Text("Öffnen"), onPressed: () => openRoomPlanPage(context, controller.text))
+          CupertinoButton(child: Text("Öffnen"), onPressed: () {
+            Navigator.pop(context);
+            openRoomPlanPage(context, controller.text);
+          })
         ],
       ),
       barrierDismissible: true,
@@ -233,7 +245,10 @@ void _openClassDialog(BuildContext context) {
           ],
         ),
         actions: [
-          CupertinoButton(child: Text("Öffnen"), onPressed: () => openClassPlanPage(context, controller.text))
+          CupertinoButton(child: Text("Öffnen"), onPressed: () {
+            Navigator.pop(context);
+            openClassPlanPage(context, controller.text);
+          })
         ],
       ),
       barrierDismissible: true,
