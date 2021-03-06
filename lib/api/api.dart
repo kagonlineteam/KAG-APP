@@ -113,7 +113,7 @@ class _APIRequests {
   Future _actionExecution(APIAction action) async {
     if (_api._isLogInNeeded(action) && !_api._user.isLoggedIn()) {
       if (!await _api._user.login()) {
-        _api._user.setLoginCredentials(null, null);
+        _api._user.setLoginCredentials(null, null, callLogout: false); // We do not call Logout, because it is not a manual logout
         KAGAppState.app.setLoggedOut();
         throw Exception("Login to API is not possible");
       }
@@ -400,14 +400,10 @@ class User {
   /// Saves username and password
   /// Changed: Now it does login to gain a refresh token
   ///
-  Future<bool> setLoginCredentials(String username, String password) async {
+  Future<bool> setLoginCredentials(String username, String password, {bool callLogout=true}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     if (password == null) {
-      prefs.remove("refresh");
-      prefs.remove("username");
-      prefs.remove("token");
-      _refreshJWT = null;
-      _jwt = null;
+      logout(callLogoutEndpoint: callLogout);
       return false;
     }
     prefs.setString("username", username);
@@ -419,6 +415,22 @@ class User {
     prefs.setString("token", _jwt);
     prefs.setString("refresh", _refreshJWT);
     return true;
+  }
+
+  Future logout({bool callLogoutEndpoint=true}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // We need the refreshJWT for a proper logout
+    if (_refreshJWT == null) {
+      _refreshJWT = prefs.getString("refresh");
+    }
+    if (_refreshJWT != null && callLogoutEndpoint) { // No this should not be an else if
+      http.logout(_refreshJWT);
+    }
+    prefs.remove("refresh");
+    prefs.remove("username");
+    prefs.remove("token");
+    _refreshJWT = null;
+    _jwt = null;
   }
 
   ///

@@ -43,6 +43,18 @@ Future<Map<String, String>> refreshLogin(
   return null;
 }
 
+Future<bool> logout(String refreshToken) async {
+  var response = await client.post("${API}logout",
+      body: jsonEncode({
+        "refresh_token": refreshToken
+      }),
+      headers: {"Content-Type": "application/json"});
+  if (response.statusCode == 200) {
+    return true;
+  }
+  return false;
+}
+
 ///
 /// GET from API
 /// Makes request, returns response body
