@@ -26,6 +26,11 @@ void main() {
             accentColor: Color.fromRGBO(255, 145, 10, 1),
             backgroundColor: Color.fromRGBO(47, 47, 47, 1),
             buttonColor: Color.fromRGBO(0, 82, 1, 1),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateColor.resolveWith((states) => Color.fromRGBO(0, 82, 1, 1))
+              )
+            )
           ),
           home: KAGApp(),
         ), api),

@@ -182,7 +182,7 @@ class NotLoggedIn extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(),
       body: Center(
-        child: RaisedButton(
+        child: ElevatedButton(
             onPressed: () => KAGAppState.app.goToPage(3),
             child: Text("Bitte melde dich an!", style: TextStyle(color: Colors.white))),
       ),

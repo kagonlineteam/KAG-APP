@@ -115,7 +115,7 @@ class TimeTablePage extends StatelessWidget {
     List<Widget> actions = splan.pdf != null ? [
       Padding(
         padding: EdgeInsets.all(10),
-        child: RaisedButton(onPressed: () => apifile.openFile(context, splan.pdf, "application/pdf"), child: Text("Als PDF", style: TextStyle(color: Colors.white))),
+        child: ElevatedButton(onPressed: () => apifile.openFile(context, splan.pdf, "application/pdf"), child: Text("Als PDF", style: TextStyle(color: Colors.white))),
       )
     ] : [];
     return LayoutBuilder(builder: (context, constraints) {

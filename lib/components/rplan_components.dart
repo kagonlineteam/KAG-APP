@@ -286,7 +286,7 @@ class DownloadFileButton extends StatelessWidget {
         visible: RPlan.of(context).hasTeacherPlan && file != null,
         child: Padding(
             padding: EdgeInsets.all(10),
-            child: RaisedButton(
+            child: ElevatedButton(
                 onPressed: () => apifile.openFile(context, file, 'application/pdf'),
                 child: Text(
                   "Als PDF",
@@ -304,7 +304,7 @@ class TeacherKuerzelButton extends StatelessWidget {
       visible: RPlan.of(context).hasTeacherPlan,
       child: Padding(
         padding: EdgeInsets.all(10),
-          child: RaisedButton(
+          child: ElevatedButton(
               onPressed: () => _showFilterOptions(context),
               child: Text(
                 "Filtern",

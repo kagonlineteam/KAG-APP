@@ -49,7 +49,7 @@ class _Calendar extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text("Termine"),
-                        RaisedButton(
+                        ElevatedButton(
                             onPressed: () => _switchView(!snapshot.data),
                             child: Container(
                               child: Text(snapshot.data ? "Als Kalender" : "Als Liste",
