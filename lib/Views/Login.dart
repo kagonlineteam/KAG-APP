@@ -138,35 +138,44 @@ class LoginState extends State<Login>
       ),
     );
 
+    var inputs = Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        SizedBox(height: 45.0),
+        usernameField,
+        SizedBox(height: 25.0),
+        passwordField,
+        SizedBox(height: 35.0),
+        loginButton,
+        SizedBox(height: 6.0),
+        MaterialButton(
+          onPressed: () => launch('https://kag-langenfeld.de/user/password'),
+          child: Text("Passwort vergessen?", style: const TextStyle(color: Colors.grey),),
+        ),
+        SizedBox(height: 15.0),
+      ],
+    );
+
+    bool isTablet = MediaQuery.of(context).size.width > 700;
+
     return Scaffold(
       appBar: AppBar(),
-      body: Center(
-        child: Container(
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage("assets/background.png"),
-                  fit: BoxFit.cover)),
-          child: Padding(
+      body: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: isTablet ? AssetImage("assets/background-login.jpg") : AssetImage("assets/background.png"),
+                fit: BoxFit.cover)
+        ),
+        padding: EdgeInsets.all(20),
+        child: Center(
+          child: isTablet ? Container(
             padding: const EdgeInsets.fromLTRB(70, 35, 70, 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 45.0),
-                usernameField,
-                SizedBox(height: 25.0),
-                passwordField,
-                SizedBox(height: 35.0),
-                loginButton,
-                SizedBox(height: 6.0),
-                MaterialButton(
-                  onPressed: () => launch('https://kag-langenfeld.de/user/password'),
-                  child: Text("Passwort vergessen?", style: const TextStyle(color: Colors.grey),),
-                ),
-                SizedBox(height: 15.0),
-              ],
-            ),
-          ),
+            width: 500,
+            height: 300,
+            color: Theme.of(context).backgroundColor.withOpacity(0.9),
+            child: inputs,
+          ) : inputs,
         ),
       ),
     );

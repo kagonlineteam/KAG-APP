@@ -85,7 +85,7 @@ class _TabletPageWidget extends StatelessWidget {
               child: child,
               margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
             ),
-            color: Colors.white,
+            color: Colors.white.withOpacity(0.85),
             margin: EdgeInsets.fromLTRB(marginWidth, screenSizeHeight / 10, marginWidth, screenSizeHeight / 6),
           ),
           decoration: BoxDecoration(
@@ -115,34 +115,43 @@ class HomeList extends StatelessWidget {
         splittingContainer,
         TerminList(homeScreenData),
         splittingContainer,
-        MoodleIconWidget(isTablet: isTablet)
+        ShortcutsWidget(isTablet: isTablet)
     ],
     );
   }
 
 }
 
-class MoodleIconWidget extends StatelessWidget {
-  MoodleIconWidget({this.isTablet = false});
+class ShortcutsWidget extends StatelessWidget {
+  ShortcutsWidget({this.isTablet = false});
 
   final bool isTablet;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.topLeft,
-      padding: EdgeInsets.all(10),
-      child: MaterialButton(
-        child: Image.asset("assets/atrium.png", width: isTablet ? 200 : 130),
-        onPressed: () async {
-          if (await canLaunch(
-              "moodlemobile://atrium.kag-langenfeld.de")) {
-            launch("moodlemobile://atrium.kag-langenfeld.de");
-          } else {
-            launch("https://atrium.kag-langenfeld.de");
-          }
-        },
-      ),
+    return Column(
+      children: [
+        Container(
+          child: Text("Shortcuts", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          alignment: Alignment.centerLeft,
+        ),
+        Container(
+            alignment: Alignment.topLeft,
+            padding: EdgeInsets.all(10),
+            child: MaterialButton(
+              child: Image.asset("assets/atrium.png", width: isTablet ? 200 : 130),
+              onPressed: () async {
+                if (await canLaunch(
+                    "moodlemobile://atrium.kag-langenfeld.de")) {
+                  launch("moodlemobile://atrium.kag-langenfeld.de");
+                } else {
+                  launch("https://atrium.kag-langenfeld.de");
+                }
+              },
+            )
+        )
+      ],
     );
   }
 
