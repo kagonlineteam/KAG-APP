@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
-import 'api_helpers.dart';
+import 'api_helpers.dart' as helpers;
 import 'api_models.dart' as models;
 import 'api_raw.dart' as http;
 import 'ios_mailconfig.dart';
@@ -39,7 +39,7 @@ class API {
   /// Of Method is used to get the API when APIHolder is used
   ///
   static API of(BuildContext context)  {
-    return context.findAncestorWidgetOfExactType<APIHolder>().api;
+    return context.findAncestorWidgetOfExactType<helpers.APIHolder>().api;
   }
 
   ///
@@ -180,8 +180,8 @@ class _APIRequests {
   ///
   /// Returns calendar entries which occur in the future
   ///
-  ListResource<models.Termin> getFutureCalendarEntries() {
-    return ListResource<models.Termin>.load("termine",
+  helpers.ListResource<models.Termin> getFutureCalendarEntries() {
+    return helpers.ListResource<models.Termin>.load("termine",
         {"view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"});
   }
 
@@ -299,14 +299,14 @@ class _APIRequests {
     return user;
   }
 
-  ListResource<models.Article> getArticles() {
+  helpers.ListResource<models.Article> getArticles() {
     // Not calling actionExecution here, because login not needed and needs async
     Map<String, String> params = {};
     params['view'] = "preview-with-image";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
     params['orderby'] = "desc-changed";
 
-    return new ListResource<models.Article>.load("articles", params);
+    return new helpers.ListResource<models.Article>.load("articles", params);
   }
 
   Future<models.Article> getArticle(String id) async {
@@ -324,10 +324,10 @@ class _APIRequests {
     return resp.bodyBytes;
   }
 
-  Future<HomeScreenData> getHomescreen() async {
+  Future<helpers.HomeScreenData> getHomescreen() async {
     List<models.Termin> termine = await _getNextCalendarEntries();
     models.Termin ferien = await _getNextFerienEvent();
-    HomeScreenData homescreen = HomeScreenData(termine, ferien);
+    helpers.HomeScreenData homescreen = helpers.HomeScreenData(termine, ferien);
     return homescreen;
   }
 
@@ -459,6 +459,11 @@ class User {
         _loggingIn = false;
         return false;
       }
+      // We do not need to try with a expired refresh token
+      if (helpers.getDecodedJWT(_refreshJWT)['exp'] <= (new DateTime.now().millisecondsSinceEpoch / 1000)) {
+        _loggingIn = false;
+        return false;
+      }
     }
     var obj = await http.refreshLogin(
         prefs.getString("username"), _refreshJWT);
@@ -496,23 +501,8 @@ class User {
     return _jwt;
   }
 
-  // ignore: type_annotate_public_apis
-  getDecodedJWT() {
-    String output =
-    _jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
-    switch (output.length % 4) {
-      case 0:
-        break;
-      case 2:
-        output += '==';
-        break;
-      case 3:
-        output += '=';
-        break;
-      default:
-        throw Exception('Illegal base64url string!"');
-    }
-    return jsonDecode(utf8.decode(base64Url.decode(output)));
+  Map<dynamic, dynamic> getDecodedJWT() {
+    return helpers.getDecodedJWT(_jwt);
   }
 
   ///

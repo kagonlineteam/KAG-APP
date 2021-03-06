@@ -137,6 +137,24 @@ class APIHolder extends InheritedWidget  {
 
 }
 
+Map<dynamic, dynamic> getDecodedJWT(String jwt) {
+  String output =
+  jwt.split(".")[1].replaceAll('-', '+').replaceAll('_', '/');
+  switch (output.length % 4) {
+    case 0:
+      break;
+    case 2:
+      output += '==';
+      break;
+    case 3:
+      output += '=';
+      break;
+    default:
+      throw Exception('Illegal base64url string!"');
+  }
+  return jsonDecode(utf8.decode(base64Url.decode(output)));
+}
+
 class HomeScreenData {
   HomeScreenData(this.termine, this.countdown);
 
