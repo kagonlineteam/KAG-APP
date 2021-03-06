@@ -402,13 +402,15 @@ class User {
   ///
   Future<bool> setLoginCredentials(String username, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString("username", username);
     if (password == null) {
       prefs.remove("refresh");
       prefs.remove("username");
       prefs.remove("token");
+      _refreshJWT = null;
+      _jwt = null;
       return false;
     }
+    prefs.setString("username", username);
     var obj = await http.login(
         prefs.getString("username"), password);
     if (obj == null) return false;
