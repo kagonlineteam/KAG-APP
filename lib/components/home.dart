@@ -116,13 +116,6 @@ class HomeList extends StatelessWidget {
         splittingContainer,
         TerminList(homeScreenData),
         splittingContainer,
-        Container(
-          child: Text(
-              "Moodle and the Moodle logo are trademarks of Moodle Pty Ltd.",
-              style: TextStyle(fontSize: 7)),
-          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-          alignment: Alignment.centerLeft,
-        ),
         MoodleIconWidget(isTablet: isTablet)
     ],
     );
@@ -137,33 +130,20 @@ class MoodleIconWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget logo;
-
-    if (kIsWeb) {
-      logo = Image.network("https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png", width: isTablet ? 250 : 175);
-    } else {
-      logo = CachedNetworkImage(
-        imageUrl:
-        "https://moodle.org/pluginfile.php/2840042/mod_page/content/19/Moodle-Logo-RGB.png",
-        width: isTablet ? 250 : 175,
-        fadeInDuration: Duration(seconds: 0),
-      );
-    }
-
-    return Row(
-      children: <Widget>[
-        MaterialButton(
-          child: logo,
-          onPressed: () async {
-            if (await canLaunch(
-                "moodlemobile://atrium.kag-langenfeld.de")) {
-              launch("moodlemobile://atrium.kag-langenfeld.de");
-            } else {
-              launch("https://atrium.kag-langenfeld.de");
-            }
-          },
-        )
-      ],
+    return Container(
+      alignment: Alignment.topLeft,
+      padding: EdgeInsets.all(10),
+      child: MaterialButton(
+        child: Image.asset("assets/atrium.png", width: isTablet ? 200 : 130),
+        onPressed: () async {
+          if (await canLaunch(
+              "moodlemobile://atrium.kag-langenfeld.de")) {
+            launch("moodlemobile://atrium.kag-langenfeld.de");
+          } else {
+            launch("https://atrium.kag-langenfeld.de");
+          }
+        },
+      ),
     );
   }
 
