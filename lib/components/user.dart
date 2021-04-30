@@ -97,7 +97,9 @@ class UserMenu extends StatelessWidget {
             child: Text("Mail in iOS/MacOS installieren"),
           ));
         }
-        String pdf = context.findAncestorWidgetOfExactType<User>().timeTable.currentData.pdf;
+        String pdf = context.findAncestorWidgetOfExactType<User>().timeTable.currentData == null
+            ? null
+            : context.findAncestorWidgetOfExactType<User>().timeTable.currentData.pdf;
         if (pdf != null) {
           items.insert(0, PopupMenuItem(
             value: "openPDF:$pdf",
