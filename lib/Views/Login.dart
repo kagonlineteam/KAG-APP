@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api.dart';
@@ -46,6 +47,7 @@ class LoginState extends State<Login>
               controller: inputController,
               placeholder: "z.B. a",
               maxLength: 1,
+              inputFormatters: [new FilteringTextInputFormatter.allow(RegExp("[a-f]")),],
             ),
             actions: [
               MaterialButton(
