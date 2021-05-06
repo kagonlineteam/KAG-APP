@@ -42,7 +42,7 @@ class LoginState extends State<Login>
         showDialog(
           context: context,
           builder: (context) => new CupertinoAlertDialog(
-            title: Text("Bitte gebe deine Klasse ein"),
+            title: Text("Bitte gib den Buchstaben deiner Klasse ein:"),
             content: CupertinoTextField(
               controller: inputController,
               placeholder: "z.B. a",
@@ -52,9 +52,10 @@ class LoginState extends State<Login>
             actions: [
               MaterialButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  userInfo.klasse = inputController.text;
-                  KAGAppState.app.setLoggedIn();
+                    if (inputController.text.isEmpty) return;
+                    Navigator.pop(context);
+                    userInfo.klasse = inputController.text;
+                    KAGAppState.app.setLoggedIn();
                 },
                 child: Text("Speichern"),
               ),
