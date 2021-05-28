@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -35,9 +37,7 @@ void main() {
           home: KAGApp(),
         ), api),
   );
-  if (!kIsWeb) {
-    new PushNotificationsManager().init();
-  }
+  new PushNotificationsManager().init();
 }
 
 class KAGApp extends StatefulWidget {
@@ -68,20 +68,46 @@ class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: _isVPlanApp ? 2 : 5,
-      child: Scaffold(
+    if ((kIsWeb && MediaQuery.of(context).size.width > 700) || (!kIsWeb && Platform.isMacOS)) {
+      return Row(
+        children: [
+          NavigationRail(
+            selectedIndex: controller.index,
+            selectedIconTheme: IconThemeData(
+              color: Theme.of(context).accentColor
+            ),
+            selectedLabelTextStyle: TextStyle(
+              color: Theme.of(context).accentColor
+            ),
+            groupAlignment: 0,
+            onDestinationSelected: (index) {
+              setState(() {
+                controller.index = index;
+              });
+            },
+            labelType: NavigationRailLabelType.selected,
+            destinations: getNavigationRail(_isVPlanApp),
+          ),
+          VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).accentColor),
+          // This is the main content.
+          Expanded(
+            child: IndexedStack(
+              index: controller.index,
+              children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return Scaffold(
           body: TabBarView(
             controller: controller,
             children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn),
             physics: NeverScrollableScrollPhysics(),
           ),
           bottomNavigationBar: BottomNavigationBarMenu(controller: controller, isVPlanApp: _isVPlanApp)
-        //backgroundColor: Colors.green,
-      ),
-    );
-
-
+      );
+    }
   }
 
   void setLoggedOut() {
@@ -95,6 +121,8 @@ class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
   void goToPage(int page) {
     if (page == 3 && _isVPlanApp) page = 1;
     if (page == 2 && _isVPlanApp) page = 0;
-    controller.animateTo(page);
+    setState(() {
+      controller.animateTo(page);
+    });
   }
 }

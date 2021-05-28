@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -203,7 +205,7 @@ class FerienCountdownNumber extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        kIsWeb ?
+        kIsWeb || Platform.isMacOS ?
         StreamBuilder(
           stream: stream,
           builder: (context, snapshot) {

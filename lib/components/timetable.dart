@@ -63,9 +63,9 @@ class TimeTableView extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [1,2,3,4,5].map((day) =>
-            Container(child: ListView(children: splan.lessons.where((e) => e.dayOfWeek == day).map((e) =>
+            Expanded(child: Container(child: ListView(children: splan.lessons.where((e) => e.dayOfWeek == day).map((e) =>
                 TimeTableListEntry(e, isTeacher: isTeacher, hideTeacher: hideTeacher)
-            ).toList()), width: MediaQuery.of(context).size.width / 5)
+            ).toList())))
         ).toList(),
       );
     }

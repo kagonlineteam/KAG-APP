@@ -96,7 +96,43 @@ class BottomNavigationBarMenu extends StatelessWidget {
       ),
     );
   }
+}
 
-
-
+// ignore: avoid_positional_boolean_parameters
+List<NavigationRailDestination> getNavigationRail(bool isVPlanApp) {
+  return isVPlanApp ?
+  // VPlan App
+  <NavigationRailDestination>[
+    NavigationRailDestination(
+      label: Text("VPlan"),
+      icon: Icon(Icons.compare_arrows, size: 35),
+    ),
+    NavigationRailDestination(
+      label: Text("SPlan"),
+      icon: Icon(Icons.person, size: 35),
+    ),
+  ] :
+  // Normal App
+  <NavigationRailDestination>[
+    NavigationRailDestination(
+      label: Text("Termine"),
+      icon: Icon(Icons.event, size: 35),
+    ),
+    NavigationRailDestination(
+      label: Text("VPlan"),
+      icon: Icon(Icons.compare_arrows, size: 35),
+    ),
+    NavigationRailDestination(
+      label: Text("Home"),
+      icon: Icon(Icons.home, size: 35),
+    ),
+    NavigationRailDestination(
+      label: Text("User"),
+      icon: Icon(Icons.person, size: 35),
+    ),
+    NavigationRailDestination(
+      label: Text("News"),
+      icon: Icon(Icons.public, size: 35),
+    ),
+  ];
 }
