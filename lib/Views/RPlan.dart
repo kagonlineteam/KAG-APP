@@ -133,7 +133,15 @@ class RPlan extends State {
               vplan.lessons[a].fach == vplan.lessons[b].fach &&
               vplan.lessons[a].raum == vplan.lessons[b].raum &&
               vplan.lessons[a].lehrer == vplan.lessons[b].lehrer &&
-              vplan.lessons[a].v_lehrer == vplan.lessons[b].v_lehrer) {
+              vplan.lessons[a].v_lehrer == vplan.lessons[b].v_lehrer &&
+              vplan.lessons[a].stunde.length == 1 &&
+              vplan.lessons[b].stunde.length == 1 &&
+              int.tryParse(vplan.lessons[a].stunde) != null &&
+              int.tryParse(vplan.lessons[b].stunde) != null &&
+              int.tryParse(vplan.lessons[b].stunde) != 3 &&
+              int.tryParse(vplan.lessons[b].stunde) != 5 &&
+              int.tryParse(vplan.lessons[a].stunde) + 1 == int.tryParse(vplan.lessons[b].stunde)
+          ) {
             notPrint.add(b);
             vplan.lessons[a].stunde = "${vplan.lessons[a].stunde}-${vplan.lessons[b].stunde}";
           }
