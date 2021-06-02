@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api.dart';
 import '../main.dart';
+import 'RPlan.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -63,6 +65,10 @@ class LoginState extends State<Login>
           )
         );
       } else {
+        if (userInfo.isTeacher && userInfo.kuerzel != null) {
+          SharedPreferences preferences = await SharedPreferences.getInstance();
+          preferences.setString(RPlan.SP_FILTER, userInfo.kuerzel);
+        }
         KAGAppState.app.setLoggedIn();
       }
     } else {

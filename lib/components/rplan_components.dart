@@ -314,10 +314,10 @@ class TeacherKuerzelButton extends StatelessWidget {
     );
   }
 
-  Future _showFilterOptions(BuildContext context) async {
-    TextEditingController teacher = TextEditingController(text: RPlan.of(context).searchedTeacher);
+  Future _showFilterOptions(BuildContext pageContext) async {
+    TextEditingController teacher = TextEditingController(text: RPlan.of(pageContext).searchedTeacher);
     showDialog(
-        context: context,
+        context: pageContext,
         builder: (context) => CupertinoAlertDialog(
           content: Column(
             children: <Widget>[
@@ -354,13 +354,13 @@ class TeacherKuerzelButton extends StatelessWidget {
                 SharedPreferences preferences =
                 await SharedPreferences.getInstance();
                 if (teacher.text == "") {
-                  RPlan.of(context).searchedTeacher = null;
+                  RPlan.of(pageContext).searchedTeacher = null;
                   preferences.remove(RPlan.SP_FILTER);
                 } else {
-                  RPlan.of(context).searchedTeacher = teacher.text;
-                  preferences.setString(RPlan.SP_FILTER, RPlan.of(context).searchedTeacher);
+                  RPlan.of(pageContext).searchedTeacher = teacher.text;
+                  preferences.setString(RPlan.SP_FILTER, RPlan.of(pageContext).searchedTeacher);
                 }
-                RPlan.of(context).loadRPlan();
+                RPlan.of(pageContext).loadRPlan();
                 Navigator.pop(context);
               },
               child: Container(

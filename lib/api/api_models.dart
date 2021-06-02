@@ -144,9 +144,10 @@ class KAGUser {
     if (rawJSON.containsKey("stufe")) _stufe = rawJSON['stufe'];
     if (rawJSON.containsKey("roles")) _roles = rawJSON['roles'].cast<String>();
     if (rawJSON.containsKey("klasse")) _klasse = rawJSON['klasse'];
+    if (rawJSON.containsKey("kuerzel")) _kuerzel = rawJSON['kuerzel'];
   }
 
-  String _givenName, _lastName, _stufe, _klasse;
+  String _givenName, _lastName, _stufe, _klasse, _kuerzel;
   List<String> _roles;
 
   String get appropriateName {
@@ -166,6 +167,8 @@ class KAGUser {
   String get name => _lastName;
 
   String get givenName => _givenName;
+
+  String get kuerzel => _kuerzel;
 
   bool get isTeacher => _roles.contains("ROLE_LEHRER") || _roles.contains("ROLE_ADMINISTRATOR");
 
