@@ -131,45 +131,26 @@ void _openMailDialog(BuildContext context) {
           builder: (context) => CupertinoAlertDialog(
             actions: [
               CupertinoButton(child: Text("Abbruch"), onPressed: () => Navigator.pop(context)),
-              CupertinoButton(child: Text(mailInfos.exists ? "Neues Passwort" : "Mail erstellen"), onPressed: () => api.API.of(context).requests.resetMailPassword().then((newPassword) {
-                Navigator.pop(context);
-                showCupertinoDialog(
-                    builder: (context) => CupertinoAlertDialog(
-                      content: Column(
-                        children: [
-                          Text(mailInfos.exists ? "Das neue Passwort ist:" : "Wir haben wir Dir/Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für WebMail oder SMTP/IMAP möglich. Deine Mail Adresse ist ${mailInfos.primaryMail}"),
-                          Stack(
-                            children: [
-                              CupertinoTextField(
-                                controller: TextEditingController(text: newPassword),
-                                readOnly: true,
-                              ),
-                              Align(
-                                alignment: Alignment.topRight,
-                                child: CupertinoButton(
-                                    child: Icon(Icons.copy, size: 15),
-                                    onPressed: () {
-                                      Clipboard.setData(ClipboardData(text: newPassword));
-                                    }
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                      actions: [
-                        CupertinoButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
-                      ],
-                    ),
-                    barrierDismissible: true,
-                    context: context
-                );
-              }))
+              Visibility(
+                child: CupertinoButton(
+                  child: Text("App Passwort erstellen"),
+                  onPressed: () => api.API.of(context).requests.getMailAppPassword().then((newPassword) => _showNewMailPassword(context, newPassword, null))
+                ),
+                visible: mailInfos.exists,
+              ),
+              CupertinoButton(
+                  child: Text(mailInfos.exists ? "Neues Passwort" : "Mail erstellen"),
+                  onPressed: () => api.API.of(context).requests.resetMailPassword().then((newPassword) => _showNewMailPassword(context, newPassword, mailInfos.exists ? null : mailInfos.primaryMail))
+              )
             ],
             content: Column(
               children: [
                 Text("Mail Infos:"),
                 Text(mailInfos.exists ? mailInfos.primaryMail : "Du/Sie musst/müssen erst eine Mail erstellen"),
+                Visibility(
+                  visible: mailInfos.exists,
+                  child: Text("Über \"Neues Passwort\" können Sie/Du Ihr/Dein Mail Passwort zurücksetzen. Über \"App Passwort erstellen\" kann ein Passwort für ein Mail Programm generiert werden. (Nicht Webmail)"),
+                )
               ],
             ),
 
@@ -187,6 +168,41 @@ void _openMailDialog(BuildContext context) {
       );
     }
   });
+}
+
+void _showNewMailPassword(BuildContext context, String password, String newMail) {
+  Navigator.pop(context);
+  showCupertinoDialog(
+      builder: (context) => CupertinoAlertDialog(
+        content: Column(
+          children: [
+            Text(newMail == null ? "Das neue Passwort ist:" : "Wir haben wir Dir/Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für WebMail oder SMTP/IMAP möglich. Deine Mail Adresse ist $newMail"),
+            Stack(
+              children: [
+                CupertinoTextField(
+                  controller: TextEditingController(text: password),
+                  readOnly: true,
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: CupertinoButton(
+                      child: Icon(Icons.copy, size: 15),
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: password));
+                      }
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
+        actions: [
+          CupertinoButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
+        ],
+      ),
+      barrierDismissible: true,
+      context: context
+  );
 }
 
 void _openMailiOSConfig(BuildContext context) {

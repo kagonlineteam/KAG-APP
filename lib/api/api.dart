@@ -349,6 +349,13 @@ class _APIRequests {
     return jsonDecode(response)['password'];
   }
 
+  Future<String> getMailAppPassword() async {
+    await _actionExecution(APIAction.MAIL);
+    String response = await http.sendEmptyPostToAPI(
+        "mail/app", {"name": "custom-app-password-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._user.getJWT());
+    return jsonDecode(response)['password'];
+  }
+
   Future<Mailconfig> getIOSMailConfig() async {
     await _actionExecution(APIAction.MAIL);
     String response = await http.sendEmptyPostToAPI(
