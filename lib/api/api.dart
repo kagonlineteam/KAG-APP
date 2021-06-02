@@ -239,7 +239,11 @@ class _APIRequests {
     models.VPlan vplan = await _getVPlanObject(day);
     if (vplan == null) return null;
 
-    params["orderby"] = "asc-stunde";
+    if ((await isTeacher())) {
+      params["orderby"] = "asc-v_lehrer,asc-stunde";
+    } else {
+      params["orderby"] = "asc-klasse,asc-stunde";
+    }
     params["vplan"] = "eq-${vplan.id}";
     params["view"] = "canonical";
     params["limit"] = "100";
