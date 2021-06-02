@@ -4,6 +4,8 @@ on:
   release:
     types:
        - created
+ # Allow workflow_dispatch to allow re-running an failed action after changes
+  workflow_dispatch:
 
 jobs:
   android:
@@ -54,7 +56,7 @@ jobs:
       run: cp $GOOGLE_LOCATION android/googleaccount.json
       env:
         GOOGLE_LOCATION: ${{ steps.google-key.outputs.filePath }}
-    - uses: actions/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1
       with:
         ruby-version: '2.7.2'
     - uses: maierj/fastlane-action@v2.0.1
