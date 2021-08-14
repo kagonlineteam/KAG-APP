@@ -11,11 +11,13 @@ class ExtraOptionsMenu extends StatelessWidget {
               context: context,
               applicationName: "KAG App",
               applicationVersion: "1.2",
-              applicationLegalese: "Copyright KAG OnlineTeam 2019-2021\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
+              applicationLegalese: "Copyright KAG OnlineTeam 2019-2021\nDie App ist unter der GNU GPLv3 lizensiert und der Source Code verfügbar.\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
               applicationIcon: Image.asset("assets/icon.png", width: 64,)
           );
         } else if (value == "support") {
           launch("mailto:app@kag-langenfeld.de");
+        } else if (value == "source") {
+          launch("https://github.com/kagonlineteam/KAG-APP");
         }
       },
       itemBuilder: (context) {
@@ -27,6 +29,10 @@ class ExtraOptionsMenu extends StatelessWidget {
           PopupMenuItem(
             value: "support",
             child: Text("Feature anfragen"),
+          ),
+          PopupMenuItem(
+            value: "source",
+            child: Text("Source Code der App"),
           ),
           PopupMenuItem(
             value: "about",
