@@ -18,7 +18,7 @@ class User extends StatelessWidget {
         future: API.of(context).requests.getUserInfo(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (timeTable == null) timeTable = TimeTable(snapshot.data.klasse != null ? snapshot.data.stufe + snapshot.data.klasse : null, isTeacher: snapshot.data.isTeacher);
+            if (timeTable == null) timeTable = TimeTable(isTeacher: snapshot.data.isTeacher);
             return UserPage(snapshot.data.appropriateName, timeTable, isTeacher: snapshot.data.isTeacher);
           } else if (!snapshot.hasError) {
             return UserPage(null, WaitingWidget());

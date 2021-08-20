@@ -13,20 +13,16 @@ import 'user.dart';
 // ignore: must_be_immutable
 class TimeTable extends StatelessWidget {
 
-  // This should only exists until class is saved in api and processed there
-  // Klasse is only set for non-Oberstufe.
-  final String klasse;
-
   final bool isTeacher;
 
-  TimeTable(this.klasse, {this.isTeacher = false});
+  TimeTable({this.isTeacher = false});
 
   SPlan currentData;
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: klasse != null ? API.of(context).requests.getClassSPlan(klasse) : API.of(context).requests.getUserSPlan(),
+      future: API.of(context).requests.getUserSPlan(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           currentData = snapshot.data;
