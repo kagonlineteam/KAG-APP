@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,38 +38,11 @@ class LoginState extends State<Login>
     Navigator.pop(context);
     if (success) {
       var userInfo = await API.of(context).requests.getUserInfo();
-      if (userInfo.roles.contains("ROLE_UNTERSTUFE") && userInfo.klasse == null) {
-        var inputController = TextEditingController();
-        showDialog(
-          context: context,
-          builder: (context) => new CupertinoAlertDialog(
-            title: Text("Bitte gib den Buchstaben deiner Klasse ein:"),
-            content: CupertinoTextField(
-              controller: inputController,
-              placeholder: "z.B. a",
-              maxLength: 1,
-              inputFormatters: [new FilteringTextInputFormatter.allow(RegExp("[a-f]")),],
-            ),
-            actions: [
-              MaterialButton(
-                onPressed: () {
-                    if (inputController.text.isEmpty) return;
-                    Navigator.pop(context);
-                    userInfo.klasse = inputController.text;
-                    KAGAppState.app.setLoggedIn();
-                },
-                child: Text("Speichern"),
-              ),
-            ],
-          )
-        );
-      } else {
-        if (userInfo.isTeacher && userInfo.kuerzel != null) {
-          SharedPreferences preferences = await SharedPreferences.getInstance();
-          preferences.setString(RPlan.SP_FILTER, userInfo.kuerzel);
-        }
-        KAGAppState.app.setLoggedIn();
+      if (userInfo.isTeacher && userInfo.kuerzel != null) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        preferences.setString(RPlan.SP_FILTER, userInfo.kuerzel);
       }
+      KAGAppState.app.setLoggedIn();
     } else {
       showDialog(
           context: context,

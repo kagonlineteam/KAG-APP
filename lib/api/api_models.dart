@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
-
 /// This file contains the models for the API
 /// Evey model has a fromJSON Constructor which parses the JSON Map
 /// To the model
@@ -171,11 +169,6 @@ class KAGUser {
   String get kuerzel => _kuerzel;
 
   bool get isTeacher => _roles.contains("ROLE_LEHRER") || _roles.contains("ROLE_ADMINISTRATOR");
-
-  set klasse(String value) {
-    _klasse = value;
-    SharedPreferences.getInstance().then((prefs) => prefs.setString('klasse', value));
-  }
 }
 
 class Article {
