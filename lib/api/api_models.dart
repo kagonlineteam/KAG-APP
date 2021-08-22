@@ -134,28 +134,29 @@ class Lesson {
 }
 
 class KAGUser {
-  KAGUser(this._lastName, this._givenName, this._stufe, this._klasse, this._roles);
+  KAGUser(this._lastName, this._givenName, this._stufe, this._klasse);
 
   KAGUser.fromJSON(Map<dynamic, dynamic> rawJSON) {
     if (rawJSON.containsKey("firstname")) _givenName = rawJSON['firstname'];
     if (rawJSON.containsKey("lastname")) _lastName = rawJSON['lastname'];
     if (rawJSON.containsKey("stufe")) _stufe = rawJSON['stufe'];
-    if (rawJSON.containsKey("roles")) _roles = rawJSON['roles'].cast<String>();
     if (rawJSON.containsKey("klasse")) _klasse = rawJSON['klasse'];
     if (rawJSON.containsKey("kuerzel")) _kuerzel = rawJSON['kuerzel'];
+    if (rawJSON.containsKey("isTeacher")) _isTeacher = rawJSON['isTeacher'];
+    if (rawJSON.containsKey("isAdmin")) _isAdmin = rawJSON['isAdmin'];
+    if (rawJSON.containsKey("isOberstufe")) _isOberstufe = rawJSON['isOberstufe'];
+    if (rawJSON.containsKey("isUnterstufe")) _isUnterstufe = rawJSON['isUnterstufe'];
   }
 
   String _givenName, _lastName, _stufe, _klasse, _kuerzel;
-  List<String> _roles;
+  bool _isTeacher, _isAdmin, _isOberstufe, _isUnterstufe;
 
   String get appropriateName {
-    if (_roles.contains("ROLE_LEHRER")) {
+    if (_isTeacher) {
       return _lastName;
     }
     return _givenName;
   }
-
-  List<String> get roles => _roles;
 
   // ignore: unnecessary_getters_setters
   String get klasse => _klasse;
@@ -168,7 +169,11 @@ class KAGUser {
 
   String get kuerzel => _kuerzel;
 
-  bool get isTeacher => _roles.contains("ROLE_LEHRER") || _roles.contains("ROLE_ADMINISTRATOR");
+  bool get isTeacher => _isTeacher || _isAdmin;
+
+  bool get isUnterstufe => _isUnterstufe;
+
+  bool get isOberstufe => _isOberstufe;
 }
 
 class Article {
