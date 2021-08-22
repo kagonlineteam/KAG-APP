@@ -33,6 +33,7 @@ dependencies:
   firebase_core: ^1.2.0
   flip_panel: ^1.0.1
   open_file: ^3.2.1
+  package_info: ^2.0.2
 
 dev_dependencies:
   flutter_test:
