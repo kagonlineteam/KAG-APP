@@ -109,6 +109,7 @@ class Lesson extends StatelessWidget {
         row.add(_DataTableEntry(lesson.stunde));
         row.add(_DataTableEntry(lesson.lehrer));
         row.add(_DataTableEntry(lesson.fach));
+        row.add(_DataTableEntry(lesson.raum));
         row.add(_DataTableEntry(lesson.type));
         row.add(_DataTableEntry(lesson.infos));
       } else {
@@ -218,6 +219,7 @@ class DataTableHeader extends StatelessWidget {
       header.add(_DataTableEntry("Stunde", bold: true));
       header.add(_DataTableEntry("Lehrer", bold: true));
       header.add(_DataTableEntry("Fach", bold: true));
+      header.add(_DataTableEntry("Raum", bold: true));
       header.add(_DataTableEntry("Art", bold: true));
       header.add(_DataTableEntry("Infos", bold: true));
     } else {
