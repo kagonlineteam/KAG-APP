@@ -6,19 +6,24 @@ import './Login.dart'     as Login; // ignore: library_prefixes
 import './News.dart'      as News; // ignore: library_prefixes
 import './RPlan.dart'     as RPlan; // ignore: library_prefixes
 import './User.dart'      as User; // ignore: library_prefixes
+import './WebMail.dart'   as WebMail; // ignore: library_prefixes
 
 /// Used by main.dart
 ///
 
 // ignore: non_constant_identifier_names
-List<Widget> AppViews({bool loggedIn = true}) {
-  return <Widget>[
+List<Widget> AppViews({bool loggedIn = true, bool webmail = false}) {
+  var widgets = <Widget>[
     new Calendar.Calendar(),
     loggedIn ? new RPlan.RPlanViewWidget() : new Login.NotLoggedIn(),
     new Home.Home(),
     loggedIn ? new User.User() : new Login.Login(),
     new News.News(),
   ];
+  if (webmail) {
+    widgets.add(WebMail.WebMail());
+  }
+  return widgets;
 }
 
 // ignore: non_constant_identifier_names

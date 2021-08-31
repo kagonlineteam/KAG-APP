@@ -146,6 +146,7 @@ class KAGUser {
     _isAdmin = false;
     _isOberstufe = false;
     _isUnterstufe = false;
+    _consent = [];
   }
 
   KAGUser.fromJSON(Map<dynamic, dynamic> rawJSON) {
@@ -154,6 +155,7 @@ class KAGUser {
     if (rawJSON.containsKey("stufe")) _stufe = rawJSON['stufe'];
     if (rawJSON.containsKey("klasse")) _klasse = rawJSON['klasse'];
     if (rawJSON.containsKey("kuerzel")) _kuerzel = rawJSON['kuerzel'];
+    if (rawJSON.containsKey("consent")) _consent = rawJSON['consent'].cast<String>(); else _consent = []; // ignore: curly_braces_in_flow_control_structures
     if (rawJSON.containsKey("isLehrer")) _isTeacher = rawJSON['isLehrer']; else _isTeacher = false; // ignore: curly_braces_in_flow_control_structures
     if (rawJSON.containsKey("isAdmin")) _isAdmin = rawJSON['isAdmin']; else _isAdmin = false; // ignore: curly_braces_in_flow_control_structures
     if (rawJSON.containsKey("isOberstufe")) _isOberstufe = rawJSON['isOberstufe']; else _isOberstufe = false; // ignore: curly_braces_in_flow_control_structures
@@ -161,6 +163,7 @@ class KAGUser {
   }
 
   String _givenName, _lastName, _stufe, _klasse, _kuerzel;
+  List<String> _consent;
   bool _isTeacher, _isAdmin, _isOberstufe, _isUnterstufe;
 
   String get appropriateName {
@@ -190,6 +193,8 @@ class KAGUser {
   bool get isAdmin => _isAdmin;
 
   bool get useSie => _isTeacher;
+
+  bool get mailConsent => _consent.contains("mail");
 }
 
 class Article {

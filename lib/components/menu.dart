@@ -66,52 +66,60 @@ class ExtraOptionsMenu extends StatelessWidget {
 }
 
 class BottomNavigationBarMenu extends StatelessWidget {
-  BottomNavigationBarMenu({this.isVPlanApp = false, this.controller});
+  BottomNavigationBarMenu({this.isVPlanApp = false, this.webmail = false, this.controller});
 
   final bool isVPlanApp;
+  final bool webmail;
   final TabController controller;
 
   @override
   Widget build(BuildContext context) {
+    var widgets = isVPlanApp ? <Widget>[
+      Tab(
+        text: "VPlan",
+        icon: Icon(Icons.compare_arrows),
+      ),
+      Tab(
+        text: "SPlan",
+        icon: Icon(Icons.person),
+      ),
+    ] :
+    // Normal App
+    <Widget>[
+      Tab(
+        text: "Termine",
+        icon: Icon(Icons.event),
+      ),
+      Tab(
+        text: "VPlan",
+        icon: Icon(Icons.compare_arrows),
+      ),
+      Tab(
+        text: "Home",
+        icon: Icon(Icons.home),
+      ),
+      Tab(
+        text: "User",
+        icon: Icon(Icons.person),
+      ),
+      Tab(
+        text: "News",
+        icon: Icon(Icons.public),
+      ),
+    ];
+
+    if (webmail) {
+      widgets.add(Tab(
+        text: "Mail",
+        icon: Icon(Icons.email),
+      ));
+    }
+
     return Container(
       color: Color.fromRGBO(244, 244, 244, 1),
       child: TabBar(
         controller: controller,
-        tabs: isVPlanApp ?
-        // VPlan App
-        <Widget>[
-          Tab(
-            text: "VPlan",
-            icon: Icon(Icons.compare_arrows),
-          ),
-          Tab(
-            text: "SPlan",
-            icon: Icon(Icons.person),
-          ),
-        ] :
-        // Normal App
-        <Widget>[
-          Tab(
-            text: "Termine",
-            icon: Icon(Icons.event),
-          ),
-          Tab(
-            text: "VPlan",
-            icon: Icon(Icons.compare_arrows),
-          ),
-          Tab(
-            text: "Home",
-            icon: Icon(Icons.home),
-          ),
-          Tab(
-            text: "User",
-            icon: Icon(Icons.person),
-          ),
-          Tab(
-            text: "News",
-            icon: Icon(Icons.public),
-          ),
-        ],
+        tabs: widgets,
         isScrollable: false,
         labelColor: Color.fromRGBO(47, 109, 29, 1),
         unselectedLabelColor: Colors.grey,
@@ -125,40 +133,47 @@ class BottomNavigationBarMenu extends StatelessWidget {
 }
 
 // ignore: avoid_positional_boolean_parameters
-List<NavigationRailDestination> getNavigationRail(bool isVPlanApp) {
-  return isVPlanApp ?
-  // VPlan App
-  <NavigationRailDestination>[
-    NavigationRailDestination(
-      label: Text("VPlan"),
-      icon: Icon(Icons.compare_arrows, size: 35),
-    ),
-    NavigationRailDestination(
-      label: Text("SPlan"),
-      icon: Icon(Icons.person, size: 35),
-    ),
-  ] :
-  // Normal App
-  <NavigationRailDestination>[
-    NavigationRailDestination(
-      label: Text("Termine"),
-      icon: Icon(Icons.event, size: 35),
-    ),
-    NavigationRailDestination(
-      label: Text("VPlan"),
-      icon: Icon(Icons.compare_arrows, size: 35),
-    ),
-    NavigationRailDestination(
-      label: Text("Home"),
-      icon: Icon(Icons.home, size: 35),
-    ),
-    NavigationRailDestination(
-      label: Text("User"),
-      icon: Icon(Icons.person, size: 35),
-    ),
-    NavigationRailDestination(
-      label: Text("News"),
-      icon: Icon(Icons.public, size: 35),
-    ),
-  ];
+List<NavigationRailDestination> getNavigationRail(bool isVPlanApp, bool webmail) {
+  if (isVPlanApp) {
+    return <NavigationRailDestination>[
+      NavigationRailDestination(
+        label: Text("VPlan"),
+        icon: Icon(Icons.compare_arrows, size: 35),
+      ),
+      NavigationRailDestination(
+        label: Text("SPlan"),
+        icon: Icon(Icons.person, size: 35),
+      ),
+    ];
+  } else {
+    var icons = <NavigationRailDestination>[
+      NavigationRailDestination(
+        label: Text("Termine"),
+        icon: Icon(Icons.event, size: 35),
+      ),
+      NavigationRailDestination(
+        label: Text("VPlan"),
+        icon: Icon(Icons.compare_arrows, size: 35),
+      ),
+      NavigationRailDestination(
+        label: Text("Home"),
+        icon: Icon(Icons.home, size: 35),
+      ),
+      NavigationRailDestination(
+        label: Text("User"),
+        icon: Icon(Icons.person, size: 35),
+      ),
+      NavigationRailDestination(
+        label: Text("News"),
+        icon: Icon(Icons.public, size: 35),
+      ),
+    ];
+    if (webmail) {
+      icons.add(NavigationRailDestination(
+        label: Text("Mail"),
+        icon: Icon(Icons.mail, size: 35),
+      ));
+    }
+    return icons;
+  }
 }

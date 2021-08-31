@@ -52,18 +52,20 @@ class KAGApp extends StatefulWidget {
 
 }
 
-class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
+class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   static final _isVPlanApp = kIsWeb && webinfo.window.location.host.startsWith("vplan.");
   static KAGAppState app;
   bool loggedIn = true;
+  bool webmailTab = false; // This is calculated here and just passed to Widgets, to have it the same everywhere.
   TabController controller;
 
 
   @override
   void initState() {
     super.initState();
-    controller = TabController(initialIndex: _isVPlanApp ? 0 : 2, length: _isVPlanApp ? 2 : 5, vsync: this);
+    controller = TabController(initialIndex: _isVPlanApp ? 0 : 2, length: _getPageCount(), vsync: this); // If you change something here change it in build, too.
     API.of(context).hasLoginCredentials().then((loggedIn) => setState(() => this.loggedIn = loggedIn));
+    webmailTab = loggedIn && API.of(context).requests.getUserInfo().mailConsent; // Is also in setLoggedIn
   }
 
   KAGAppState(){
@@ -72,6 +74,9 @@ class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    if (_getPageCount() != controller.length) {
+      controller = TabController(initialIndex: controller.index, length: _getPageCount(), vsync: this);
+    }
     if ((kIsWeb && MediaQuery.of(context).size.width > 700) || (!kIsWeb && Platform.isMacOS)) {
       return Row(
         children: [
@@ -90,14 +95,14 @@ class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
               });
             },
             labelType: NavigationRailLabelType.selected,
-            destinations: getNavigationRail(_isVPlanApp),
+            destinations: getNavigationRail(_isVPlanApp, webmailTab),
           ),
           VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).accentColor),
           // This is the main content.
           Expanded(
             child: IndexedStack(
               index: controller.index,
-              children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn),
+              children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn, webmail: webmailTab),
             ),
           ),
         ],
@@ -106,20 +111,26 @@ class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
       return Scaffold(
           body: TabBarView(
             controller: controller,
-            children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn),
+            children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn, webmail: webmailTab),
             physics: NeverScrollableScrollPhysics(),
           ),
-          bottomNavigationBar: BottomNavigationBarMenu(controller: controller, isVPlanApp: _isVPlanApp)
+          bottomNavigationBar: BottomNavigationBarMenu(controller: controller, isVPlanApp: _isVPlanApp, webmail: webmailTab)
       );
     }
   }
 
   void setLoggedOut() {
-    setState(() => loggedIn = false);
+    setState(() {
+      loggedIn = false;
+      webmailTab = false;
+    });
   }
 
   void setLoggedIn() {
-    setState(() => loggedIn = true);
+    setState(() {
+      loggedIn = true;
+      webmailTab = loggedIn && API.of(context).requests.getUserInfo().mailConsent; // Is also in initState
+    });
   }
 
   void goToPage(int page) {
@@ -128,5 +139,9 @@ class KAGAppState extends State<KAGApp> with SingleTickerProviderStateMixin {
     setState(() {
       controller.animateTo(page);
     });
+  }
+
+  int _getPageCount() {
+    return _isVPlanApp ? 2 : (webmailTab ? 6 : 5);
   }
 }

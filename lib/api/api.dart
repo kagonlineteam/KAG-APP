@@ -406,6 +406,14 @@ class _APIRequests {
     return models.SPlan.fromJSON(jsonDecode(response));
   }
 
+  ///
+  /// Get raw JWT token for mail usage
+  ///
+  Future<String> getMailJWTToken() async {
+    await _actionExecution(APIAction.MAIL);
+    return _api._authenticationUser._jwt;
+  }
+
 }
 
 class User {
