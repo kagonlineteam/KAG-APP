@@ -146,10 +146,12 @@ void _openMailDialog(BuildContext context) {
             content: Column(
               children: [
                 Text("Mail Infos:"),
-                Text(mailInfos.exists ? mailInfos.primaryMail : "Du/Sie musst/müssen erst eine Mail erstellen"),
+                Text(mailInfos.exists ? mailInfos.primaryMail : (api.API.of(context).requests.getUserInfo().useSie ? "Sie müssen erst eine Mail erstellen" : "Du musst erst eine Mail erstellen")),
                 Visibility(
                   visible: mailInfos.exists,
-                  child: Text("Über \"Neues Passwort\" können Sie/Du Ihr/Dein Mail Passwort zurücksetzen. Über \"App Passwort erstellen\" kann ein Passwort für ein Mail Programm generiert werden. (Nicht Webmail)"),
+                  child: Text(api.API.of(context).requests.getUserInfo().useSie ?
+                  "Über \"Neues Passwort\" können Sie Ihr Mail Passwort zurücksetzen. Über \"App Passwort erstellen\" können Sie ein Passwort für ein Mail Programm oder iPad generieren." :
+                  "Über \"Neues Passwort\" können kannst Du Mail Passwort zurücksetzen. Über \"App Passwort erstellen\" kannst du ein Passwort für ein Mail Programm generieren."),
                 )
               ],
             ),
@@ -176,7 +178,11 @@ void _showNewMailPassword(BuildContext context, String password, String newMail)
       builder: (context) => CupertinoAlertDialog(
         content: Column(
           children: [
-            Text(newMail == null ? "Das neue Passwort ist:" : "Wir haben wir Dir/Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für WebMail oder SMTP/IMAP möglich. Deine Mail Adresse ist $newMail"),
+            Text(newMail == null ? "Das neue Passwort ist:" : (
+                api.API.of(context).requests.getUserInfo().useSie ?
+                "Wir haben wir Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für die alte WebMail oder SMTP/IMAP möglich. Deine Mail Adresse ist $newMail. Für Mailprogramme/iPads muss ein App Passwort generiert werden" :
+                "Wir haben wir Dir für den Mailaccount ein extra Passwort erstellt. Für Mailprogramme muss jedoch ein App Passwort generiert werden"
+            )),
             Stack(
               children: [
                 CupertinoTextField(

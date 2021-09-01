@@ -22,16 +22,21 @@ enum APIAction {
 }
 
 class API {
-  User _user;
+  // This is the internal user
+  User _authenticationUser;
+  // This is the data of the user in the API.
+  // This user should always be loaded as it gets loaded on
+  // app start, login and refresh
+  models.KAGUser _userData = models.KAGUser("", "", "", "");
   _APIRequests _requests;
 
   API() {
-    _user = User();
+    _authenticationUser = User();
     _requests = new _APIRequests(this);
   }
 
-  API.asMock(User user, _APIRequests requests) {
-    _user = user;
+  API.asMock(User authenticationUser, _APIRequests requests) {
+    _authenticationUser = authenticationUser;
     _requests = requests;
   }
 
@@ -73,7 +78,7 @@ class API {
   /// This does not check its validity
   ///
   Future<bool> hasLoginCredentials() async {
-    return await _user._hasLoginCredentialsSaved();
+    return await _authenticationUser._hasLoginCredentialsSaved();
   }
 
 
@@ -81,7 +86,22 @@ class API {
   /// Calls setLoginCredentials in User
   ///
   Future<bool> setLoginCredentials(String username, String password) async {
-    return await _user.setLoginCredentials(username, password);
+    bool success = await _authenticationUser.setLoginCredentials(username, password);
+    if (success) await preloadUserData();
+    return success;
+  }
+
+  ///
+  /// Load User data into local variable.
+  /// This should be called before the App starts.
+  ///
+  Future preloadUserData() async {
+    if (await hasLoginCredentials()) {
+      print("Loading user data.");
+      _userData = await requests._getUserInfo();
+    } else {
+      print("User is not logged in: Not loading user data.");
+    }
   }
 
   _APIRequests get requests => _requests;
@@ -111,9 +131,11 @@ class _APIRequests {
   /// Check if action is specified action else throw exception
   ///
   Future _actionExecution(APIAction action) async {
-    if (_api._isLogInNeeded(action) && !_api._user.isLoggedIn()) {
-      if (!await _api._user.login()) {
-        _api._user.setLoginCredentials(null, null, callLogout: false); // We do not call Logout, because it is not a manual logout
+    if (_api._isLogInNeeded(action) && !_api._authenticationUser.isLoggedIn()) {
+      if (await _api._authenticationUser.login()) {
+        await _api.preloadUserData();
+      } else {
+        _api._authenticationUser.setLoginCredentials(null, null, callLogout: false); // We do not call Logout, because it is not a manual logout
         KAGAppState.app.setLoggedOut();
         throw Exception("Login to API is not possible");
       }
@@ -125,7 +147,7 @@ class _APIRequests {
   ///
   Future<String> getUsername() async {
     await _actionExecution(APIAction.GET_USERNAME);
-    return _api._user.getUsername();
+    return _api._authenticationUser.getUsername();
   }
 
   ///
@@ -133,15 +155,21 @@ class _APIRequests {
   ///
   Future<List> getGroups() async {
     await _actionExecution(APIAction.GET_GROUPS);
-    return _api._user.getGroups();
+    return _api._authenticationUser.getGroups();
   }
 
   ///
   /// Checks if user has Teacher permissions
   ///
-  Future<bool> isTeacher() async {
-    var groups = await getGroups();
-    return groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR");
+  bool isTeacher() {
+    return _api._userData.isTeacher;
+  }
+
+  ///
+  /// Checks if user has Admin permissions
+  ///
+  bool isAdmin() {
+    return _api._userData.isAdmin;
   }
 
   ///
@@ -154,7 +182,7 @@ class _APIRequests {
     String response = await http.getFromAPI(
         "termine",
         {"start": "gte-$start", "stop": "lte-$end", "view": "runtime", "limit": "100"},
-        _api._user.isLoggedIn() ? _api._user.getJWT() : null);
+        _api._authenticationUser.isLoggedIn() ? _api._authenticationUser.getJWT() : null);
     var jsonResponse = json.decode(response)['entities'];
     List<models.Termin> entries = [];
     for (var entity in jsonResponse) {
@@ -171,7 +199,7 @@ class _APIRequests {
     String response = await http.getFromAPI(
         "termine/$id",
         null,
-        _api._user.isLoggedIn() ? _api._user.getJWT() : null
+        _api._authenticationUser.isLoggedIn() ? _api._authenticationUser.getJWT() : null
     );
     var jsonResponse = json.decode(response)['entity'];
     return new models.Termin.fromJSON(jsonResponse);
@@ -191,7 +219,7 @@ class _APIRequests {
   Future<List<models.Termin>> _getNextCalendarEntries() async {
     await _actionExecution(APIAction.GET_CALENDAR);
     var response = await http.getFromAPI(
-        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
+        "termine", {"limit": "3", "view": "canonical", "orderby": "asc-start", "start": "gte-${(new DateTime.now().millisecondsSinceEpoch ~/ 1000).toString()}"}, _api._authenticationUser.isLoggedIn() ? _api._authenticationUser.getJWT() : null);
     if (response != null) {
       var jsonResponse = json.decode(response)['entities'];
       List<models.Termin> entries = [];
@@ -219,7 +247,7 @@ class _APIRequests {
           "view": "runtime",
           "orderby": "asc-start"
         },
-        _api._user.isLoggedIn() ? _api._user.getJWT() : null))['entities'];
+        _api._authenticationUser.isLoggedIn() ? _api._authenticationUser.getJWT() : null))['entities'];
     if (jsonResponse.length > 0) {
       return models.Termin.fromJSON(jsonResponse[0]);
     }
@@ -239,7 +267,7 @@ class _APIRequests {
     models.VPlan vplan = await _getVPlanObject(day);
     if (vplan == null) return null;
 
-    if ((await isTeacher())) {
+    if (isTeacher()) {
       params["orderby"] = "asc-v_lehrer,asc-stunde";
     } else {
       params["orderby"] = "asc-klasse,asc-stunde";
@@ -251,12 +279,12 @@ class _APIRequests {
     if (teacher != null) {
       var paramsOne = Map.of(params);
       paramsOne.addAll({"lehrer": "eq-${Uri.encodeComponent(teacher)}"});
-      await jsonDecode(await http.getFromAPI("vertretungen", paramsOne, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
+      await jsonDecode(await http.getFromAPI("vertretungen", paramsOne, _api._authenticationUser.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
       var paramsTwo = Map.of(params);
       paramsTwo.addAll({"v_lehrer": "eq-${Uri.encodeComponent(teacher)}"});
-      await jsonDecode(await http.getFromAPI("vertretungen", paramsTwo, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
+      await jsonDecode(await http.getFromAPI("vertretungen", paramsTwo, _api._authenticationUser.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
     } else {
-      await jsonDecode(await http.getFromAPI("vertretungen", params, _api._user.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
+      await jsonDecode(await http.getFromAPI("vertretungen", params, _api._authenticationUser.getJWT()))['entities'].forEach((e) => vplan.addLesson(models.Lesson.fromJSON(e)));
     }
 
     return vplan;
@@ -280,25 +308,31 @@ class _APIRequests {
     DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
     // Adding the days
     int time = requestTime.millisecondsSinceEpoch ~/ 1000 + (days * 86400);
-    var response  = jsonDecode(await http.getFromAPI("vplans", {"date": "eq-${time.toString()}", "view": "canonical"}, _api._user.getJWT()))['entities'];
+    var response  = jsonDecode(await http.getFromAPI("vplans", {"date": "eq-${time.toString()}", "view": "canonical"}, _api._authenticationUser.getJWT()))['entities'];
     if (response.length == 0) return null;
     return models.VPlan.fromJSON(response[0]);
   }
 
   ///
-  /// Returns specified information of user
-  /// Info needs a LDAP field name(s)
-  /// E.g. employeeNumber, givenName, sn etc.
+  /// Returns a KAGUser Object
+  /// is used in preload function
   ///
-  /// It directly returns the Information as String
-  ///
-  Future <models.KAGUser> getUserInfo() async {
+  Future <models.KAGUser> _getUserInfo() async {
     await _actionExecution(APIAction.GET_USER_INFO);
     String response = await http.getFromAPI(
-        "users/${_api._user.getUsername()}", null, _api._user.getJWT());
+        "users/${_api._authenticationUser.getUsername()}", null, _api._authenticationUser.getJWT());
     var jsonResponse = jsonDecode(response)['entity'];
     models.KAGUser user = models.KAGUser.fromJSON(jsonResponse);
     return user;
+  }
+
+  ///
+  /// This loads the users data
+  /// synchronous as it should already
+  /// be preloaded
+  ///
+  models.KAGUser getUserInfo() {
+    return _api._userData;
   }
 
   helpers.ListResource<models.Article> getArticles() {
@@ -314,7 +348,7 @@ class _APIRequests {
   Future<models.Article> getArticle(String id) async {
     await _actionExecution(APIAction.GET_ARTICLE);
 
-    String response = await http.getFromAPI("articles/$id", null, _api._user.isLoggedIn() ? _api._user.getJWT() : null);
+    String response = await http.getFromAPI("articles/$id", null, _api._authenticationUser.isLoggedIn() ? _api._authenticationUser.getJWT() : null);
     var jsonResponse = jsonDecode(response);
     if (!jsonResponse.containsKey('entity')) return null;
     return models.Article.fromJSON(jsonResponse['entity']);
@@ -322,7 +356,7 @@ class _APIRequests {
 
 
   Future <Uint8List> getFile(String id) async {
-    var resp = await http.client.get("${http.API}files/$id", headers: _api._user.isLoggedIn() ? {'Authorization': 'Bearer ${_api._user.getJWT()}'} : {});
+    var resp = await http.client.get("${http.API}files/$id", headers: _api._authenticationUser.isLoggedIn() ? {'Authorization': 'Bearer ${_api._authenticationUser.getJWT()}'} : {});
     return resp.bodyBytes;
   }
 
@@ -336,50 +370,50 @@ class _APIRequests {
   Future<models.MailSettings> getMailSettings() async {
     await _actionExecution(APIAction.MAIL);
     String response = await http.getFromAPI(
-        "mail", null, _api._user.getJWT());
+        "mail", null, _api._authenticationUser.getJWT());
    return models.MailSettings.fromJSON(jsonDecode(response));
   }
 
   Future<String> resetMailPassword() async {
     await _actionExecution(APIAction.MAIL);
     String response = await http.sendEmptyPostToAPI(
-        "mail", null, _api._user.getJWT());
+        "mail", null, _api._authenticationUser.getJWT());
     return jsonDecode(response)['password'];
   }
 
   Future<String> getMailAppPassword() async {
     await _actionExecution(APIAction.MAIL);
     String response = await http.sendEmptyPostToAPI(
-        "mail/app", {"name": "custom-app-password-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._user.getJWT());
+        "mail/app", {"name": "custom-app-password-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._authenticationUser.getJWT());
     return jsonDecode(response)['password'];
   }
 
   Future<Mailconfig> getIOSMailConfig() async {
     await _actionExecution(APIAction.MAIL);
     String response = await http.sendEmptyPostToAPI(
-        "mail/app", {"name": "ios-mailconfig-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._user.getJWT());
+        "mail/app", {"name": "ios-mailconfig-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._authenticationUser.getJWT());
     String password = jsonDecode(response)['password'];
-    return Mailconfig((await getMailSettings()).primaryMail, password, _api._user.getUsername());
+    return Mailconfig((await getMailSettings()).primaryMail, password, _api._authenticationUser.getUsername());
   }
 
   Future<models.SPlan> getUserSPlan() async {
     await _actionExecution(APIAction.GET_SPLAN);
     String response = await http.getFromAPI(
-        "stundenplan", null, _api._user.getJWT());
+        "stundenplan", null, _api._authenticationUser.getJWT());
     return models.SPlan.fromJSON(jsonDecode(response));
   }
 
   Future<models.SPlan> getClassSPlan(String klasse) async {
     await _actionExecution(APIAction.GET_SPLAN);
     String response = await http.getFromAPI(
-        "stundenplan/klasse/$klasse", null, _api._user.getJWT());
+        "stundenplan/klasse/$klasse", null, _api._authenticationUser.getJWT());
     return models.SPlan.fromJSON(jsonDecode(response));
   }
 
   Future<models.SPlan> getRoomSPlan(String room) async {
     await _actionExecution(APIAction.GET_SPLAN);
     String response = await http.getFromAPI(
-        "stundenplan/raum/$room", null, _api._user.getJWT());
+        "stundenplan/raum/$room", null, _api._authenticationUser.getJWT());
     return models.SPlan.fromJSON(jsonDecode(response));
   }
 

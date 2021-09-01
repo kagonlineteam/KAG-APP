@@ -12,12 +12,16 @@ import 'dynimports/webinfo.dart' if (dart.library.html) 'dart:html' as webinfo;
 import 'push_notifications.dart';
 
 
-void main() {
+void main() async {
   // This does not need to be waited on as we do not use it in HomeScreen
   initializeDateFormatting("de_DE");
 
+  // Preload binary messenger to load Shared Preferences
+  WidgetsFlutterBinding.ensureInitialized();
+
   API api = new API();
-  //TODO preload
+  await api.preloadUserData(); // Load user data, that is required to build some app functions
+
   runApp(
     APIHolder(
         MaterialApp(

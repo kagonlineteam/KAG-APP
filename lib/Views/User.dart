@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api.dart';
-import '../components/helpers.dart';
+import '../api/api_models.dart';
 import '../components/timetable.dart';
 import '../components/user.dart';
 import '../main.dart';
@@ -14,18 +14,9 @@ class User extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: API.of(context).requests.getUserInfo(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            if (timeTable == null) timeTable = TimeTable(isTeacher: snapshot.data.isTeacher);
-            return UserPage(snapshot.data.appropriateName, timeTable, isTeacher: snapshot.data.isTeacher);
-          } else if (!snapshot.hasError) {
-            return UserPage(null, WaitingWidget());
-          } else {
-            return ErrorTextHolder("Die Nutzer Seite ist zur Zeit leider nicht verfügbar");
-          }
-        });
+    KAGUser user = API.of(context).requests.getUserInfo();
+    if (timeTable == null) timeTable = TimeTable(isTeacher: user.isTeacher);
+    return UserPage(user.appropriateName, timeTable, isTeacher: user.isTeacher);
   }
 
   static void logout(BuildContext context) {

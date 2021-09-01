@@ -60,6 +60,7 @@ class RPlan extends State {
   @override
   void initState() {
     super.initState();
+    hasTeacherPlan = API.of(context).requests.isTeacher();
     _loadOptions().then((value) {
         _loaded = 0;
         loadRPlan();
@@ -72,10 +73,6 @@ class RPlan extends State {
     if (preferences.containsKey(SP_FILTER)) {
       searchedTeacher = preferences.getString(SP_FILTER);
     }
-
-    // Load Settings
-    var groups = await API.of(context).requests.getGroups();
-    hasTeacherPlan = (groups.contains("ROLE_LEHRER") || groups.contains("ROLE_ADMINISTRATOR"));
   }
 
   // Get Data

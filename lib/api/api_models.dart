@@ -134,7 +134,12 @@ class Lesson {
 }
 
 class KAGUser {
-  KAGUser(this._lastName, this._givenName, this._stufe, this._klasse);
+  KAGUser(this._lastName, this._givenName, this._stufe, this._klasse) {
+    _isTeacher = false;
+    _isAdmin = false;
+    _isOberstufe = false;
+    _isUnterstufe = false;
+  }
 
   KAGUser.fromJSON(Map<dynamic, dynamic> rawJSON) {
     if (rawJSON.containsKey("firstname")) _givenName = rawJSON['firstname'];
@@ -142,10 +147,10 @@ class KAGUser {
     if (rawJSON.containsKey("stufe")) _stufe = rawJSON['stufe'];
     if (rawJSON.containsKey("klasse")) _klasse = rawJSON['klasse'];
     if (rawJSON.containsKey("kuerzel")) _kuerzel = rawJSON['kuerzel'];
-    if (rawJSON.containsKey("isLehrer")) _isTeacher = rawJSON['isLehrer'];
-    if (rawJSON.containsKey("isAdmin")) _isAdmin = rawJSON['isAdmin'];
-    if (rawJSON.containsKey("isOberstufe")) _isOberstufe = rawJSON['isOberstufe'];
-    if (rawJSON.containsKey("isUnterstufe")) _isUnterstufe = rawJSON['isUnterstufe'];
+    if (rawJSON.containsKey("isLehrer")) _isTeacher = rawJSON['isLehrer']; else _isTeacher = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isAdmin")) _isAdmin = rawJSON['isAdmin']; else _isAdmin = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isOberstufe")) _isOberstufe = rawJSON['isOberstufe']; else _isOberstufe = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isUnterstufe")) _isUnterstufe = rawJSON['isUnterstufe']; else _isUnterstufe = false; // ignore: curly_braces_in_flow_control_structures
   }
 
   String _givenName, _lastName, _stufe, _klasse, _kuerzel;
@@ -174,6 +179,10 @@ class KAGUser {
   bool get isUnterstufe => _isUnterstufe;
 
   bool get isOberstufe => _isOberstufe;
+
+  bool get isAdmin => _isAdmin;
+
+  bool get useSie => _isTeacher;
 }
 
 class Article {

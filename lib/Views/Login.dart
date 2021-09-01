@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api.dart';
+import '../api/api_models.dart';
 import '../main.dart';
 import 'RPlan.dart';
 
@@ -37,7 +38,7 @@ class LoginState extends State<Login>
         await API.of(context).setLoginCredentials(username.text, password.text);
     Navigator.pop(context);
     if (success) {
-      var userInfo = await API.of(context).requests.getUserInfo();
+      KAGUser userInfo = API.of(context).requests.getUserInfo();
       if (userInfo.isTeacher && userInfo.kuerzel != null) {
         SharedPreferences preferences = await SharedPreferences.getInstance();
         preferences.setString(RPlan.SP_FILTER, userInfo.kuerzel);
