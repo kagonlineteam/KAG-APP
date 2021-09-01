@@ -11,8 +11,6 @@ class MockUser extends Mock implements User {}
 
 void main() {
   raw.client = MockClient();
-  // Can be used when creating API tests
-  MockUser user = MockUser();
 
   test('test raw get', () async {
     when(raw.client.get("${raw.API}request?test=param&param=test", headers: {"Authorization": "Bearer 123"})).thenAnswer((_) async => http.Response('testResponse1', 200));
@@ -21,22 +19,6 @@ void main() {
     expect(await raw.getFromAPI("request", {"test": "param", "param": "test"}, "123"), "testResponse1");
     expect(await raw.getFromAPI("request", {"test": "param", "param": "test"}, null), "testResponse2");
     expect(() => raw.getFromAPI("request", {"test": "errorCode"}, null), throwsException);
-  });
-
-  test('test API internal', () async {
-    API api = API.asMock(user, null);
-    expect(api.requests, isNull);
-    when(user.setLoginCredentials("username", "password"))
-        .thenAnswer(expectAsync1((_) async {
-          return true;
-    }));
-    when(user.setLoginCredentials("username", "password1"))
-        .thenAnswer(expectAsync1((_) async {
-      return false;
-    }));
-
-    expect(await api.setLoginCredentials("username", "password"), true);
-    expect(await api.setLoginCredentials("username", "password1"), false);
   });
 
   test('test list resource', () async {
