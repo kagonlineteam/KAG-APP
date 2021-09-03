@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Views/RPlan.dart';
+import '../api/api.dart';
 import '../api/api_models.dart' as api_model;
 
 import '../dynimports/apifile/dynapifile.dart'
@@ -67,15 +68,28 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (lessons.length == 0) {
+      if (MediaQuery.of(context).size.width <= 1000) {
+        return Container(margin: const EdgeInsets.only(top: 250.0),
+            alignment: Alignment.center,
+            child: Text("Es gibt derzeit am $date keine Vertretungen ${API.of(context).requests.getUserInfo().useSie ? "für Sie" : "für dich"}."));
+      } else {
+        return Container(margin: const EdgeInsets.only(left: 12.0),
+            alignment: Alignment.bottomLeft,
+            child: Text("Es gibt derzeit am $date keine Vertretungen ${API.of(context).requests.getUserInfo().useSie ? "für Sie" : "für dich"}."));
+      }
+    }
+
+    // If there are rows:
     var row = new List<Widget>.from(lessons);
 
     if (MediaQuery.of(context).size.width >= 1000) {
       row.insert(0, DataTableHeader(isFullPlan: RPlan.of(context).hasTeacherPlan));
     }
 
-   return Column(
+    return Column(
      children: row,
-   );
+    );
   }
 
   // ignore: type_annotate_public_apis
