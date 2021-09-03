@@ -67,6 +67,17 @@ class DayWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (lessons.length == 0) {
+      if (MediaQuery.of(context).size.width <= 1000) {
+        return Container(margin: const EdgeInsets.only(top: 250.0),
+            alignment: Alignment.center,
+            child: Text("Es gibt derzeit am $date keine Vertretungen."));
+      } else {
+        return Container(margin: const EdgeInsets.only(left: 12.0),
+              alignment: Alignment.bottomLeft,
+              child: Text("Es gibt derzeit am $date keine Vertretungen."));
+      }
+    }
     var row = new List<Widget>.from(lessons);
 
     if (MediaQuery.of(context).size.width >= 1000) {

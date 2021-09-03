@@ -32,13 +32,6 @@ class RPlan extends State {
   @override
   Widget build(BuildContext context) {
     if (_loaded == 3) {
-      if (_days.length == 0) {
-        return ErrorTextHolder(hasTeacherPlan ?
-        // Teacher Error Message
-        "Es gibt keine Vertretungen für Sie. Sollte dies unerwartet sein und Sie einen Filter konfiguriert haben, so überprüfen sie bitte das eingebene Kürzel." :
-        // Student Error Message
-        "Es gibt keine Vertretung für dich.", barActions: [TeacherKuerzelButton()], barTitle: "VPlan");
-      }
       bool isDesktop = kIsWeb && MediaQuery.of(context).size.width > 1000;
       return isDesktop ? RPlanListView(_days) : RPlanTabBar(_days);
     } else if (_loaded  == -2) {
@@ -100,13 +93,13 @@ class RPlan extends State {
       newLessons.addAll(_preProcessLessonData(vplan));
 
       setState(() {
-        if (!newLessons.isEmpty) {
+
           _days.add(DayWidget(
               lessons: newLessons,
               dateTime: vplan.date,
               pdfFile: vplan.file
           ));
-        }
+
         _days.sort((a, b) => a.dateTime.compareTo(b.dateTime));
         // Only set to loaded if really loaded
         if (_loaded != 3  && _loaded != -2) _loaded++;
