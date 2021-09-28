@@ -265,7 +265,7 @@ class _APIRequests {
     await _actionExecution(APIAction.GET_VPLAN);
     Map<String, String> params = {};
     models.VPlan vplan = await _getVPlanObject(day);
-    if (vplan == null) return null;
+    if (vplan == null) return models.VPlan.empty(day);
 
     if (isTeacher()) {
       params["orderby"] = "asc-v_lehrer,asc-stunde";
@@ -295,19 +295,8 @@ class _APIRequests {
   /// This ID is needed to filter for days
   ///
   Future<models.VPlan> _getVPlanObject(int day) async {
-    int days;
-    if (day == 0) {
-      days = 0;
-    } else if (day == 1) {
-      days = DateTime.now().weekday >= 5 ? 8 - DateTime.now().weekday : 1;
-    } else {
-      days = DateTime.now().weekday == 4 ? 4 : DateTime.now().weekday >= 5 ? 9 - DateTime.now().weekday : 2;
-    }
-    // Calculating today at 8o clock
-    DateTime now = new DateTime.now();
-    DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
     // Adding the days
-    int time = requestTime.millisecondsSinceEpoch ~/ 1000 + (days * 86400);
+    int time = helpers.getVPlanTime(day);
     var response  = jsonDecode(await http.getFromAPI("vplans", {"date": "eq-${time.toString()}", "view": "canonical"}, _api._authenticationUser.getJWT()))['entities'];
     if (response.length == 0) return null;
     return models.VPlan.fromJSON(response[0]);

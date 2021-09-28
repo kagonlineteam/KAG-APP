@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'api_helpers.dart';
+
 /// This file contains the models for the API
 /// Evey model has a fromJSON Constructor which parses the JSON Map
 /// To the model
@@ -58,6 +60,11 @@ class VPlan {
   String _file;
   // ignore: prefer_final_fields
   List<Lesson> _lessons;
+
+  VPlan.empty(int day) {
+    _date = DateTime.fromMillisecondsSinceEpoch(getVPlanTime(day) * 1000);
+    _lessons = [];
+  }
 
   VPlan.fromJSON(Map<dynamic, dynamic> rawJson) {
     if (rawJson.containsKey("id")) _id = rawJson['id'];

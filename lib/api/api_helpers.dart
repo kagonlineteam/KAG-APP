@@ -163,3 +163,18 @@ class HomeScreenData {
 
   DateTime get ferienDatetime => countdown.startDatetime;
 }
+
+int getVPlanTime(int day) {
+  int days;
+  if (day == 0) {
+    days = 0;
+  } else if (day == 1) {
+    days = DateTime.now().weekday >= 5 ? 8 - DateTime.now().weekday : 1;
+  } else {
+    days = DateTime.now().weekday == 4 ? 4 : DateTime.now().weekday >= 5 ? 9 - DateTime.now().weekday : 2;
+  }
+  // Calculating today at 8o clock
+  DateTime now = new DateTime.now();
+  DateTime requestTime = new DateTime(now.year, now.month, now.day, 8, 0, 0, 0, 0);
+  return requestTime.millisecondsSinceEpoch ~/ 1000 + (days * 86400);
+}
