@@ -29,6 +29,9 @@ void main() async {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primaryColor: Color.fromRGBO(0, 112, 1, 1),
+            appBarTheme: AppBarTheme(
+              color: const Color.fromRGBO(0, 112, 1, 1)
+            ),
             accentColor: Color.fromRGBO(255, 145, 10, 1),
             backgroundColor: Color.fromRGBO(47, 47, 47, 1),
             buttonColor: Color.fromRGBO(0, 82, 1, 1),
