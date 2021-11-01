@@ -44,24 +44,18 @@ class _Calendar extends StatelessWidget {
         if (snapshot.hasData) {
           return Scaffold(
               appBar: AppBar(
-                  title: Align(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text("Termine"),
-                        ElevatedButton(
-                            onPressed: () => _switchView(!snapshot.data),
-                            child: Container(
-                              child: Text(snapshot.data ? "Als Kalender" : "Als Liste",
-                                  style: TextStyle(fontSize: 15, color: Colors.white)),
-                              margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                              alignment: Alignment.centerRight,
-                            )
-                        ),
-                      ],
-                    ),
-                    alignment: Alignment.centerLeft,
-                  )),
+                  title: Text("Termine"),
+                  actions: [Padding(padding: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                      onPressed: () => _switchView(!snapshot.data),
+                      child: Container(
+                        child: Text(snapshot.data ? "Als Kalender" : "Als Liste",
+                            style: TextStyle(fontSize: 15, color: Colors.white)),
+                        margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                        alignment: Alignment.centerRight,
+                      )
+                  ))],
+              ),
               body: snapshot.data ? _ListCalendar() : _TableCalendar());
         } else {
           return WaitingWidget();
@@ -261,7 +255,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
         children: [
           Container(
             padding: const EdgeInsets.all(3.0),
-            decoration: today ? new BoxDecoration(borderRadius: new BorderRadius.circular(16.0), color: Theme.of(context).accentColor) : null,
+            decoration: today ? new BoxDecoration(borderRadius: new BorderRadius.circular(16.0), color: Theme.of(context).colorScheme.secondary) : null,
             child:
           Text(
               '${date.day}',
@@ -297,7 +291,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
             decoration: BoxDecoration(
               border: Border.all(width: 0.8),
               borderRadius: BorderRadius.circular(12.0),
-              color: Theme.of(context).buttonColor
+              color: Theme.of(context).colorScheme.primary
             ),
             margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             child: MaterialButton(

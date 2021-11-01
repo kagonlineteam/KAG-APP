@@ -143,7 +143,7 @@ class Lesson extends StatelessWidget {
             margin: EdgeInsets.only(left: 5, right: 5),
             padding: EdgeInsets.only(top: 3, bottom: 3),
             decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).primaryColor)
+                border: Border.all(color: Theme.of(context).colorScheme.primary)
             ),
             width: width,
             child: Row(
@@ -250,7 +250,7 @@ class DataTableHeader extends StatelessWidget {
       margin: EdgeInsets.only(left: 5, right: 5, top: 10),
       padding: EdgeInsets.only(top: 3, bottom: 3),
       decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).primaryColor)
+          border: Border.all(color: Theme.of(context).colorScheme.primary)
       ),
       width: MediaQuery.of(context).size.width,
       child: Row(
@@ -275,7 +275,7 @@ class _DataTableEntry extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             border: Border(
-                right: BorderSide(color: Theme.of(context).primaryColor)
+                right: BorderSide(color: Theme.of(context).colorScheme.primary)
             )
         ),
         child: Padding(

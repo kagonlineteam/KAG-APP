@@ -19,7 +19,8 @@ class DateWidget extends StatelessWidget {
     return Container(
       color: Theme
           .of(context)
-          .primaryColor,
+          .colorScheme
+          .primary,
       child: Center(
         child: Container(
           child: Text(dateText, style: dateStyle),

@@ -32,9 +32,22 @@ void main() async {
             appBarTheme: AppBarTheme(
               color: const Color.fromRGBO(0, 112, 1, 1)
             ),
-            accentColor: Color.fromRGBO(255, 145, 10, 1),
+            colorScheme: ColorScheme(
+              primary: Color.fromRGBO(0, 112, 1, 1),
+              primaryVariant: Color.fromRGBO(0, 112, 1, 1),
+              background: Color.fromRGBO(47, 47, 47, 1),
+              secondary: Color.fromRGBO(255, 145, 10, 1),
+              secondaryVariant: Color.fromRGBO(255, 145, 10, 1),
+              onSecondary: Color.fromRGBO(255, 145, 10, 1),
+              brightness: Brightness.light,
+              error: Colors.red,
+              onError: Colors.white,
+              onBackground: Color.fromRGBO(255, 145, 10, 1),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+              surface: Colors.white
+            ),
             backgroundColor: Color.fromRGBO(47, 47, 47, 1),
-            buttonColor: Color.fromRGBO(0, 82, 1, 1),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ButtonStyle(
                 backgroundColor: MaterialStateColor.resolveWith((states) => Color.fromRGBO(0, 82, 1, 1))
@@ -86,10 +99,10 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
           NavigationRail(
             selectedIndex: controller.index,
             selectedIconTheme: IconThemeData(
-              color: Theme.of(context).accentColor
+              color: Theme.of(context).colorScheme.secondary
             ),
             selectedLabelTextStyle: TextStyle(
-              color: Theme.of(context).accentColor
+              color: Theme.of(context).colorScheme.secondary
             ),
             groupAlignment: 0,
             onDestinationSelected: (index) {
@@ -100,7 +113,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
             labelType: NavigationRailLabelType.selected,
             destinations: getNavigationRail(_isVPlanApp, webmailTab),
           ),
-          VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).accentColor),
+          VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).colorScheme.secondary),
           // This is the main content.
           Expanded(
             child: IndexedStack(

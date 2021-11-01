@@ -109,7 +109,7 @@ class LoginState extends State<Login>
       padding: const EdgeInsets.only(left: 35, right: 35),
       child: Material(
         borderRadius: BorderRadius.circular(30),
-        color: Theme.of(context).buttonColor,
+        color: Theme.of(context).colorScheme.primary,
         child: MaterialButton(
             onPressed: login,
             padding: EdgeInsets.fromLTRB(20, 15, 20, 15),

@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
 import 'package:kag/api/api.dart';
 import 'package:kag/api/api_helpers.dart';
 import 'package:kag/api/api_models.dart' show MockModel;
-import 'package:http/http.dart' as http;
 import 'package:kag/api/api_raw.dart' as raw;
 import 'package:mockito/mockito.dart';
 
