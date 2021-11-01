@@ -64,7 +64,7 @@ class MailMenu extends StatelessWidget {
       )
     ];
     if (kIsWeb || Platform.isIOS) {
-      buttons.add(ElevatedButton(onPressed: () => _openMailiOSConfig(context), child: Text(API.of(context).requests.getUserInfo().useSie ? "Ihr Mail Account" : "Dein Mail Account", style: style)));
+      buttons.add(ElevatedButton(onPressed: () => _openMailiOSConfig(context), child: Text(kIsWeb ? "MacOS/iOS Konfiguration generieren" : "Konfiguration installieren", style: style)));
     }
     return Center(
       child: Column(
@@ -125,7 +125,6 @@ void _openMailDialog(BuildContext context) {
 }
 
 void _showNewMailPassword(BuildContext context, String password, String newMail) {
-  Navigator.pop(context);
   showCupertinoDialog(
       builder: (context) => CupertinoAlertDialog(
         content: Column(
