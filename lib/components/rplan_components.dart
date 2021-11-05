@@ -177,9 +177,9 @@ class MobileLesson extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(child: Text(lesson.klasse, style: bigText, textAlign: TextAlign.left)),
-                      Expanded(child: Text(lesson.fach, style: bigText, textAlign: TextAlign.center)),
-                      Expanded(child: Text(lesson.stunde, style: bigText, textAlign: TextAlign.right))
+                      Expanded(child: Text(lesson.klasse != null ? lesson.klasse : "", style: bigText, textAlign: TextAlign.left)),
+                      Expanded(child: Text(lesson.fach != null ? lesson.fach : "", style: bigText, textAlign: TextAlign.center)),
+                      Expanded(child: Text(lesson.stunde != null ? lesson.stunde : "", style: bigText, textAlign: TextAlign.right))
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -189,7 +189,7 @@ class MobileLesson extends StatelessWidget {
                     children: [
                       Expanded(child: Visibility(
                         visible: RPlan.of(context).hasTeacherPlan,
-                        child: Text("${lesson.lehrer} -> ${lesson.v_lehrer == null || lesson.v_lehrer == "" ? "-" : lesson.v_lehrer}", style: normalText, textAlign: TextAlign.left),
+                        child: Text("${lesson.lehrer != null ? "${lesson.lehrer} -> " : ""}${lesson.v_lehrer == null || lesson.v_lehrer == "" ? "-" : lesson.v_lehrer}", style: normalText, textAlign: TextAlign.left),
                       )),
                       Expanded(child: Visibility(
                         visible: !RPlan.of(context).hasTeacherPlan,

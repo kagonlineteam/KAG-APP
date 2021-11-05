@@ -189,11 +189,11 @@ class RPlanDetail extends StatelessWidget {
   }
 
   Container element(String title, String first, String second) {
-    if (first.compareTo("") == 0 && second.compareTo("") == 0) {
+    if (first == null && second == null) {
       return (Container());
     }
 
-    String arrow = second.compareTo("") == 0 ? "" : "->";
+    String arrow = second != null && second.isEmpty ? "" : "->";
 
     final container = Container(
       margin: EdgeInsets.fromLTRB(20, 15, 20, 15),
@@ -217,7 +217,7 @@ class RPlanDetail extends StatelessWidget {
             children: <Widget>[
               Flexible(
                   child: Container(
-                    child: Text(first, style: textStyle, textAlign: TextAlign.left),
+                    child: Text(first != null ? first : "-", style: textStyle, textAlign: TextAlign.left),
                     height: 30,
                   ),
                   fit: FlexFit.loose
@@ -231,7 +231,7 @@ class RPlanDetail extends StatelessWidget {
               ),
               Flexible(
                   child: Container(
-                    child: Text(second, style: textStyle, textAlign: TextAlign.right),
+                    child: Text(second != null ? second : "-", style: textStyle, textAlign: TextAlign.right),
                     height: 30,
                   ),
                   fit: FlexFit.loose
@@ -246,11 +246,7 @@ class RPlanDetail extends StatelessWidget {
   }
 
   String getAppBarText() {
-    String returnString = lesson.klasse;
-
-    if (lesson.klasse != "" && lesson.fach != "") returnString += " - ";
-    returnString += lesson.fach;
-    return returnString;
+    return "${lesson.klasse != null ? lesson.klasse : ""}${lesson.klasse != null && lesson.fach != null ? " - " : ""}${lesson.fach != null ? lesson.fach : ""}";
   }
 
   String getTeacherText(String teacher, String vTeacher) {
