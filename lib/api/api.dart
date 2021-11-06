@@ -19,6 +19,7 @@ enum APIAction {
   GET_ARTICLE,
   MAIL,
   GET_SPLAN,
+  GET_EXAM
 }
 
 class API {
@@ -68,6 +69,8 @@ class API {
       case APIAction.MAIL:
         return true;
       case APIAction.GET_SPLAN:
+        return true;
+      case APIAction.GET_EXAM:
         return true;
     }
     return true;
@@ -352,8 +355,11 @@ class _APIRequests {
   Future<helpers.HomeScreenData> getHomescreen() async {
     List<models.Termin> termine = await _getNextCalendarEntries();
     models.Termin ferien = await _getNextFerienEvent();
-    helpers.HomeScreenData homescreen = helpers.HomeScreenData(termine, ferien);
-    return homescreen;
+    List<models.Exam> exams = [];
+    if (_api._authenticationUser.isLoggedIn() && _api._userData.isOberstufe) {
+      exams = await _getUpcomingExams();
+    }
+    return helpers.HomeScreenData(termine, ferien, exams);
   }
 
   Future<models.MailSettings> getMailSettings() async {
@@ -404,6 +410,20 @@ class _APIRequests {
     String response = await http.getFromAPI(
         "stundenplan/raum/$room", null, _api._authenticationUser.getJWT());
     return models.SPlan.fromJSON(jsonDecode(response));
+  }
+
+  ///
+  /// Returns the upcoming exams
+  ///
+  Future<List<models.Exam>> _getUpcomingExams() async {
+    await _actionExecution(APIAction.GET_EXAM);
+    var response = await http.getFromAPI(
+        "exams", {"view": "canonical", "orderby": "asc-date", "date": "gte-${((new DateTime.now().millisecondsSinceEpoch ~/ 1000) - 60*60*24).toString()}"}, _api._authenticationUser.getJWT());
+    if (response != null) {
+      var jsonResponse = json.decode(response)['entities'];
+      return jsonResponse.map((exam) => models.Exam.fromJSON(exam)).toList().cast<models.Exam>();
+    }
+    return [];
   }
 
   ///

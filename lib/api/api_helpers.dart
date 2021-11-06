@@ -89,6 +89,8 @@ Resource fromJSON<Resource>(Map<dynamic, dynamic> rawJSON) {
       return Lehrstunde.fromJSON(rawJSON) as Resource;
     case MockModel:
       return MockModel.fromJSON(rawJSON) as Resource;
+    case Exam:
+      return Exam.fromJSON(rawJSON) as Resource;
     default:
       throw UnimplementedError("This type is not implemented in fromJSON");
   }
@@ -156,10 +158,11 @@ Map<dynamic, dynamic> getDecodedJWT(String jwt) {
 }
 
 class HomeScreenData {
-  HomeScreenData(this.termine, this.countdown);
+  HomeScreenData(this.termine, this.countdown, this.exams);
 
   final List<Termin> termine;
   final Termin countdown;
+  final List<Exam> exams;
 
   DateTime get ferienDatetime => countdown.startDatetime;
 }
