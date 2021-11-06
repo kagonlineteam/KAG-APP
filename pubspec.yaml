@@ -14,7 +14,7 @@ description: Konrad Adenauer Gymnasium Langenfeld App
 version: 1.2.0+1 #VC #This has to be there to make it changeable by automation
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
