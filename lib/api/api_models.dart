@@ -281,6 +281,30 @@ class Lehrstunde {
   String get id => _id;
 }
 
+class Exam {
+  String _id, _class, _course, _stunde, _teacher;
+  DateTime _date;
+
+  Exam(this._id, this._date, this._class, this._course, this._teacher);
+
+  Exam.fromJSON(Map<dynamic, dynamic> rawJSON) {
+    if (rawJSON.containsKey("id")) _id = rawJSON['id'];
+    if (rawJSON.containsKey("date")) _date = DateTime.fromMillisecondsSinceEpoch(int.parse(rawJSON['date']) * 1000);
+    if (rawJSON.containsKey("class")) _class = rawJSON['class'];
+    if (rawJSON.containsKey("course")) _course = rawJSON['course'];
+    if (rawJSON.containsKey("stunde")) _stunde = rawJSON['stunde'].toString();
+    if (rawJSON.containsKey("teacher")) _teacher = rawJSON['teacher'];
+  }
+
+  DateTime get date => _date;
+
+  String get teacher => _teacher;
+  String get stunde => _stunde;
+  String get course => _course;
+  String get klasse => _class;
+  String get id => _id;
+}
+
 ///
 /// This model is only used in UnitTests, as it only saves data
 ///

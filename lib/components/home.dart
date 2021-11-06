@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api_helpers.dart';
+import '../api/api_models.dart';
 import 'helpers.dart';
 import 'menu.dart';
 import 'terminlist.dart';
@@ -114,10 +116,12 @@ class HomeList extends StatelessWidget {
     return ListView(
       children: [
         FerienCountdown(homeScreenData, isTablet: isTablet),
+        if (!homeScreenData.exams.isEmpty) splittingContainer,
+        if (!homeScreenData.exams.isEmpty) ExamList(homeScreenData.exams),
         splittingContainer,
         TerminList(homeScreenData),
         splittingContainer,
-        ShortcutsWidget(isTablet: isTablet)
+        ShortcutsWidget(isTablet: isTablet),
     ],
     );
   }
@@ -257,5 +261,40 @@ class TerminList extends StatelessWidget {
       ]..addAll(homeScreenData.termine.map((termin) => TerminWidget(termin))),
     );
   }
+
+}
+
+final DateFormat formatter = DateFormat('dd.MM');
+
+class ExamList extends StatelessWidget {
+  ExamList(this._examList);
+
+  final List<Exam> _examList;
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> items = [
+      Container(
+        child: Text("Die nächsten Klausuren", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        alignment: Alignment.centerLeft,
+      ),
+      Container(
+        child: Text("Beachte die Aushänge in der Schule.", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+        margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+        alignment: Alignment.centerLeft,
+      )
+    ];
+    items.addAll(_examList.map((exam) => ListTile(
+      title: Text("${exam.course}"),
+      subtitle: Text("${exam.date != null ? formatter.format(exam.date) : "Fehlerhaftes Datum"} ${exam.stunde}. Stunde"),
+      leading: Icon(Icons.school_outlined),
+    )));
+    return Column(
+      children: items,
+    );
+  }
+
+
 
 }
