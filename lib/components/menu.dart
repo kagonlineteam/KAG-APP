@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../main.dart';
+
 class ExtraOptionsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -66,53 +68,101 @@ class ExtraOptionsMenu extends StatelessWidget {
 }
 
 class BottomNavigationBarMenu extends StatelessWidget {
-  BottomNavigationBarMenu({this.isVPlanApp = false, this.webmail = false, this.controller});
+  BottomNavigationBarMenu(this.type, this.controller);
 
-  final bool isVPlanApp;
-  final bool webmail;
   final TabController controller;
+  final AppType type;
 
   @override
   Widget build(BuildContext context) {
-    var widgets = isVPlanApp ? <Widget>[
-      Tab(
-        text: "VPlan",
-        icon: Icon(Icons.compare_arrows),
-      ),
-      Tab(
-        text: "SPlan",
-        icon: Icon(Icons.person),
-      ),
-    ] :
-    // Normal App
-    <Widget>[
-      Tab(
-        text: "Termine",
-        icon: Icon(Icons.event),
-      ),
-      Tab(
-        text: "VPlan",
-        icon: Icon(Icons.compare_arrows),
-      ),
-      Tab(
-        text: "Home",
-        icon: Icon(Icons.home),
-      ),
-      Tab(
-        text: "User",
-        icon: Icon(Icons.person),
-      ),
-      Tab(
-        text: "News",
-        icon: Icon(Icons.public),
-      ),
-    ];
+    List<Widget> widgets = [];
 
-    if (webmail) {
-      widgets.add(Tab(
-        text: "Mail",
-        icon: Icon(Icons.email),
-      ));
+    switch (type) {
+      case AppType.LOGGED_OUT:
+        widgets = [
+          Tab(
+            text: "Home",
+            icon: Icon(Icons.home, size: 35),
+          ),
+          Tab(
+            text: "Termine",
+            icon: Icon(Icons.event, size: 35),
+          ),
+          Tab(
+            text: "News",
+            icon: Icon(Icons.public, size: 35),
+          ),
+          Tab(
+            text: "Login",
+            icon: Icon(Icons.person, size: 35),
+          )
+        ];
+        break;
+      case AppType.NORMAL:
+      case AppType.NORMAL_WITH_WEBMAIL:
+        widgets = [
+          Tab(
+            text: "Home",
+            icon: Icon(Icons.home, size: 35),
+          ),
+          Tab(
+            text: "Termine",
+            icon: Icon(Icons.event, size: 35),
+          ),
+          Tab(
+            text: "VPlan",
+            icon: Icon(Icons.swap_horiz, size: 35),
+          ),
+          Tab(
+            text: "User",
+            icon: Icon(Icons.person, size: 35),
+          ),
+          if (type == AppType.NORMAL_WITH_WEBMAIL) Tab(
+            text: "Mail",
+            icon: Icon(Icons.mail, size: 35),
+          ),
+          Tab(
+            text: "News",
+            icon: Icon(Icons.public, size: 35),
+          ),
+        ];
+        break;
+      case AppType.VPLAN_LOGGED_OUT:
+        widgets = [
+          Tab(
+            text: "Login",
+            icon: Icon(Icons.person, size: 35),
+          ),
+        ];
+        break;
+      case AppType.VPLAN:
+        widgets = [
+          Tab(
+            text: "VPlan",
+            icon: Icon(Icons.swap_horiz, size: 35),
+          ),
+          Tab(
+            text: "SPlan",
+            icon: Icon(Icons.person, size: 35),
+          ),
+        ];
+        break;
+      case AppType.MOBILE_SITE:
+        widgets = [
+          Tab(
+            text: "News",
+            icon: Icon(Icons.public, size: 35),
+          ),
+          Tab(
+            text: "Termine",
+            icon: Icon(Icons.event, size: 35),
+          ),
+          Tab(
+            text: "Login",
+            icon: Icon(Icons.person, size: 35),
+          ),
+        ];
+        break;
     }
 
     return Container(
@@ -133,47 +183,92 @@ class BottomNavigationBarMenu extends StatelessWidget {
 }
 
 // ignore: avoid_positional_boolean_parameters
-List<NavigationRailDestination> getNavigationRail(bool isVPlanApp, bool webmail) {
-  if (isVPlanApp) {
-    return <NavigationRailDestination>[
-      NavigationRailDestination(
-        label: Text("VPlan"),
-        icon: Icon(Icons.compare_arrows, size: 35),
-      ),
-      NavigationRailDestination(
-        label: Text("SPlan"),
-        icon: Icon(Icons.person, size: 35),
-      ),
-    ];
-  } else {
-    var icons = <NavigationRailDestination>[
-      NavigationRailDestination(
-        label: Text("Termine"),
-        icon: Icon(Icons.event, size: 35),
-      ),
-      NavigationRailDestination(
-        label: Text("VPlan"),
-        icon: Icon(Icons.compare_arrows, size: 35),
-      ),
-      NavigationRailDestination(
-        label: Text("Home"),
-        icon: Icon(Icons.home, size: 35),
-      ),
-      NavigationRailDestination(
-        label: Text("User"),
-        icon: Icon(Icons.person, size: 35),
-      ),
-      NavigationRailDestination(
-        label: Text("News"),
-        icon: Icon(Icons.public, size: 35),
-      ),
-    ];
-    if (webmail) {
-      icons.add(NavigationRailDestination(
-        label: Text("Mail"),
-        icon: Icon(Icons.mail, size: 35),
-      ));
-    }
-    return icons;
+List<NavigationRailDestination> getNavigationRail(AppType type) {
+  switch (type) {
+    case AppType.LOGGED_OUT:
+      return <NavigationRailDestination>[
+        NavigationRailDestination(
+          label: Text("Home"),
+          icon: Icon(Icons.home, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Termine"),
+          icon: Icon(Icons.event, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("News"),
+          icon: Icon(Icons.public, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Login"),
+          icon: Icon(Icons.person, size: 35),
+        )
+      ];
+    case AppType.NORMAL:
+    case AppType.NORMAL_WITH_WEBMAIL:
+      return <NavigationRailDestination>[
+        NavigationRailDestination(
+          label: Text("Home"),
+          icon: Icon(Icons.home, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Termine"),
+          icon: Icon(Icons.event, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("VPlan"),
+          icon: Icon(Icons.swap_horiz, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("User"),
+          icon: Icon(Icons.person, size: 35),
+        ),
+        if (type == AppType.NORMAL_WITH_WEBMAIL) NavigationRailDestination(
+          label: Text("Mail"),
+          icon: Icon(Icons.mail, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("News"),
+          icon: Icon(Icons.public, size: 35),
+        ),
+      ];
+    case AppType.VPLAN_LOGGED_OUT:
+      return <NavigationRailDestination>[
+        NavigationRailDestination(
+          label: Text("Login"),
+          icon: Icon(Icons.person, size: 35),
+        ),
+        NavigationRailDestination( // We need this here as Flutter does not allow having only one item
+          label: Text("Login"),
+          icon: Icon(Icons.swap_horiz, size: 35),
+        ),
+      ];
+    case AppType.VPLAN:
+      return <NavigationRailDestination>[
+        NavigationRailDestination(
+          label: Text("VPlan"),
+          icon: Icon(Icons.swap_horiz, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("SPlan"),
+          icon: Icon(Icons.person, size: 35),
+        ),
+      ];
+    case AppType.MOBILE_SITE:
+      return <NavigationRailDestination>[
+        NavigationRailDestination(
+          label: Text("News"),
+          icon: Icon(Icons.public, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Termine"),
+          icon: Icon(Icons.event, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Login"),
+          icon: Icon(Icons.person, size: 35),
+        ),
+      ];
   }
+  return <NavigationRailDestination>[];
 }

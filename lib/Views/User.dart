@@ -26,7 +26,7 @@ class User extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Logged out!"),
         action: SnackBarAction(
-            label: 'Zurück zum Start!', onPressed: () => KAGAppState.app.goToPage(2))
+            label: 'Zurück zum Start!', onPressed: () => KAGAppState.app.goToPage(0))
     ));
   }
 
