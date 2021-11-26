@@ -166,17 +166,3 @@ class LoginState extends State<Login>
   @override
   bool get wantKeepAlive => true;
 }
-
-class NotLoggedIn extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: ElevatedButton(
-            onPressed: () => KAGAppState.app.goToPage(3),
-            child: Text("Bitte melde dich an!", style: TextStyle(color: Colors.white))),
-      ),
-    );
-  }
-}

@@ -68,20 +68,30 @@ class KAGApp extends StatefulWidget {
 
 }
 
+enum AppType {
+  LOGGED_OUT,
+  NORMAL,
+  NORMAL_WITH_WEBMAIL,
+  VPLAN_LOGGED_OUT,
+  VPLAN,
+  MOBILE_SITE
+}
+
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
-  static final _isVPlanApp = kIsWeb && webinfo.window.location.host.startsWith("vplan.");
+  AppType type = getDefaultAppType();
   static KAGAppState app;
-  bool loggedIn = true;
-  bool webmailTab = false; // This is calculated here and just passed to Widgets, to have it the same everywhere.
   TabController controller;
 
 
   @override
   void initState() {
     super.initState();
-    controller = TabController(initialIndex: _isVPlanApp ? 0 : 2, length: _getPageCount(), vsync: this); // If you change something here change it in build, too.
-    API.of(context).hasLoginCredentials().then((loggedIn) => setState(() => this.loggedIn = loggedIn));
-    webmailTab = loggedIn && API.of(context).requests.getUserInfo().mailConsent; // Is also in setLoggedIn
+    controller = TabController(initialIndex: 0, length: getPageCount(type), vsync: this); // If you change something here change it in build, too.
+    API.of(context).hasLoginCredentials().then((loggedIn) => {
+      if (loggedIn) {
+        setState(() => type = getLoggedInAppType(webmail: API.of(context).requests.getUserInfo().mailConsent))
+      }
+    });
   }
 
   KAGAppState(){
@@ -90,8 +100,8 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (_getPageCount() != controller.length) {
-      controller = TabController(initialIndex: controller.index, length: _getPageCount(), vsync: this);
+    if (getPageCount(type) != controller.length) {
+      controller = TabController(initialIndex: controller.index, length: getPageCount(type), vsync: this);
     }
     if ((kIsWeb && MediaQuery.of(context).size.width > 700) || (!kIsWeb && Platform.isMacOS)) {
       return Row(
@@ -111,14 +121,14 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
               });
             },
             labelType: NavigationRailLabelType.selected,
-            destinations: getNavigationRail(_isVPlanApp, webmailTab),
+            destinations: getNavigationRail(type),
           ),
           VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).colorScheme.secondary),
           // This is the main content.
           Expanded(
             child: IndexedStack(
               index: controller.index,
-              children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn, webmail: webmailTab),
+              children: AppViews(type),
             ),
           ),
         ],
@@ -127,37 +137,45 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
       return Scaffold(
           body: TabBarView(
             controller: controller,
-            children: _isVPlanApp ? VPlanAppViews(loggedIn: loggedIn) : AppViews(loggedIn: loggedIn, webmail: webmailTab),
+            children: AppViews(type),
             physics: NeverScrollableScrollPhysics(),
           ),
-          bottomNavigationBar: BottomNavigationBarMenu(controller: controller, isVPlanApp: _isVPlanApp, webmail: webmailTab)
+          bottomNavigationBar: BottomNavigationBarMenu(type, controller)
       );
     }
   }
 
   void setLoggedOut() {
     setState(() {
-      loggedIn = false;
-      webmailTab = false;
+      type = getDefaultAppType();
     });
   }
 
   void setLoggedIn() {
     setState(() {
-      loggedIn = true;
-      webmailTab = loggedIn && API.of(context).requests.getUserInfo().mailConsent; // Is also in initState
+      type = getLoggedInAppType(webmail: API.of(context).requests.getUserInfo().mailConsent);
     });
   }
 
   void goToPage(int page) {
-    if (page == 3 && _isVPlanApp) page = 1;
-    if (page == 2 && _isVPlanApp) page = 0;
     setState(() {
       controller.animateTo(page);
     });
   }
 
-  int _getPageCount() {
-    return _isVPlanApp ? 2 : (webmailTab ? 6 : 5);
+  static AppType getDefaultAppType() {
+    if (kIsWeb) {
+      if (webinfo.window.location.host.startsWith("vplan.")) return AppType.VPLAN_LOGGED_OUT;
+      if (webinfo.window.location.host.startsWith("m.")) return AppType.MOBILE_SITE;
+      return AppType.LOGGED_OUT;
+    }
+    return AppType.LOGGED_OUT;
+  }
+
+  static AppType getLoggedInAppType({bool webmail = false}) {
+    if (kIsWeb) {
+      if (webinfo.window.location.host.startsWith("vplan.")) return AppType.VPLAN;
+    }
+    return webmail ? AppType.NORMAL_WITH_WEBMAIL : AppType.NORMAL;
   }
 }
