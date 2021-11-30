@@ -103,7 +103,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     if (getPageCount(type) != controller.length) {
       controller = TabController(initialIndex: controller.index, length: getPageCount(type), vsync: this);
     }
-    if ((kIsWeb && MediaQuery.of(context).size.width > 700) || (!kIsWeb && Platform.isMacOS)) {
+    if (MediaQuery.of(context).size.width > 700 || (!kIsWeb && Platform.isMacOS)) { //  !kIsWeb is required to not cause an exception by calling Platform on web.
       return Row(
         children: [
           NavigationRail(
