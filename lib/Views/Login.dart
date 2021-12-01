@@ -44,6 +44,7 @@ class LoginState extends State<Login>
         preferences.setString(RPlan.SP_FILTER, userInfo.kuerzel);
       }
       KAGAppState.app.setLoggedIn();
+      KAGAppState.app.goToPage(0);
     } else {
       showDialog(
           context: context,

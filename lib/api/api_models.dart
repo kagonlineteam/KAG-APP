@@ -195,6 +195,10 @@ class KAGUser {
   bool get useSie => _isTeacher;
 
   bool get mailConsent => _consent.contains("mail");
+
+  // This does exists to quickly allow somebody to create a password for
+  // their mail account. This should only be used in very few situations.
+  bool get mailPasswordConsent => _consent.contains("mailcow-pw");
 }
 
 class Article {

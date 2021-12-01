@@ -22,7 +22,7 @@ class WebmailMenu extends StatelessWidget {
         } else if (value == "mailconfig") {
           _openMailiOSConfig(context);
         } else if (value == "apppassword") {
-          API.of(context).requests.getMailAppPassword().then((newPassword) => _showNewMailPassword(context, newPassword, null));
+          _generateAppPasswordPrompt(context);
         }
       },
       itemBuilder: (context) {
@@ -34,14 +34,13 @@ class WebmailMenu extends StatelessWidget {
           PopupMenuItem(
             value: "apppassword",
             child: Text("App Passwort generieren"),
-          )
+          ),
+          if (kIsWeb || Platform.isIOS)
+            PopupMenuItem(
+              value: "mailconfig",
+              child: Text("Mail in iOS/MacOS installieren"),
+            )
         ];
-        if (kIsWeb || Platform.isIOS) {
-          items.insert(2, PopupMenuItem(
-            value: "mailconfig",
-            child: Text("Mail in iOS/MacOS installieren"),
-          ));
-        }
         return items;
       },
     );
@@ -59,13 +58,12 @@ class MailMenu extends StatelessWidget {
       ElevatedButton(onPressed: () => launch("https://webmail.kag-langenfeld.de"), child: Text("Webmail öffnen", style: style)),
       ElevatedButton(onPressed: () => _openMailDialog(context), child: Text(API.of(context).requests.getUserInfo().useSie ? "Ihr Mail Account" : "Dein Mail Account", style: style)),
       ElevatedButton(
-          onPressed: () => API.of(context).requests.getMailAppPassword().then((newPassword) => _showNewMailPassword(context, newPassword, null)),
+          onPressed: () => _generateAppPasswordPrompt(context),
           child: Text("App Passwort generieren", style: style)
-      )
+      ),
+      if (kIsWeb || Platform.isIOS)
+        ElevatedButton(onPressed: () => _openMailiOSConfig(context), child: Text(kIsWeb ? "MacOS/iOS Konfiguration generieren" : "Konfiguration installieren", style: style))
     ];
-    if (kIsWeb || Platform.isIOS) {
-      buttons.add(ElevatedButton(onPressed: () => _openMailiOSConfig(context), child: Text(kIsWeb ? "MacOS/iOS Konfiguration generieren" : "Konfiguration installieren", style: style)));
-    }
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -79,6 +77,7 @@ class MailMenu extends StatelessWidget {
 void _openMailDialog(BuildContext context) {
   API.of(context).requests.getMailSettings().then((mailInfos) {
     if (mailInfos.consent) {
+      print(API.of(context).requests.getUserInfo().mailPasswordConsent);
       showCupertinoDialog(context: context,
           builder: (context) => CupertinoAlertDialog(
             actions: [
@@ -86,13 +85,19 @@ void _openMailDialog(BuildContext context) {
               Visibility(
                 child: CupertinoButton(
                     child: Text("App Passwort erstellen"),
-                    onPressed: () => API.of(context).requests.getMailAppPassword().then((newPassword) => _showNewMailPassword(context, newPassword, null))
+                    onPressed: () => _generateAppPasswordPrompt(context)
                 ),
                 visible: mailInfos.exists,
               ),
-              CupertinoButton(
+              if (!mailInfos.exists || API.of(context).requests.getUserInfo().mailPasswordConsent) CupertinoButton(
                   child: Text(mailInfos.exists ? "Neues Passwort" : "Mail erstellen"),
-                  onPressed: () => API.of(context).requests.resetMailPassword().then((newPassword) => _showNewMailPassword(context, newPassword, mailInfos.exists ? null : mailInfos.primaryMail))
+                  onPressed: () {
+                    if (API.of(context).requests.getUserInfo().mailPasswordConsent) {
+                      API.of(context).requests.resetMailPassword().then((newPassword) => _showNewMailPassword(context, newPassword, mailInfos.exists ? null : mailInfos.primaryMail));
+                    } else { // New account
+                      API.of(context).requests.resetMailPassword().then((_) => _showNewMailAccount(context, mailInfos.primaryMail));
+                    }
+                  }
               )
             ],
             content: Column(
@@ -102,8 +107,8 @@ void _openMailDialog(BuildContext context) {
                 Visibility(
                   visible: mailInfos.exists,
                   child: Text(API.of(context).requests.getUserInfo().useSie ?
-                  "Über \"Neues Passwort\" können Sie Ihr Mail Passwort zurücksetzen. Über \"App Passwort erstellen\" können Sie ein Passwort für ein Mail Programm oder iPad generieren." :
-                  "Über \"Neues Passwort\" können kannst Du Mail Passwort zurücksetzen. Über \"App Passwort erstellen\" kannst du ein Passwort für ein Mail Programm generieren."),
+                  "Mit \"App Passwort erstellen\" können Sie ein Passwort für ein Mail Programm oder iPad generieren." :
+                  "Mit \"App Passwort erstellen\" kannst du ein Passwort für ein Mail Programm generieren."),
                 )
               ],
             ),
@@ -112,7 +117,7 @@ void _openMailDialog(BuildContext context) {
     } else {
       showCupertinoDialog(
           builder: (context) => CupertinoAlertDialog(
-            content: Text("Wir können dir leider keine Mailadresse erstellen, solange du nicht den Mail Bogen im Sekretariat abgegeben hast."),
+            content: Text("Wir können dir leider keine Mailadresse erstellen, solange Du nicht den Mail Bogen im Sekretariat abgegeben hast. Solltest du den bereits vor über einer Woche abgegeben haben melde dich bitte bei support@kag-langenfeld.de"),
             actions: [
               CupertinoButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
             ],
@@ -124,6 +129,46 @@ void _openMailDialog(BuildContext context) {
   });
 }
 
+void _generateAppPasswordPrompt(BuildContext bcontext) {
+  DateTime date = DateTime.now().add(Duration(days: 365));
+  showCupertinoDialog(
+      builder: (context) => CupertinoAlertDialog(
+        content: Column(
+          children: [
+            Text(
+                API.of(context).requests.getUserInfo().useSie ?
+                "Bitte geben Sie an wann das App-Passwort ablaufen soll." :
+                "Bitte gebe an wann das App-Passwort ablaufen soll."
+            ),
+            SizedBox(
+              height: 400,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: date,
+                onDateTimeChanged: (newDateTime) {
+                  date = newDateTime;
+                },
+              ),
+            )
+          ],
+        ),
+        actions: [
+          CupertinoButton(child: Text("App Passwort erstellen", textAlign: TextAlign.left, style: TextStyle(color: Colors.green)), onPressed: () {
+            int time = (date.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
+            Navigator.pop(context);
+            API.of(bcontext).requests.getMailAppPassword(expireSeconds: time).then((newPassword) => _showNewMailPassword(bcontext, newPassword, null));
+          }),
+          CupertinoButton(child: Text("Permanentes App Passwort erstellen", textAlign: TextAlign.left), onPressed: () {
+            Navigator.pop(context);
+            API.of(bcontext).requests.getMailAppPassword().then((newPassword) => _showNewMailPassword(bcontext, newPassword, null));
+          })
+        ],
+      ),
+      barrierDismissible: true,
+      context: bcontext
+  );
+}
+
 void _showNewMailPassword(BuildContext context, String password, String newMail) {
   showCupertinoDialog(
       builder: (context) => CupertinoAlertDialog(
@@ -131,8 +176,8 @@ void _showNewMailPassword(BuildContext context, String password, String newMail)
           children: [
             Text(newMail == null ? "Das neue Passwort ist:" : (
                 API.of(context).requests.getUserInfo().useSie ?
-                "Wir haben wir Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für die alte WebMail oder SMTP/IMAP möglich. Deine Mail Adresse ist $newMail. Für Mailprogramme/iPads muss ein App Passwort generiert werden" :
-                "Wir haben wir Dir für den Mailaccount ein extra Passwort erstellt. Für Mailprogramme muss jedoch ein App Passwort generiert werden"
+                "Wir haben Ihnen für den Mailaccount ein extra Passwort erstellt. Mit diesem ist nur der Login für die alte WebMail oder SMTP/IMAP möglich. Ihre Mail Adresse ist $newMail. Für Mailprogramme/iPads muss ein App Passwort generiert werden" :
+                "Wir haben Dir für den Mailaccount ($newMail ein extra Passwort erstellt. Für Mailprogramme muss jedoch ein App Passwort generiert werden"
             )),
             Stack(
               children: [
@@ -150,6 +195,26 @@ void _showNewMailPassword(BuildContext context, String password, String newMail)
                   ),
                 )
               ],
+            )
+          ],
+        ),
+        actions: [
+          CupertinoButton(child: Text("OK"), onPressed: () => Navigator.pop(context))
+        ],
+      ),
+      barrierDismissible: true,
+      context: context
+  );
+}
+
+void _showNewMailAccount(BuildContext context, String newMail) {
+  showCupertinoDialog(
+      builder: (context) => CupertinoAlertDialog(
+        content: Column(
+          children: [
+            Text(API.of(context).requests.getUserInfo().useSie ?
+                "Wir haben Ihnen einen Mailaccount erstellt. Ihre Mail Adresse ist $newMail. Für Mailprogramme/iPads muss ein App Passwort generiert werden. Außerdem kann die Webmail in der App und unter webmail.kag-langenfeld.de genutzt werden." :
+                "Wir haben Dir einen Mailaccount mit der Adresse $newMail erstellt. Um Mailprogramme und Schüler-iPads zu verbinden musst Du ein App Passwort generieren. Ansonsten kannst du auch die Webmail in der App nutzen."
             )
           ],
         ),

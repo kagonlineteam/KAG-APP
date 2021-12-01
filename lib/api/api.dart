@@ -373,13 +373,21 @@ class _APIRequests {
     await _actionExecution(APIAction.MAIL);
     String response = await http.sendEmptyPostToAPI(
         "mail", null, _api._authenticationUser.getJWT());
-    return jsonDecode(response)['password'];
+    Map<String, dynamic> jsonResponse = jsonDecode(response);
+    if (jsonResponse.containsKey("password")) {
+      return jsonResponse['password'];
+    } else {
+      return null;
+    }
   }
 
-  Future<String> getMailAppPassword() async {
+  Future<String> getMailAppPassword({int expireSeconds = -1}) async {
     await _actionExecution(APIAction.MAIL);
     String response = await http.sendEmptyPostToAPI(
-        "mail/app", {"name": "custom-app-password-${DateTime.now().millisecondsSinceEpoch / 1000}"}, _api._authenticationUser.getJWT());
+        "mail/app", {
+          "name": "custom-app-password-${DateTime.now().millisecondsSinceEpoch / 1000}",
+           if (expireSeconds > 0) "time": expireSeconds.toString()
+    }, _api._authenticationUser.getJWT());
     return jsonDecode(response)['password'];
   }
 
