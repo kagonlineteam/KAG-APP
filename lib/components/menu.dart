@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Views/User.dart' as user_widget;
 import '../main.dart';
 
 class ExtraOptionsMenu extends StatelessWidget {
@@ -36,6 +37,8 @@ class ExtraOptionsMenu extends StatelessWidget {
           launch("mailto:support@kag-langenfeld.de");
         } else if (value == "source") {
           launch("https://github.com/kagonlineteam/KAG-APP");
+        } else if (value == "logout") {
+          user_widget.User.logout(context);
         }
       },
       itemBuilder: (context) {
@@ -59,7 +62,12 @@ class ExtraOptionsMenu extends StatelessWidget {
           PopupMenuItem(
             value: "about",
             child: Text("Über die App"),
-          )
+          ),
+          if (KAGAppState.app.type != AppType.LOGGED_OUT)
+            PopupMenuItem(
+              value: "logout",
+              child: Text("Ausloggen")
+            )
         ];
       },
     );
@@ -114,8 +122,8 @@ class BottomNavigationBarMenu extends StatelessWidget {
             icon: Icon(Icons.swap_horiz, size: 35),
           ),
           Tab(
-            text: "User",
-            icon: Icon(Icons.person, size: 35),
+            text: "SPlan",
+            icon: Icon(Icons.widgets, size: 35),
           ),
           if (type == AppType.NORMAL_WITH_WEBMAIL) Tab(
             text: "Mail",
@@ -143,7 +151,7 @@ class BottomNavigationBarMenu extends StatelessWidget {
           ),
           Tab(
             text: "SPlan",
-            icon: Icon(Icons.person, size: 35),
+            icon: Icon(Icons.widgets, size: 35),
           ),
         ];
         break;
@@ -220,8 +228,8 @@ List<NavigationRailDestination> getNavigationRail(AppType type) {
           icon: Icon(Icons.swap_horiz, size: 35),
         ),
         NavigationRailDestination(
-          label: Text("User"),
-          icon: Icon(Icons.person, size: 35),
+          label: Text("SPlan"),
+          icon: Icon(Icons.widgets, size: 35),
         ),
         if (type == AppType.NORMAL_WITH_WEBMAIL) NavigationRailDestination(
           label: Text("Mail"),
