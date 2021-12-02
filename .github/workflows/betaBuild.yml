@@ -31,7 +31,7 @@ jobs:
           fileName: 'key.jks'
           encodedString: ${{ secrets.KEY_JKS }}
       - name: build android
-        run: cp $KEY_LOCATION android/key.jks && flutter build apk --release && flutter build appbundle --release
+        run: cp $KEY_LOCATION android/key.jks && flutter build apk --release
         env:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
