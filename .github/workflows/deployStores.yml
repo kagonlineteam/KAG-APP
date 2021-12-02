@@ -4,8 +4,6 @@ on:
   release:
     types:
        - created
- # Allow workflow_dispatch to allow re-running an failed action after changes
-  workflow_dispatch:
 
 jobs:
   android:
@@ -40,7 +38,7 @@ jobs:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         ALIAS_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         KEY_LOCATION: ${{ steps.android-key.outputs.filePath }}
-    # Add the built APK to Action
+    # Add the built APK to Action for non-playstore downloads
     - uses: actions/upload-artifact@v1
       with:
         name: android-release-apk
