@@ -137,8 +137,8 @@ void _generateAppPasswordPrompt(BuildContext bcontext) {
           children: [
             Text(
                 API.of(context).requests.getUserInfo().useSie ?
-                "Bitte geben Sie an wann das App-Passwort ablaufen soll." :
-                "Bitte gebe an wann das App-Passwort ablaufen soll."
+                "Bitte wählen Sie unten das Ablaufdatum für das App-Passwort durch drehen der Auswahlräder." :
+                "Bitte wähle das Ablaufdatum für das App-Passwort."
             ),
             SizedBox(
               height: 400,
@@ -153,12 +153,12 @@ void _generateAppPasswordPrompt(BuildContext bcontext) {
           ],
         ),
         actions: [
-          CupertinoButton(child: Text("App Passwort erstellen", textAlign: TextAlign.left, style: TextStyle(color: Colors.green)), onPressed: () {
+          CupertinoButton(child: Text("App Passwort erstellen", textAlign: TextAlign.left), onPressed: () {
             int time = (date.millisecondsSinceEpoch - DateTime.now().millisecondsSinceEpoch) ~/ 1000;
             Navigator.pop(context);
             API.of(bcontext).requests.getMailAppPassword(expireSeconds: time).then((newPassword) => _showNewMailPassword(bcontext, newPassword, null));
           }),
-          CupertinoButton(child: Text("Permanentes App Passwort erstellen", textAlign: TextAlign.left), onPressed: () {
+          CupertinoButton(child: Text("Permanentes App Passwort erstellen", textAlign: TextAlign.left, style: TextStyle(color: Colors.grey)), onPressed: () {
             Navigator.pop(context);
             API.of(bcontext).requests.getMailAppPassword().then((newPassword) => _showNewMailPassword(bcontext, newPassword, null));
           })
