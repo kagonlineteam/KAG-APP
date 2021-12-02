@@ -118,20 +118,20 @@ class BottomNavigationBarMenu extends StatelessWidget {
             icon: Icon(Icons.event, size: 35),
           ),
           Tab(
-            text: "VPlan",
-            icon: Icon(Icons.swap_horiz, size: 35),
+            text: "News",
+            icon: Icon(Icons.public, size: 35),
           ),
           Tab(
             text: "SPlan",
             icon: Icon(Icons.widgets, size: 35),
           ),
+          Tab(
+            text: "VPlan",
+            icon: Icon(Icons.swap_horiz, size: 35),
+          ),
           if (type == AppType.NORMAL_WITH_WEBMAIL) Tab(
             text: "Mail",
             icon: Icon(Icons.mail, size: 35),
-          ),
-          Tab(
-            text: "News",
-            icon: Icon(Icons.public, size: 35),
           ),
         ];
         break;
@@ -224,20 +224,20 @@ List<NavigationRailDestination> getNavigationRail(AppType type) {
           icon: Icon(Icons.event, size: 35),
         ),
         NavigationRailDestination(
-          label: Text("VPlan"),
-          icon: Icon(Icons.swap_horiz, size: 35),
+          label: Text("News"),
+          icon: Icon(Icons.public, size: 35),
         ),
         NavigationRailDestination(
           label: Text("SPlan"),
           icon: Icon(Icons.widgets, size: 35),
         ),
+        NavigationRailDestination(
+          label: Text("VPlan"),
+          icon: Icon(Icons.swap_horiz, size: 35),
+        ),
         if (type == AppType.NORMAL_WITH_WEBMAIL) NavigationRailDestination(
           label: Text("Mail"),
           icon: Icon(Icons.mail, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("News"),
-          icon: Icon(Icons.public, size: 35),
         ),
       ];
     case AppType.VPLAN_LOGGED_OUT:

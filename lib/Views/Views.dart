@@ -28,10 +28,10 @@ List<Widget> AppViews(AppType type) {
       return <Widget>[
         new Home.Home(),
         new Calendar.Calendar(),
-        new RPlan.RPlanViewWidget(),
-        new User.User(),
-        if (type == AppType.NORMAL_WITH_WEBMAIL) WebMail.WebMail(),
         new News.News(),
+        new User.User(),
+        new RPlan.RPlanViewWidget(),
+        if (type == AppType.NORMAL_WITH_WEBMAIL) WebMail.WebMail(),
       ];
     case AppType.VPLAN_LOGGED_OUT:
       return <Widget>[
