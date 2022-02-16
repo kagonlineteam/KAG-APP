@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 
-import './Calendar.dart'	as Calendar; // ignore: library_prefixes
-import './Home.dart'      as Home; // ignore: library_prefixes
-import './Login.dart'     as Login; // ignore: library_prefixes
-import './News.dart'      as News; // ignore: library_prefixes
-import './RPlan.dart'     as RPlan; // ignore: library_prefixes
-import './User.dart'      as User; // ignore: library_prefixes
-import './WebMail.dart'   as WebMail; // ignore: library_prefixes
+import './Calendar.dart'	     as Calendar; // ignore: library_prefixes
+import './Home.dart'           as Home; // ignore: library_prefixes
+import './Informations.dart'   as Information; // ignore: library_prefixes
+import './Login.dart'          as Login; // ignore: library_prefixes
+import './News.dart'           as News; // ignore: library_prefixes
+import './RPlan.dart'          as RPlan; // ignore: library_prefixes
+import './User.dart'           as User; // ignore: library_prefixes
+import './WebMail.dart'        as WebMail; // ignore: library_prefixes
 
 import '../main.dart';
 
@@ -21,6 +22,7 @@ List<Widget> AppViews(AppType type) {
         new Home.Home(),
         new Calendar.Calendar(),
         new News.News(),
+        new Information.Information(),
         new Login.Login(),
       ];
     case AppType.NORMAL:
@@ -29,6 +31,7 @@ List<Widget> AppViews(AppType type) {
         new Home.Home(),
         new Calendar.Calendar(),
         new News.News(),
+        new Information.Information(),
         new User.User(),
         new RPlan.RPlanViewWidget(),
         if (type == AppType.NORMAL_WITH_WEBMAIL) WebMail.WebMail(),
@@ -45,6 +48,7 @@ List<Widget> AppViews(AppType type) {
     case AppType.MOBILE_SITE:
       return <Widget>[
         new News.News(),
+        new Information.Information(),
         new Calendar.Calendar(),
         new Login.Login(),
       ];
@@ -56,13 +60,13 @@ List<Widget> AppViews(AppType type) {
 int getPageCount(AppType type) {
   switch (type) {
     case AppType.LOGGED_OUT:
-      return 4;
-      break;
-    case AppType.NORMAL:
       return 5;
       break;
-    case AppType.NORMAL_WITH_WEBMAIL:
+    case AppType.NORMAL:
       return 6;
+      break;
+    case AppType.NORMAL_WITH_WEBMAIL:
+      return 7;
       break;
     case AppType.VPLAN_LOGGED_OUT:
       return 1;
@@ -71,7 +75,7 @@ int getPageCount(AppType type) {
       return 2;
       break;
     case AppType.MOBILE_SITE:
-      return 3;
+      return 4;
       break;
   }
   return 0;

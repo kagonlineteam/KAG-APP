@@ -111,6 +111,10 @@ class BottomNavigationBarMenu extends StatelessWidget {
             icon: Icon(Icons.public, size: 35),
           ),
           Tab(
+            text: "Infos",
+            icon: Icon(Icons.info_outline, size: 35),
+          ),
+          Tab(
             text: "Login",
             icon: Icon(Icons.person, size: 35),
           )
@@ -130,6 +134,10 @@ class BottomNavigationBarMenu extends StatelessWidget {
           Tab(
             text: "News",
             icon: Icon(Icons.public, size: 35),
+          ),
+          Tab(
+            text: "Infos",
+            icon: Icon(Icons.info_outline, size: 35),
           ),
           Tab(
             text: "SPlan",
@@ -170,6 +178,10 @@ class BottomNavigationBarMenu extends StatelessWidget {
           Tab(
             text: "News",
             icon: Icon(Icons.public, size: 35),
+          ),
+          Tab(
+            text: "Infos",
+            icon: Icon(Icons.info_outline, size: 35),
           ),
           Tab(
             text: "Termine",
@@ -218,6 +230,10 @@ List<NavigationRailDestination> getNavigationRail(AppType type) {
           icon: Icon(Icons.public, size: 35),
         ),
         NavigationRailDestination(
+          label: Text("Infos"),
+          icon: Icon(Icons.info_outline, size: 35),
+        ),
+        NavigationRailDestination(
           label: Text("Login"),
           icon: Icon(Icons.person, size: 35),
         )
@@ -236,6 +252,10 @@ List<NavigationRailDestination> getNavigationRail(AppType type) {
         NavigationRailDestination(
           label: Text("News"),
           icon: Icon(Icons.public, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Infos"),
+          icon: Icon(Icons.info_outline, size: 35),
         ),
         NavigationRailDestination(
           label: Text("SPlan"),
@@ -277,6 +297,10 @@ List<NavigationRailDestination> getNavigationRail(AppType type) {
         NavigationRailDestination(
           label: Text("News"),
           icon: Icon(Icons.public, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Infos"),
+          icon: Icon(Icons.info_outline, size: 35),
         ),
         NavigationRailDestination(
           label: Text("Termine"),
