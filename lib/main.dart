@@ -34,10 +34,8 @@ void main() async {
             ),
             colorScheme: ColorScheme(
               primary: Color.fromRGBO(0, 112, 1, 1),
-              primaryVariant: Color.fromRGBO(0, 112, 1, 1),
               background: Color.fromRGBO(47, 47, 47, 1),
               secondary: Color.fromRGBO(255, 145, 10, 1),
-              secondaryVariant: Color.fromRGBO(255, 145, 10, 1),
               onSecondary: Color.fromRGBO(255, 145, 10, 1),
               brightness: Brightness.light,
               error: Colors.red,

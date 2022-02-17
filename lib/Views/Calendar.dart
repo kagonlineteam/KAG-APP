@@ -176,7 +176,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
     super.dispose();
   }
 
-  void _onDaySelected(DateTime day, List events) {
+  void _onDaySelected(DateTime day, List events, List unknown) {
     setState(() {
       _selectedEvents = events;
       if (_selectedEvents.length == 1) {
