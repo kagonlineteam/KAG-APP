@@ -1,10 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../Views/User.dart' as user_widget;
+import '../api/api.dart';
 import '../main.dart';
+import '../push_notifications.dart';
+import 'dev.dart';
 
 class ExtraOptionsMenu extends StatelessWidget {
   @override
@@ -39,6 +43,8 @@ class ExtraOptionsMenu extends StatelessWidget {
           launch("https://github.com/kagonlineteam/KAG-APP");
         } else if (value == "logout") {
           user_widget.User.logout(context);
+        } else if (value == "fcmtoken") {
+          SharedPreferences.getInstance().then((sp) => showData(context, sp.getString(PushNotificationsManager.SP_FIREBASE_TOKEN)));
         }
       },
       itemBuilder: (context) {
@@ -58,6 +64,10 @@ class ExtraOptionsMenu extends StatelessWidget {
           PopupMenuItem(
             value: "source",
             child: Text("Source Code der App"),
+          ),
+          if (!kIsWeb && KAGAppState.app.type != AppType.LOGGED_OUT && API.of(context).requests.getUserInfo().isAppDev) PopupMenuItem(
+            value: "fcmtoken",
+            child: Text("Dev: FCM Token"),
           ),
           PopupMenuItem(
             value: "about",

@@ -199,6 +199,9 @@ class KAGUser {
   // This does exists to quickly allow somebody to create a password for
   // their mail account. This should only be used in very few situations.
   bool get mailPasswordConsent => _consent.contains("mailcow-pw");
+
+  // This consent shows some dev focussed features
+  bool get isAppDev => _consent.contains("app-dev");
 }
 
 class Article {
