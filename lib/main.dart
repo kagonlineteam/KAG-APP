@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -55,7 +56,23 @@ void main() async {
           home: KAGApp(),
         ), api),
   );
-  new PushNotificationsManager().init();
+  // Push Notification Stuff
+  PushNotificationsManager pushNotificationsManager = new PushNotificationsManager();
+  pushNotificationsManager.init().then((_) {
+    if (FirebaseMessaging.instance != null) {
+      api.hasLoginCredentials().then((value) {
+        // the messages sent are still public. This is only to annoy less people
+        // similar code in Views/Login.dart
+        if (value) {
+          FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_LOGGED_IN);
+          if (api.requests.getUserInfo().isAppDev) FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_APP_DEV);
+        } else {
+          FirebaseMessaging.instance.unsubscribeFromTopic(PushNotificationsManager.TOPIC_LOGGED_IN);
+          FirebaseMessaging.instance.unsubscribeFromTopic(PushNotificationsManager.TOPIC_APP_DEV);
+        }
+      });
+    }
+  });
 }
 
 class KAGApp extends StatefulWidget {
