@@ -7,6 +7,7 @@ import 'main.dart';
 class PushNotificationsManager {
 
   static const String SP_FIREBASE_TOKEN = "firebase_token";
+  static const String TOPIC_ALL = "all";
   static const String TOPIC_LOGGED_IN = "logged_in";
   static const String TOPIC_APP_DEV = "app_dev";
 
