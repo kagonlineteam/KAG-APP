@@ -25,24 +25,8 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
         navigator.serviceWorker.register('flutter_service_worker.js');
-        navigator.serviceWorker.register('firebase-messaging-sw.js');
       });
     }
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/8.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.20.0/firebase-messaging.js"></script>
-  <script>
-    firebase.initializeApp({
-      apiKey: "AIzaSyAFpBzKmDDJIL-3Y43tvC7mfHjCaWdwK5A",
-      authDomain: "kag-api.firebaseapp.com",
-      databaseURL: "https://kag-api.firebaseio.com",
-      projectId: "kag-api",
-      storageBucket: "kag-api.appspot.com",
-      messagingSenderId: "932178639950",
-      appId: "1:932178639950:web:a51a16deb1f1c001c7971f"
-    });
-
-    const messaging = firebase.messaging();
   </script>
   <script src="main.dart.js" type="application/javascript"></script>
 </body>

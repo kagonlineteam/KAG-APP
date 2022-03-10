@@ -57,23 +57,25 @@ void main() async {
         ), api),
   );
   // Push Notification Stuff
-  PushNotificationsManager pushNotificationsManager = new PushNotificationsManager();
-  pushNotificationsManager.init().then((_) {
-    if (FirebaseMessaging.instance != null) {
-      FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_ALL);
-      api.hasLoginCredentials().then((value) {
-        // the messages sent are still public. This is only to annoy less people
-        // similar code in Views/Login.dart
-        if (value) {
-          FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_LOGGED_IN);
-          if (api.requests.getUserInfo().isAppDev) FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_APP_DEV);
-        } else {
-          FirebaseMessaging.instance.unsubscribeFromTopic(PushNotificationsManager.TOPIC_LOGGED_IN);
-          FirebaseMessaging.instance.unsubscribeFromTopic(PushNotificationsManager.TOPIC_APP_DEV);
-        }
-      });
-    }
-  });
+  if (!kIsWeb) {
+    PushNotificationsManager pushNotificationsManager = new PushNotificationsManager();
+    pushNotificationsManager.init().then((_) {
+      if (FirebaseMessaging.instance != null) {
+        FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_ALL);
+        api.hasLoginCredentials().then((value) {
+          // the messages sent are still public. This is only to annoy less people
+          // similar code in Views/Login.dart
+          if (value) {
+            FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_LOGGED_IN);
+            if (api.requests.getUserInfo().isAppDev) FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_APP_DEV);
+          } else {
+            FirebaseMessaging.instance.unsubscribeFromTopic(PushNotificationsManager.TOPIC_LOGGED_IN);
+            FirebaseMessaging.instance.unsubscribeFromTopic(PushNotificationsManager.TOPIC_APP_DEV);
+          }
+        });
+      }
+    });
+  }
 }
 
 class KAGApp extends StatefulWidget {
