@@ -10,6 +10,8 @@ import 'api_models.dart' as models;
 import 'api_raw.dart' as http;
 import 'ios_mailconfig.dart';
 
+const String SP_CACHE_USER_PRELOAD = "UserPreloadCache";
+
 enum APIAction {
   GET_USERNAME,
   GET_GROUPS,
@@ -101,7 +103,18 @@ class API {
   Future preloadUserData() async {
     if (await hasLoginCredentials()) {
       print("Loading user data.");
-      _userData = await requests._getUserInfo();
+      try {
+        _userData = await requests._getUserInfo();
+      } on Exception catch (e) {
+        print("Preloading user data not possible: ${e.toString()}");
+        // In cases of no/bad network we load data from a local store
+        // this could in theory lead to old data being loaded with other access
+        // permissions than the newest version. This could be an inconvenience,
+        // but should not be a security issue as security is not enforced on clientside.
+        SharedPreferences sp = await SharedPreferences.getInstance();
+        var decodedJson = utf8.decode(base64Decode(sp.getString(SP_CACHE_USER_PRELOAD)));
+        _userData = models.KAGUser.fromJSON(jsonDecode(decodedJson)['entity']);
+      }
     } else {
       print("User is not logged in: Not loading user data.");
     }
@@ -314,6 +327,10 @@ class _APIRequests {
     String response = await http.getFromAPI(
         "users/${_api._authenticationUser.getUsername()}", null, _api._authenticationUser.getJWT());
     var jsonResponse = jsonDecode(response)['entity'];
+    // Yes I might actually use Base64 here for "security".
+    // This is just to keep students to easily modify the local storage.
+    // Everyone that wants to get around this would just recompile the app anywhere.
+    SharedPreferences.getInstance().then((sp) => sp.setString(SP_CACHE_USER_PRELOAD, base64.encode(utf8.encode(response))));
     models.KAGUser user = models.KAGUser.fromJSON(jsonResponse);
     return user;
   }
