@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 import 'Views/Views.dart';
 import 'api/api.dart';
@@ -12,10 +13,10 @@ import 'components/menu.dart';
 import 'dynimports/webinfo.dart' if (dart.library.html) 'dart:html' as webinfo;
 import 'push_notifications.dart';
 
-
 void main() async {
   // This does not need to be waited on as we do not use it in HomeScreen
   initializeDateFormatting("de_DE");
+  Intl.defaultLocale = "de_DE";
 
   // Preload binary messenger to load Shared Preferences
   WidgetsFlutterBinding.ensureInitialized();
