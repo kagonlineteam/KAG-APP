@@ -15,7 +15,7 @@ class RPlanTabBar extends StatelessWidget {
             title: Text("VPlan"),
             actions: [TeacherKuerzelButton()],
             bottom: TabBar(
-              tabs: _days.map((day) => Tab(text: day.date,)).toList(),
+              tabs: _days.map((day) => Tab(text: "${day.weekdayShort}, ${day.date}",)).toList(),
             ),
           ),
           body: TabBarView(

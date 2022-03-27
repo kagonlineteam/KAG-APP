@@ -104,28 +104,6 @@ String addLeadingZero(int originalNumber) {
   return "$originalNumber";
 }
 
-String getWeekdayByNumber(int weekday) {
-  switch (weekday) {
-    case 1:
-      return "Montag";
-    case 2:
-      return "Dienstag";
-    case 3:
-      return "Mittwoch";
-    case 4:
-      return "Donnerstag";
-    case 5:
-      return "Freitag";
-    case 6:
-      return "Samstag";
-    case 0:
-    case 7:
-      return "Sonntag";
-    default:
-      throw Exception("Invalid number for Weekday");
-  }
-}
-
 class APIHolder extends InheritedWidget  {
   APIHolder(Widget child, this.api, /*this.options*/) : super(child: child);
 

@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Views/RPlan.dart';
 import '../api/api.dart';
 import '../api/api_models.dart' as api_model;
-
 import '../dynimports/apifile/dynapifile.dart'
 if (dart.library.html) '../dynimports/apifile/webapifile.dart'
 if (dart.library.io) '../dynimports/apifile/mobileapifile.dart' as apifile;
@@ -21,7 +21,7 @@ class ListViewDay extends StatelessWidget {
       children: [
         Row(children: [
           Padding(
-            child: Text(day.date, style: TextStyle(fontSize: 40)),
+            child: Text("${day.weekdayShort}, ${day.date}", style: TextStyle(fontSize: 40)),
             padding: EdgeInsets.all(10),
           ),
           DownloadFileButton(day.pdfFile)
@@ -72,11 +72,11 @@ class DayWidget extends StatelessWidget {
       if (MediaQuery.of(context).size.width <= 1000) {
         return Container(margin: const EdgeInsets.only(top: 250.0),
             alignment: Alignment.center,
-            child: Text("Es gibt derzeit am $date keine Vertretungen ${API.of(context).requests.getUserInfo().useSie ? "für Sie" : "für dich"}."));
+            child: Text("Es gibt derzeit am $weekday, dem $date, keine Vertretungen ${API.of(context).requests.getUserInfo().useSie ? "für Sie" : "für dich"}."));
       } else {
         return Container(margin: const EdgeInsets.only(left: 12.0),
             alignment: Alignment.bottomLeft,
-            child: Text("Es gibt derzeit am $date keine Vertretungen ${API.of(context).requests.getUserInfo().useSie ? "für Sie" : "für dich"}."));
+            child: Text("Es gibt derzeit am $weekday, dem $date, keine Vertretungen ${API.of(context).requests.getUserInfo().useSie ? "für Sie" : "für dich"}."));
       }
     }
 
@@ -92,9 +92,19 @@ class DayWidget extends StatelessWidget {
     );
   }
 
-  // ignore: type_annotate_public_apis
-  get date {
-    return "${dateTime.day}.${dateTime.month}";
+  static final DateFormat _dateFormat = DateFormat('dd.MM');
+  String get date {
+    return _dateFormat.format(dateTime);
+  }
+
+  static final DateFormat _weekdayShortFormat = DateFormat('E');
+  String get weekdayShort {
+    return _weekdayShortFormat.format(dateTime);
+  }
+
+  static final DateFormat _weekdayFormat = DateFormat('EEEE');
+  String get weekday {
+    return _weekdayFormat.format(dateTime);
   }
 
 }
