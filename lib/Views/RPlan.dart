@@ -71,8 +71,17 @@ class RPlan extends State {
   Future loadRPlan() async{
     if (_loaded == 3) _loaded = 0;
     _days = [];
-    _loadDay(0);
+
+    // We do not load day zero on weekend to avoid
+    // showing the "no lessons" error on weekends
+    if (!(DateTime.now().weekday >= DateTime.saturday)) {
+      _loadDay(0);
+    } else {
+      _loaded++;
+    }
+
     _loadDay(1);
+
     if (hasTeacherPlan) {
       _loadDay(2);
     } else {
