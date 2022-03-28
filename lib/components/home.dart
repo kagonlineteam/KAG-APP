@@ -38,16 +38,17 @@ class _BaseHomePageWidget extends StatelessWidget {
       appBar: PreferredSize(
         child: AppBar(
           bottom: PreferredSize(
-            preferredSize: Size.fromHeight(100),
+            preferredSize: Size.fromHeight(0),
             child:
             Stack(
               children: [
                 Container(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                    alignment: Alignment.topCenter,
+                    alignment: Alignment.topLeft,
                     child: Image(
+                      alignment: Alignment.topLeft,
                       image: AssetImage("assets/logo.png"),
-                      height: 100,
+                      height: 60,
                       width: MediaQuery.of(context).size.width,
                     )
                 ),
@@ -60,7 +61,7 @@ class _BaseHomePageWidget extends StatelessWidget {
             ),
           ),
         ),
-        preferredSize: Size.fromHeight(110),
+        preferredSize: Size.fromHeight(70),
       ),
       body: SafeArea(
         child: child,
