@@ -272,7 +272,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
     if (events == null) return Text("");
     List<Widget> eventWidgets = [];
     for (var event in events) {
-      eventWidgets.add(Text(event.title, style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 7),));
+      eventWidgets.add(Text(event.title, style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 14 : 9),));
     }
     return Column(
       children: eventWidgets,

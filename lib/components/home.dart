@@ -280,14 +280,14 @@ class ExamList extends StatelessWidget {
         alignment: Alignment.centerLeft,
       ),
       Container(
-        child: Text("Beachte die Aushänge in der Schule.", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+        child: Text("Beachte die Aushänge in der Schule.", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
         alignment: Alignment.centerLeft,
       )
     ];
     items.addAll(_examList.map((exam) => ListTile(
-      title: Text("${exam.course}"),
-      subtitle: Text("${exam.date != null ? formatter.format(exam.date) : "Fehlerhaftes Datum"} ${exam.stunde}. Stunde"),
+      title: Text("${exam.course}", style: TextStyle(fontSize: 20)),
+      subtitle: Text("${exam.date != null ? formatter.format(exam.date) : "Fehlerhaftes Datum"} ${exam.stunde}. Stunde", style: TextStyle(fontSize: 14)),
       leading: Icon(Icons.school_outlined),
     )));
     return Column(

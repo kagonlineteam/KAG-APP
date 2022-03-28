@@ -30,6 +30,7 @@ void main() async {
           title: 'KAG',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
+            fontFamily: 'Zen Maru Gothic',
             primaryColor: Color.fromRGBO(0, 112, 1, 1),
             appBarTheme: AppBarTheme(
               color: const Color.fromRGBO(0, 112, 1, 1)

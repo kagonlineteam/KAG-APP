@@ -10,7 +10,7 @@ import '../api/api_models.dart';
 class DateWidget extends StatelessWidget {
   DateWidget(Termin termin):
       dateText = "${addLeadingZero(termin.startDatetime.day)}.${addLeadingZero(termin.startDatetime.month)}";
-  static const dateStyle = const TextStyle(fontSize: 20, color: Colors.white);
+  static const dateStyle = const TextStyle(fontSize: 24, color: Colors.white);
 
   final String dateText;
 
@@ -42,7 +42,7 @@ class TerminWidget extends StatelessWidget {
     return
       ListTile(
         leading: DateWidget(termin),
-        title: Text(termin.title, style: TextStyle(fontSize: 23)),
+        title: Text(termin.title, style: TextStyle(fontSize: 24)),
         subtitle: Text(termin.preview != null ? termin.preview : ""),
         onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => CalendarDetail(termin))),
       );

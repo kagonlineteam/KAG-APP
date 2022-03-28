@@ -176,13 +176,14 @@ class TimeTableListEntry extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(lehrstunde.course),
+      title: Text(lehrstunde.course, style: TextStyle(fontSize: 20)),
       subtitle: Text(
           lehrstunde.room +
               // We check for null and empty string to avoid the , showing in Bereitschaftsstunden
               (isTeacher && lehrstunde.klasse != null && lehrstunde.klasse.isNotEmpty ? ", ${lehrstunde.klasse}" : "") +
               // We do check isTeacher here to avoid a situation where a mistake in the API could be exposed
-              (isTeacher && lehrstunde.teacher != null && !hideTeacher ? ", ${lehrstunde.teacher}" : "")
+              (isTeacher && lehrstunde.teacher != null && !hideTeacher ? ", ${lehrstunde.teacher}" : ""),
+        style: TextStyle(fontSize: 16),
       ),
       leading: Container(
           padding: EdgeInsets.fromLTRB(15,5,15,5),
@@ -190,7 +191,7 @@ class TimeTableListEntry extends StatelessWidget {
               borderRadius: BorderRadius.circular(35),
               border: Border.all(width: 2)
           ),
-          child: Text(lehrstunde.period.toString(), style: TextStyle(fontSize: 25))),
+          child: Text(lehrstunde.period.toString(), style: TextStyle(fontSize: 24))),
       onTap: () {
         if (isTeacher) {
           showDialog(context: context, builder: (context) => Dialog(
