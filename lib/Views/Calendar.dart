@@ -270,13 +270,12 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
   // Builds the list before a day has been selected
   Widget _buildEventsList(List events) {
     if (events == null) return Text("");
-    List<Widget> eventWidgets = [];
-    for (var event in events) {
-      eventWidgets.add(Text(event.title, style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 14 : 9),));
+    if (events.length == 1) {
+      return Text(events[0].title, style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 9), textAlign: TextAlign.left);
+    } else if (events.length > 1) {
+      return Text("Mehrere Termine", style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 9, fontStyle: FontStyle.italic), textAlign: TextAlign.left);
     }
-    return Column(
-      children: eventWidgets,
-    );
+    return Container();
   }
 
 
