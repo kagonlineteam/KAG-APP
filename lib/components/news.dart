@@ -106,7 +106,7 @@ class ArticleDetailWidget extends StatelessWidget {
     var htmlData = """${article.htmlBody != null ? article.htmlBody : ""}""";
     return Scaffold(
       appBar: AppBar(
-        title: Text(article.shortTitle != "" ? article.shortTitle : article.title),
+        title: Text(article.shortTitle != null && !article.shortTitle.isEmpty ? article.shortTitle : article.title),
       ),
       body: Container(
         child: ListView(
