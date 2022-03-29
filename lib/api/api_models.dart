@@ -205,16 +205,17 @@ class KAGUser {
 }
 
 class Article {
-  String _title, _id, _htmlBody;
+  String _title, _id, _htmlBody, _shortTitle;
   Map<String, String> _image;
 
-  Article(this._id, this._title, this._htmlBody, this._image);
+  Article(this._id, this._title, this._htmlBody, this._shortTitle, this._image);
 
   Article.fromJSON(Map<dynamic, dynamic> rawJSON) {
     if (rawJSON.containsKey("id")) _id = rawJSON['id'];
     if (rawJSON.containsKey("title")) _title = rawJSON['title'];
     if (rawJSON.containsKey("body")) _htmlBody = utf8.decode(base64Decode(rawJSON['body'].replaceAll('\n', '')));
     if (rawJSON.containsKey("files") && rawJSON['files'] is Map) _image = new Map<String, String>.from(rawJSON['files']);
+    if (rawJSON.containsKey("short_title")) _shortTitle = rawJSON['short_title'];
   }
 
   // Image stuff
@@ -222,6 +223,7 @@ class Article {
   bool get hasImage => _image != null;
 
   String get title => _title;
+  String get shortTitle => _shortTitle;
   String get id => _id;
   String get htmlBody => _htmlBody;
 }

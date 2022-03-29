@@ -102,16 +102,16 @@ class ArticleDetailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var htmlData = """<h1>${article.title}</h1><br><br> ${article.htmlBody != null ? article.htmlBody : ""}""";
+    var htmlData = """${article.htmlBody != null ? article.htmlBody : ""}""";
     return Scaffold(
       appBar: AppBar(
-        title: Text("News"),
+        title: Text(article.shortTitle != "" ? article.shortTitle : article.title),
       ),
       body: Container(
         child: ListView(
           children: <Widget>[Html(data: htmlData, onLinkTap: launch)],
         ),
-        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+        padding: EdgeInsets.fromLTRB(10, 4, 10, 0),
       ),
     );
   }
