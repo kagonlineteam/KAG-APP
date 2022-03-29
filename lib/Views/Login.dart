@@ -23,6 +23,8 @@ class LoginState extends State<Login>
   TextEditingController password = new TextEditingController(),
       username = new TextEditingController();
 
+  static const String PASSWORD_RESET_URL = "https://atrium.kag-langenfeld.de/login/forgot_password.php";
+
   Future login() async {
     showDialog(
       context: context,
@@ -59,7 +61,7 @@ class LoginState extends State<Login>
             actions: <Widget>[
               MaterialButton(
                 onPressed: () =>
-                    launch('https://kag-langenfeld.de/user/password'),
+                    launch(PASSWORD_RESET_URL),
                 child: Text("Passwort vergessen?"),
               ),
               MaterialButton(
@@ -137,7 +139,7 @@ class LoginState extends State<Login>
         loginButton,
         SizedBox(height: 6.0),
         MaterialButton(
-          onPressed: () => launch('https://kag-langenfeld.de/user/password'),
+          onPressed: () => launch(PASSWORD_RESET_URL),
           child: Text("Passwort vergessen?", style: const TextStyle(color: Colors.grey),),
         ),
         SizedBox(height: 15.0),
