@@ -4,6 +4,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../Views/News.dart';
 import '../api/api_models.dart';
+import '../api/api_raw.dart' as api_raw;
 
 class ArticleCard extends StatelessWidget {
   ArticleCard(this.article);
@@ -53,7 +54,7 @@ class ImageBox extends StatelessWidget {
                 image: new DecorationImage(
                     fit: BoxFit.fitWidth,
                     alignment: FractionalOffset.center,
-                    image: CachedNetworkImageProvider("https://apiv2.kag-langenfeld.de/files/${article.imageID}")
+                    image: CachedNetworkImageProvider("${api_raw.API}files/${article.imageID}")
                 )
             ),
           )
