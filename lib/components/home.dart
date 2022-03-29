@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Views/News.dart';
+import '../api/api.dart';
 import '../api/api_helpers.dart';
 import '../api/api_models.dart';
 import 'helpers.dart';
@@ -123,6 +125,9 @@ class HomeList extends StatelessWidget {
         TerminList(homeScreenData),
         splittingContainer,
         ShortcutsWidget(isTablet: isTablet),
+        // Only show Impressum on web
+        if (kIsWeb) splittingContainer,
+        if (kIsWeb) ImpressumWidget()
     ],
     );
   }
@@ -297,5 +302,28 @@ class ExamList extends StatelessWidget {
   }
 
 
+}
 
+class ImpressumWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        MaterialButton(
+          child: Text("Impressum"),
+          onPressed: () async {
+            Article article = await API.of(context).requests.getArticle("mz8Ohncn3OiFJPRfhwsGr");
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article)));
+          },
+        ),
+        MaterialButton(
+          child: Text("Datenschutz"),
+          onPressed: () async {
+            Article article = await API.of(context).requests.getArticle("6m90o7IQw3UGhxaoD9g3GB");
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article)));
+          },
+        )
+      ],
+    );
+  }
 }
