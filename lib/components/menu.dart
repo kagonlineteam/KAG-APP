@@ -22,7 +22,7 @@ class ExtraOptionsMenu extends StatelessWidget {
                   context: context,
                   applicationName: "KAG App ${packageInfo.appName}",
                   applicationVersion: "${packageInfo.version} VC${packageInfo.buildNumber}",
-                  applicationLegalese: "Copyright KAG OnlineTeam 2019-2021\nDie App ist unter der GNU GPLv3 lizensiert und der Source Code verfügbar.\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
+                  applicationLegalese: "Copyright KAG OnlineTeam 2019-2022\nDie App ist unter der GNU GPLv3 lizensiert und der Source Code verfügbar.\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
                   applicationIcon: Image.asset("assets/icon.png", width: 64,)
               );
             });
@@ -30,7 +30,7 @@ class ExtraOptionsMenu extends StatelessWidget {
             showAboutDialog(
                 context: context,
                 applicationName: "KAG App Web",
-                applicationLegalese: "Copyright KAG OnlineTeam 2019-2021\nDie App ist unter der GNU GPLv3 lizensiert und der Source Code verfügbar.\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
+                applicationLegalese: "Copyright KAG OnlineTeam 2019-2022\nDie App ist unter der GNU GPLv3 lizensiert und der Source Code verfügbar.\n\nThis App uses third-party software or other resources that may be distributed under different licenses. You can read them with the \"View Licenses\" button.",
                 applicationIcon: Image.asset("assets/icon.png", width: 64,)
             );
           }
