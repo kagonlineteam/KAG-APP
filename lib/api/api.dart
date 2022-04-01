@@ -344,12 +344,12 @@ class _APIRequests {
     return _api._userData;
   }
 
-  helpers.ListResource<models.Article> getArticles() {
+  helpers.ListResource<models.Article> getNewsArticles() {
     // Not calling actionExecution here, because login not needed and needs async
     Map<String, String> params = {};
     params['view'] = "preview-with-image";
     params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
-    params['orderby'] = "desc-changed";
+    params['orderby'] = "desc-priority,desc-changed";
 
     return new helpers.ListResource<models.Article>.load("articles", params);
   }

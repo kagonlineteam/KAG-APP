@@ -14,7 +14,7 @@ class News extends StatelessWidget {
             title: Text("Aktuelles"),
         ),
         body: ResourceListBuilder(
-            API.of(context).requests.getArticles,
+            API.of(context).requests.getNewsArticles,
             (data, controller) => ListView(
               controller: controller,
               children: [
