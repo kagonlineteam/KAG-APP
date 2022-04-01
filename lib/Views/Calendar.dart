@@ -42,19 +42,27 @@ class _Calendar extends StatelessWidget {
       stream: controller.stream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          if (MediaQuery.of(context).size.height < 600) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text("Termine"),
+              ),
+              body: _ListCalendar(),
+            );
+          }
           return Scaffold(
               appBar: AppBar(
-                  title: Text("Termine"),
-                  actions: [Padding(padding: EdgeInsets.all(10),
-                  child: ElevatedButton(
-                      onPressed: () => _switchView(!snapshot.data),
-                      child: Container(
-                        child: Text(snapshot.data ? "Als Kalender" : "Als Liste",
-                            style: TextStyle(fontSize: 15, color: Colors.white)),
-                        margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                        alignment: Alignment.centerRight,
-                      )
-                  ))],
+                title: Text("Termine"),
+                actions: [Padding(padding: EdgeInsets.all(10),
+                    child: ElevatedButton(
+                        onPressed: () => _switchView(!snapshot.data),
+                        child: Container(
+                          child: Text(snapshot.data ? "Als Kalender" : "Als Liste",
+                              style: TextStyle(fontSize: 15, color: Colors.white)),
+                          margin: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                          alignment: Alignment.centerRight,
+                        )
+                    ))],
               ),
               body: snapshot.data ? _ListCalendar() : _TableCalendar());
         } else {
