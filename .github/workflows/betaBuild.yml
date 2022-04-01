@@ -41,3 +41,27 @@ jobs:
         with:
           name: android-release-apk
           path: build/app/outputs/apk/release/app-release.apk
+
+  build-and-release-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: 'stable'
+      - name: Install project dependencies
+        run: flutter pub get
+      - name: Enable windows build
+        run: flutter config --enable-windows-desktop
+      - name: Build artifacts
+        run: flutter build windows --release
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          filename: kag-windows.zip
+          directory: build/windows/runner/Release
+      - uses: actions/upload-artifact@v1
+        with:
+          name: android-release-apk
+          path: build/windows/runner/Release/kag-windows.zip
