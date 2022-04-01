@@ -148,6 +148,8 @@ void _generateAppPasswordPrompt(BuildContext bcontext) {
                 onDateTimeChanged: (newDateTime) {
                   date = newDateTime;
                 },
+                minimumDate: DateTime.now().add(Duration(days: 1)),
+                maximumYear: 2037, // Yes we should someday prepare ourselves for 2k36
               ),
             )
           ],
