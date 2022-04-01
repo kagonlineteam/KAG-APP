@@ -148,20 +148,49 @@ class ShortcutsWidget extends StatelessWidget {
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
         ),
-        Container(
-            alignment: Alignment.topLeft,
-            padding: EdgeInsets.all(10),
-            child: MaterialButton(
-              child: Image.asset("assets/atrium.png", width: isTablet ? 200 : 130),
-              onPressed: () async {
-                if (await canLaunch(
-                    "moodlemobile://atrium.kag-langenfeld.de")) {
-                  launch("moodlemobile://atrium.kag-langenfeld.de");
-                } else {
-                  launch("https://atrium.kag-langenfeld.de");
-                }
-              },
-            )
+        Row(
+          mainAxisAlignment: API.of(context).requests.getUserInfo().isTeacher ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.start,
+          children: [
+            Container(
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    MaterialButton(
+                      child: Image.asset("assets/atrium.png", width: isTablet ? 170 : 100),
+                      onPressed: () async {
+                        if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
+                          launch("moodlemobile://atrium.kag-langenfeld.de");
+                        } else {
+                          launch("https://atrium.kag-langenfeld.de");
+                        }
+                      },
+                    ),
+                    Text("Atrium", style: TextStyle(fontSize: 20))
+                  ],
+                )
+            ),
+            if (API.of(context).requests.getUserInfo().isTeacher) Container(
+                alignment: Alignment.topLeft,
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  children: [
+                    MaterialButton(
+                        child: Image.asset("assets/zulip.png",
+                            width: isTablet ? 170 : 100),
+                        onPressed: () async {
+                          if (await canLaunch("zulip://lehrer.chat.kag-langenfeld.de")) {
+                            launch("zulip://lehrer.chat.kag-langenfeld.de");
+                          } else {
+                            launch("https://lehrer.chat.kag-langenfeld.de");
+                          }
+                        }
+                    ),
+                    Text("Lehrerchat", style: TextStyle(fontSize: 20))
+                  ],
+                )
+            ),
+          ],
         )
       ],
     );
