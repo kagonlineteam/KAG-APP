@@ -248,18 +248,26 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
   }
 
   Widget _buildDay(date, events, {today=false}) {
+    var isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
     return Container(
-      margin: const EdgeInsets.all(4.0),
-      padding: const EdgeInsets.only(top: 5.0, left: 6.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary),
+      ),
+      margin: EdgeInsets.all(isLandscape ? 4 : 1.5),
+      padding: const EdgeInsets.only(top: 5.0, left: 5.0, right: 5.0),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(3.0),
-            decoration: today ? new BoxDecoration(borderRadius: new BorderRadius.circular(16.0), color: Theme.of(context).colorScheme.secondary) : null,
-            child:
-          Text(
+            alignment: Alignment.topCenter,
+            padding: const EdgeInsets.all(1.0),
+            decoration: today ? new BoxDecoration(borderRadius: new BorderRadius.circular(16.0), color: Theme.of(context).colorScheme.primary) : null,
+            child: Text(
               '${date.day}',
-              style: TextStyle().copyWith(fontSize: 16.0)),
+              style: TextStyle().copyWith(fontSize: isLandscape ? 16 : 10, color: today ? Colors.white : Colors.black)
+            ),
           ),
           _buildEventsList(events)
         ],
@@ -271,9 +279,9 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
   Widget _buildEventsList(List events) {
     if (events == null) return Text("");
     if (events.length == 1) {
-      return Text(events[0].title, style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 9), textAlign: TextAlign.left);
+      return Expanded(child: Text(events[0].title, style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 9), textAlign: TextAlign.left));
     } else if (events.length > 1) {
-      return Text("Mehrere Termine", style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 9, fontStyle: FontStyle.italic), textAlign: TextAlign.left);
+      return Expanded(child: Text("Mehrere Termine", style: TextStyle().copyWith(fontSize: MediaQuery.of(context).size.longestSide > 1000 ? 13 : 9, fontStyle: FontStyle.italic), textAlign: TextAlign.left));
     }
     return Container();
   }
