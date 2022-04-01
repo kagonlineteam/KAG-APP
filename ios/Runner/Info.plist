@@ -23,6 +23,8 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>moodlemobile</string>
+		<string>zulip</string>
+		<string>nextcloud</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
