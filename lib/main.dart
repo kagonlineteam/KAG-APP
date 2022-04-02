@@ -98,7 +98,8 @@ enum AppType {
 }
 
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
-  AppType type = getDefaultAppType();
+  AppType _type = getDefaultAppType();
+  GlobalKey _key = GlobalKey();
   static KAGAppState app;
   TabController controller;
 
@@ -106,7 +107,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(initialIndex: 0, length: getPageCount(type), vsync: this); // If you change something here change it in build, too.
+    controller = TabController(initialIndex: 0, length: getPageCount(_type), vsync: this); // If you change something here change it in build, too.
     API.of(context).hasLoginCredentials().then((loggedIn) => {
       if (loggedIn) {
         setState(() => type = getLoggedInAppType(webmail: API.of(context).requests.getUserInfo().mailConsent))
@@ -120,11 +121,12 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (getPageCount(type) != controller.length) {
+    if (getPageCount(_type) != controller.length) {
       controller = TabController(initialIndex: controller.index, length: getPageCount(type), vsync: this);
     }
     if (MediaQuery.of(context).size.width > 700 || (!kIsWeb && Platform.isMacOS)) { //  !kIsWeb is required to not cause an exception by calling Platform on web.
       return Row(
+        key: _key,
         children: [
           NavigationRail(
             selectedIndex: controller.index,
@@ -141,26 +143,27 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
               });
             },
             labelType: NavigationRailLabelType.selected,
-            destinations: getNavigationRail(type),
+            destinations: getNavigationRail(_type),
           ),
           VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).colorScheme.secondary),
           // This is the main content.
           Expanded(
             child: IndexedStack(
               index: controller.index,
-              children: AppViews(type),
+              children: AppViews(_type),
             ),
           ),
         ],
       );
     } else {
       return Scaffold(
+          key: _key,
           body: TabBarView(
             controller: controller,
-            children: AppViews(type),
+            children: AppViews(_type),
             physics: NeverScrollableScrollPhysics(),
           ),
-          bottomNavigationBar: BottomNavigationBarMenu(type, controller)
+          bottomNavigationBar: BottomNavigationBarMenu(_type, controller)
       );
     }
   }
@@ -197,5 +200,12 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
       if (webinfo.window.location.host.startsWith("vplan.")) return AppType.VPLAN;
     }
     return webmail ? AppType.NORMAL_WITH_WEBMAIL : AppType.NORMAL;
+  }
+
+  AppType get type => _type;
+
+  set type (AppType type) {
+    _type = type;
+    _key = GlobalKey();
   }
 }
