@@ -20,13 +20,12 @@ class SurroundingWidget extends StatelessWidget {
 
   final Widget child;
 
-
   @override
   Widget build(BuildContext context) {
-     if (MediaQuery.of(context).size.longestSide > 1000) return _TabletPageWidget(child);
-     return _BaseHomePageWidget(child);
+    if (MediaQuery.of(context).size.longestSide > 1000)
+      return _TabletPageWidget(child);
+    return _BaseHomePageWidget(child);
   }
-
 }
 
 class _BaseHomePageWidget extends StatelessWidget {
@@ -41,8 +40,7 @@ class _BaseHomePageWidget extends StatelessWidget {
         child: AppBar(
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(0),
-            child:
-            Stack(
+            child: Stack(
               children: [
                 Container(
                     margin: EdgeInsets.fromLTRB(10, 5, 10, 5),
@@ -52,8 +50,7 @@ class _BaseHomePageWidget extends StatelessWidget {
                       image: AssetImage("assets/logo.png"),
                       height: 60,
                       width: MediaQuery.of(context).size.width,
-                    )
-                ),
+                    )),
                 Positioned(
                   bottom: 2,
                   right: 2,
@@ -70,7 +67,6 @@ class _BaseHomePageWidget extends StatelessWidget {
       ),
     );
   }
-
 }
 
 class _TabletPageWidget extends StatelessWidget {
@@ -81,30 +77,27 @@ class _TabletPageWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenSizeWidth = MediaQuery.of(context).size.width;
-    double marginWidth = screenSizeWidth > 1200 ? screenSizeWidth / 3.5 : screenSizeWidth / 6;
+    double marginWidth =
+        screenSizeWidth > 1200 ? screenSizeWidth / 3.5 : screenSizeWidth / 6;
 
     double screenSizeHeight = MediaQuery.of(context).size.height;
 
-    return _BaseHomePageWidget(
-        Container(
-          child: Container(
-            child: Container(
-              child: child,
-              margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
-            ),
-            color: Colors.white.withOpacity(0.85),
-            margin: EdgeInsets.fromLTRB(marginWidth, screenSizeHeight / 10, marginWidth, screenSizeHeight / 6),
-          ),
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: new AssetImage("assets/background-main.jpg"),
-                  fit: BoxFit.fill
-              )
-          ),
-        )
-    );
+    return _BaseHomePageWidget(Container(
+      child: Container(
+        child: Container(
+          child: child,
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
+        ),
+        color: Colors.white.withOpacity(0.85),
+        margin: EdgeInsets.fromLTRB(marginWidth, screenSizeHeight / 10,
+            marginWidth, screenSizeHeight / 6),
+      ),
+      decoration: BoxDecoration(
+          image: DecorationImage(
+              image: new AssetImage("assets/background-main.jpg"),
+              fit: BoxFit.fill)),
+    ));
   }
-
 }
 
 class HomeList extends StatelessWidget {
@@ -128,10 +121,9 @@ class HomeList extends StatelessWidget {
         // Only show Impressum on web
         if (kIsWeb) splittingContainer,
         if (kIsWeb) ImpressumWidget()
-    ],
+      ],
     );
   }
-
 }
 
 class ShortcutsWidget extends StatelessWidget {
@@ -144,12 +136,15 @@ class ShortcutsWidget extends StatelessWidget {
     return Column(
       children: [
         Container(
-          child: Text("Shortcuts", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          child: Text("Shortcuts",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
         ),
         Row(
-          mainAxisAlignment: API.of(context).requests.getUserInfo().isTeacher ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.start,
+          mainAxisAlignment: API.of(context).requests.getUserInfo().isTeacher
+              ? MainAxisAlignment.spaceEvenly
+              : MainAxisAlignment.start,
           children: [
             Container(
                 alignment: Alignment.topLeft,
@@ -157,9 +152,11 @@ class ShortcutsWidget extends StatelessWidget {
                 child: Column(
                   children: [
                     MaterialButton(
-                      child: Image.asset("assets/atrium.png", width: isTablet ? 170 : 100),
+                      child: Image.asset("assets/atrium.png",
+                          width: isTablet ? 170 : 100),
                       onPressed: () async {
-                        if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
+                        if (await canLaunch(
+                            "moodlemobile://atrium.kag-langenfeld.de")) {
                           launch("moodlemobile://atrium.kag-langenfeld.de");
                         } else {
                           launch("https://atrium.kag-langenfeld.de");
@@ -168,34 +165,51 @@ class ShortcutsWidget extends StatelessWidget {
                     ),
                     Text("Atrium", style: TextStyle(fontSize: 20))
                   ],
-                )
-            ),
-            if (API.of(context).requests.getUserInfo().isTeacher) Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    MaterialButton(
-                        child: Image.asset("assets/zulip.png",
-                            width: isTablet ? 170 : 100),
-                        onPressed: () async {
-                          if (await canLaunch("zulip://lehrer.chat.kag-langenfeld.de")) {
-                            launch("zulip://lehrer.chat.kag-langenfeld.de");
-                          } else {
-                            launch("https://lehrer.chat.kag-langenfeld.de");
-                          }
-                        }
-                    ),
-                    Text("Lehrerchat", style: TextStyle(fontSize: 20))
-                  ],
-                )
-            ),
+                )),
+            if (API.of(context).requests.getUserInfo().isTeacher)
+              Container(
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      MaterialButton(
+                          child: Image.asset("assets/zulip.png",
+                              width: isTablet ? 170 : 100),
+                          onPressed: () async {
+                            if (await canLaunch(
+                                "zulip://lehrer.chat.kag-langenfeld.de")) {
+                              launch("zulip://lehrer.chat.kag-langenfeld.de");
+                            } else {
+                              launch("https://lehrer.chat.kag-langenfeld.de");
+                            }
+                          }),
+                      Text("Lehrerchat", style: TextStyle(fontSize: 20))
+                    ],
+                  )),
+            if (API.of(context).requests.getUserInfo().cloudConsent)
+              Container(
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      MaterialButton(
+                          child: Image.asset("assets/nextcloud.png",
+                              width: isTablet ? 170 : 100),
+                          onPressed: () async {
+                            if (await canLaunch("cloud.kag-langenfeld.de")) {
+                              launch("cloud.kag-langenfeld.de");
+                            } else {
+                              launch("https://cloud.kag-langenfeld.de");
+                            }
+                          }),
+                      Text("Cloud", style: TextStyle(fontSize: 20))
+                    ],
+                  )),
           ],
         )
       ],
     );
   }
-
 }
 
 class FerienCountdown extends StatelessWidget {
@@ -206,11 +220,14 @@ class FerienCountdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (homeScreenData.countdown == null || homeScreenData.ferienDatetime.difference(DateTime.now()).isNegative) return Container();
+    if (homeScreenData.countdown == null ||
+        homeScreenData.ferienDatetime.difference(DateTime.now()).isNegative)
+      return Container();
     return Column(
       children: [
         Container(
-          child: Text("Ferien-Countdown", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          child: Text("Ferien-Countdown",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
         ),
@@ -218,11 +235,56 @@ class FerienCountdown extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
-              FerienCountdownNumber("w", Stream.periodic(Duration(seconds: 1), (i) => homeScreenData.ferienDatetime.difference(DateTime.now()).inDays ~/ 7).asBroadcastStream(), isTablet: isTablet),
-              FerienCountdownNumber("d", Stream.periodic(Duration(seconds: 1), (i) => homeScreenData.ferienDatetime.difference(DateTime.now()).inDays % 7).asBroadcastStream(), isTablet: isTablet),
-              FerienCountdownNumber("h", Stream.periodic(Duration(seconds: 1), (i) => homeScreenData.ferienDatetime.difference(DateTime.now()).inHours % 24).asBroadcastStream(), isTablet: isTablet),
-              FerienCountdownNumber("m", Stream.periodic(Duration(seconds: 1), (i) => homeScreenData.ferienDatetime.difference(DateTime.now()).inMinutes % 60).asBroadcastStream(), isTablet: isTablet),
-              FerienCountdownNumber("s", Stream.periodic(Duration(seconds: 1), (i) => homeScreenData.ferienDatetime.difference(DateTime.now()).inSeconds % 60).asBroadcastStream(), isTablet: isTablet),
+              FerienCountdownNumber(
+                  "w",
+                  Stream.periodic(
+                      Duration(seconds: 1),
+                      (i) =>
+                          homeScreenData.ferienDatetime
+                              .difference(DateTime.now())
+                              .inDays ~/
+                          7).asBroadcastStream(),
+                  isTablet: isTablet),
+              FerienCountdownNumber(
+                  "d",
+                  Stream.periodic(
+                      Duration(seconds: 1),
+                      (i) =>
+                          homeScreenData.ferienDatetime
+                              .difference(DateTime.now())
+                              .inDays %
+                          7).asBroadcastStream(),
+                  isTablet: isTablet),
+              FerienCountdownNumber(
+                  "h",
+                  Stream.periodic(
+                      Duration(seconds: 1),
+                      (i) =>
+                          homeScreenData.ferienDatetime
+                              .difference(DateTime.now())
+                              .inHours %
+                          24).asBroadcastStream(),
+                  isTablet: isTablet),
+              FerienCountdownNumber(
+                  "m",
+                  Stream.periodic(
+                      Duration(seconds: 1),
+                      (i) =>
+                          homeScreenData.ferienDatetime
+                              .difference(DateTime.now())
+                              .inMinutes %
+                          60).asBroadcastStream(),
+                  isTablet: isTablet),
+              FerienCountdownNumber(
+                  "s",
+                  Stream.periodic(
+                      Duration(seconds: 1),
+                      (i) =>
+                          homeScreenData.ferienDatetime
+                              .difference(DateTime.now())
+                              .inSeconds %
+                          60).asBroadcastStream(),
+                  isTablet: isTablet),
             ],
           ),
           margin: EdgeInsets.fromLTRB(0, 10, 10, 10),
@@ -230,7 +292,6 @@ class FerienCountdown extends StatelessWidget {
       ],
     );
   }
-
 }
 
 class FerienCountdownNumber extends StatelessWidget {
@@ -244,39 +305,40 @@ class FerienCountdownNumber extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        kIsWeb || Platform.isMacOS ?
-        StreamBuilder(
-          stream: stream,
-          builder: (context, snapshot) {
-            var data = 0;
-            if (snapshot.hasData) data = snapshot.data;
-            return Text(data.toString(), style: TextStyle(fontSize: isTablet ? 50 : 35));
-          },
-        )
+        kIsWeb || Platform.isMacOS
+            ? StreamBuilder(
+                stream: stream,
+                builder: (context, snapshot) {
+                  var data = 0;
+                  if (snapshot.hasData) data = snapshot.data;
+                  return Text(data.toString(),
+                      style: TextStyle(fontSize: isTablet ? 50 : 35));
+                },
+              )
             : FlipPanel<int>.stream(
-          itemStream: stream,
-          itemBuilder: (context, value) => Container(
-            // The width has to be calculated like this to fit on mobile and tablet. But there should be a better way I do not know.
-            width: isTablet ? MediaQuery.of(context).size.width / 3 / 7 : MediaQuery.of(context).size.width / 7,
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Text(
-                addLeadingZero(value),
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
+                itemStream: stream,
+                itemBuilder: (context, value) => Container(
+                  // The width has to be calculated like this to fit on mobile and tablet. But there should be a better way I do not know.
+                  width: isTablet
+                      ? MediaQuery.of(context).size.width / 3 / 7
+                      : MediaQuery.of(context).size.width / 7,
+                  color: Colors.black,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      addLeadingZero(value),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                ),
+                initValue: 0,
               ),
-            ),
-          ),
-          initValue: 0,
-        ),
         Text(abbreviation)
       ],
     );
   }
-
 }
 
 class TerminList extends StatelessWidget {
@@ -289,14 +351,14 @@ class TerminList extends StatelessWidget {
     return Column(
       children: [
         Container(
-          child: Text("Die nächsten Termine", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          child: Text("Die nächsten Termine",
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
         )
       ]..addAll(homeScreenData.termine.map((termin) => TerminWidget(termin))),
     );
   }
-
 }
 
 final DateFormat formatter = DateFormat('dd.MM');
@@ -310,27 +372,29 @@ class ExamList extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> items = [
       Container(
-        child: Text("Die nächsten Klausuren", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+        child: Text("Die nächsten Klausuren",
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
         alignment: Alignment.centerLeft,
       ),
       Container(
-        child: Text("Beachte die Aushänge in der Schule.", style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+        child: Text("Beachte die Aushänge in der Schule.",
+            style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
         margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
         alignment: Alignment.centerLeft,
       )
     ];
     items.addAll(_examList.map((exam) => ListTile(
-      title: Text("${exam.course}", style: TextStyle(fontSize: 20)),
-      subtitle: Text("${exam.date != null ? formatter.format(exam.date) : "Fehlerhaftes Datum"} ${exam.stunde}. Stunde", style: TextStyle(fontSize: 14)),
-      leading: Icon(Icons.school_outlined),
-    )));
+          title: Text("${exam.course}", style: TextStyle(fontSize: 20)),
+          subtitle: Text(
+              "${exam.date != null ? formatter.format(exam.date) : "Fehlerhaftes Datum"} ${exam.stunde}. Stunde",
+              style: TextStyle(fontSize: 14)),
+          leading: Icon(Icons.school_outlined),
+        )));
     return Column(
       children: items,
     );
   }
-
-
 }
 
 class ImpressumWidget extends StatelessWidget {
@@ -341,15 +405,27 @@ class ImpressumWidget extends StatelessWidget {
         MaterialButton(
           child: Text("Impressum"),
           onPressed: () async {
-            Article article = await API.of(context).requests.getArticle("mz8Ohncn3OiFJPRfhwsGr");
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article)));
+            Article article = await API
+                .of(context)
+                .requests
+                .getArticle("mz8Ohncn3OiFJPRfhwsGr");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ArticleDetail(article)));
           },
         ),
         MaterialButton(
           child: Text("Datenschutz"),
           onPressed: () async {
-            Article article = await API.of(context).requests.getArticle("6m90o7IQw3UGhxaoD9g3GB");
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article)));
+            Article article = await API
+                .of(context)
+                .requests
+                .getArticle("6m90o7IQw3UGhxaoD9g3GB");
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ArticleDetail(article)));
           },
         )
       ],

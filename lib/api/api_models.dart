@@ -8,22 +8,30 @@ import 'api_helpers.dart';
 /// This constructor can also be called like api_helpers.fromJSON<Termin>({"title": "test"});
 /// When creating a new Model please also add it to api_helpers.formJSON (in api_helpers.dart)
 
-
 class Termin {
   String _title, _id, _description, _preview;
   int _start, _stop;
   List<String> _tags;
 
-  Termin(this._title, this._id, this._start, this._stop, this._description, this._tags);
+  Termin(this._title, this._id, this._start, this._stop, this._description,
+      this._tags);
 
   Termin.fromJSON(Map<dynamic, dynamic> rawJson) {
     if (rawJson.containsKey("id")) _id = rawJson['id'];
     if (rawJson.containsKey("title")) _title = rawJson['title'];
     if (rawJson.containsKey("start")) _start = rawJson['start'];
     if (rawJson.containsKey("stop")) _stop = rawJson['stop'];
-    if (rawJson.containsKey("description") && rawJson['description'] != null && rawJson['description'].containsKey("body")) _description = utf8.decode(base64Decode(rawJson['description']['body']));
-    if (rawJson.containsKey("description") && rawJson['description'] != null && rawJson['description'].containsKey("preview")) _preview = rawJson['description']['preview'];
-    if (rawJson.containsKey("tags") && rawJson['tags'] != null && rawJson['tags'].length > 0) {
+    if (rawJson.containsKey("description") &&
+        rawJson['description'] != null &&
+        rawJson['description'].containsKey("body"))
+      _description = utf8.decode(base64Decode(rawJson['description']['body']));
+    if (rawJson.containsKey("description") &&
+        rawJson['description'] != null &&
+        rawJson['description'].containsKey("preview"))
+      _preview = rawJson['description']['preview'];
+    if (rawJson.containsKey("tags") &&
+        rawJson['tags'] != null &&
+        rawJson['tags'].length > 0) {
       for (var tag in rawJson['tags']) {
         if (tag != null && tag.containsKey('title') && tag['title'] != null) {
           _tags.add(tag['title']);
@@ -33,10 +41,12 @@ class Termin {
   }
 
   int get stop => _stop;
-  DateTime get stopDatetime => new DateTime.fromMillisecondsSinceEpoch(_stop * 1000);
+  DateTime get stopDatetime =>
+      new DateTime.fromMillisecondsSinceEpoch(_stop * 1000);
 
   int get start => _start;
-  DateTime get startDatetime => new DateTime.fromMillisecondsSinceEpoch(_start * 1000);
+  DateTime get startDatetime =>
+      new DateTime.fromMillisecondsSinceEpoch(_start * 1000);
 
   String get id => _id;
 
@@ -45,7 +55,7 @@ class Termin {
   List<String> get tags => _tags;
 
   String get description => _description;
-  bool get hasDescription =>  _description != null;
+  bool get hasDescription => _description != null;
   String get preview => _preview;
 }
 
@@ -68,8 +78,11 @@ class VPlan {
 
   VPlan.fromJSON(Map<dynamic, dynamic> rawJson) {
     if (rawJson.containsKey("id")) _id = rawJson['id'];
-    if (rawJson.containsKey("date")) _date = DateTime.fromMillisecondsSinceEpoch(int.parse(rawJson['date']) * 1000);
-    if (rawJson.containsKey("files") && rawJson['files'].length > 0) _file = rawJson['files'][0]['id'];
+    if (rawJson.containsKey("date"))
+      _date = DateTime.fromMillisecondsSinceEpoch(
+          int.parse(rawJson['date']) * 1000);
+    if (rawJson.containsKey("files") && rawJson['files'].length > 0)
+      _file = rawJson['files'][0]['id'];
     _lessons = [];
   }
 
@@ -87,11 +100,21 @@ class VPlan {
 }
 
 class Lesson {
-  Lesson(this._stunde, this._fach, this._klasse, this._raum, this._lehrer, this._type,
-      this._v_fach, this._v_raum, this._v_klasse, this._v_lehrer);
+  Lesson(this._stunde, this._fach, this._klasse, this._raum, this._lehrer,
+      this._type, this._v_fach, this._v_raum, this._v_klasse, this._v_lehrer);
 
   // ignore: non_constant_identifier_names
-  String _stunde, _fach, _klasse, _raum, _lehrer, _type, _v_fach, _v_raum, _v_klasse, _v_lehrer, _infos;
+  String _stunde,
+      _fach,
+      _klasse,
+      _raum,
+      _lehrer,
+      _type,
+      _v_fach,
+      _v_raum,
+      _v_klasse,
+      _v_lehrer,
+      _infos;
 
   Lesson.fromJSON(Map<dynamic, dynamic> rawJson) {
     if (rawJson.containsKey("stunde")) _stunde = rawJson['stunde'];
@@ -155,11 +178,26 @@ class KAGUser {
     if (rawJSON.containsKey("stufe")) _stufe = rawJSON['stufe'];
     if (rawJSON.containsKey("klasse")) _klasse = rawJSON['klasse'];
     if (rawJSON.containsKey("kuerzel")) _kuerzel = rawJSON['kuerzel'];
-    if (rawJSON.containsKey("consent")) _consent = rawJSON['consent'].cast<String>(); else _consent = []; // ignore: curly_braces_in_flow_control_structures
-    if (rawJSON.containsKey("isLehrer")) _isTeacher = rawJSON['isLehrer']; else _isTeacher = false; // ignore: curly_braces_in_flow_control_structures
-    if (rawJSON.containsKey("isAdmin")) _isAdmin = rawJSON['isAdmin']; else _isAdmin = false; // ignore: curly_braces_in_flow_control_structures
-    if (rawJSON.containsKey("isOberstufe")) _isOberstufe = rawJSON['isOberstufe']; else _isOberstufe = false; // ignore: curly_braces_in_flow_control_structures
-    if (rawJSON.containsKey("isUnterstufe")) _isUnterstufe = rawJSON['isUnterstufe']; else _isUnterstufe = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("consent"))
+      _consent = rawJSON['consent'].cast<String>();
+    else
+      _consent = []; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isLehrer"))
+      _isTeacher = rawJSON['isLehrer'];
+    else
+      _isTeacher = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isAdmin"))
+      _isAdmin = rawJSON['isAdmin'];
+    else
+      _isAdmin = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isOberstufe"))
+      _isOberstufe = rawJSON['isOberstufe'];
+    else
+      _isOberstufe = false; // ignore: curly_braces_in_flow_control_structures
+    if (rawJSON.containsKey("isUnterstufe"))
+      _isUnterstufe = rawJSON['isUnterstufe'];
+    else
+      _isUnterstufe = false; // ignore: curly_braces_in_flow_control_structures
   }
 
   String _givenName, _lastName, _stufe, _klasse, _kuerzel;
@@ -202,6 +240,8 @@ class KAGUser {
 
   // This consent shows some dev focussed features
   bool get isAppDev => _consent.contains("app-dev");
+
+  bool get cloudConsent => _consent.contains("cloud");
 }
 
 class Article {
@@ -213,9 +253,13 @@ class Article {
   Article.fromJSON(Map<dynamic, dynamic> rawJSON) {
     if (rawJSON.containsKey("id")) _id = rawJSON['id'];
     if (rawJSON.containsKey("title")) _title = rawJSON['title'];
-    if (rawJSON.containsKey("body")) _htmlBody = utf8.decode(base64Decode(rawJSON['body'].replaceAll('\n', '')));
-    if (rawJSON.containsKey("files") && rawJSON['files'] is Map) _image = new Map<String, String>.from(rawJSON['files']);
-    if (rawJSON.containsKey("short_title")) _shortTitle = rawJSON['short_title'];
+    if (rawJSON.containsKey("body"))
+      _htmlBody =
+          utf8.decode(base64Decode(rawJSON['body'].replaceAll('\n', '')));
+    if (rawJSON.containsKey("files") && rawJSON['files'] is Map)
+      _image = new Map<String, String>.from(rawJSON['files']);
+    if (rawJSON.containsKey("short_title"))
+      _shortTitle = rawJSON['short_title'];
   }
 
   // Image stuff
@@ -237,7 +281,9 @@ class MailSettings {
   MailSettings(this._primaryMail, this._exists, this._consent);
 
   MailSettings.fromJSON(Map<dynamic, dynamic> rawJSON) {
-    if (rawJSON.containsKey("mail") && rawJSON['mail'] is List && rawJSON['mail'].length > 0) _primaryMail = rawJSON['mail'][0];
+    if (rawJSON.containsKey("mail") &&
+        rawJSON['mail'] is List &&
+        rawJSON['mail'].length > 0) _primaryMail = rawJSON['mail'][0];
     if (rawJSON.containsKey("exists")) _exists = rawJSON['exists'];
     if (rawJSON.containsKey("consent")) _consent = rawJSON['consent'];
   }
@@ -255,21 +301,26 @@ class SPlan {
   SPlan(this._pdf, this._lessons);
 
   SPlan.fromJSON(Map<dynamic, dynamic> rawJSON) {
-    if (rawJSON.containsKey("pdf") && rawJSON["pdf"] is Map<dynamic, dynamic> && rawJSON["pdf"].containsKey("id")) _pdf = rawJSON['pdf']['id'];
-    if (rawJSON.containsKey("lessons")) _lessons = rawJSON['lessons'].map((d) => Lehrstunde.fromJSON(d)).toList().cast<Lehrstunde>();
+    if (rawJSON.containsKey("pdf") &&
+        rawJSON["pdf"] is Map<dynamic, dynamic> &&
+        rawJSON["pdf"].containsKey("id")) _pdf = rawJSON['pdf']['id'];
+    if (rawJSON.containsKey("lessons"))
+      _lessons = rawJSON['lessons']
+          .map((d) => Lehrstunde.fromJSON(d))
+          .toList()
+          .cast<Lehrstunde>();
   }
 
   List<Lehrstunde> get lessons => _lessons;
   String get pdf => _pdf;
-
 }
 
 class Lehrstunde {
   String _id, _class, _course, _room, _teacher;
   int _period, _dayOfWeek;
 
-  Lehrstunde(this._id, this._class, this._course, this._room, this._period, this._teacher,
-      this._dayOfWeek);
+  Lehrstunde(this._id, this._class, this._course, this._room, this._period,
+      this._teacher, this._dayOfWeek);
 
   Lehrstunde.fromJSON(Map<dynamic, dynamic> rawJSON) {
     if (rawJSON.containsKey("id")) _id = rawJSON['id'];
@@ -298,7 +349,9 @@ class Exam {
 
   Exam.fromJSON(Map<dynamic, dynamic> rawJSON) {
     if (rawJSON.containsKey("id")) _id = rawJSON['id'];
-    if (rawJSON.containsKey("date")) _date = DateTime.fromMillisecondsSinceEpoch(int.parse(rawJSON['date']) * 1000);
+    if (rawJSON.containsKey("date"))
+      _date = DateTime.fromMillisecondsSinceEpoch(
+          int.parse(rawJSON['date']) * 1000);
     if (rawJSON.containsKey("class")) _class = rawJSON['class'];
     if (rawJSON.containsKey("course")) _course = rawJSON['course'];
     if (rawJSON.containsKey("stunde")) _stunde = rawJSON['stunde'].toString();
