@@ -190,6 +190,25 @@ class ShortcutsWidget extends StatelessWidget {
                   ],
                 )
             ),
+          if (API.of(context).requests.getUserInfo().cloudConsent)
+              Container(
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      MaterialButton(
+                          child: Image.asset("assets/nextcloud.png",
+                              width: isTablet ? 170 : 100),
+                          onPressed: () async {
+                            if (await canLaunchUrl(Uri.parse("nextcloud://cloud.kag-langenfeld.de"))) {
+                              launchUrl(Uri.parse("nextcloud://cloud.kag-langenfeld.de"));
+                            } else {
+                              launchUrl(Uri.https("cloud.kag-langenfeld.de", ""));
+                            }
+                          }),
+                      Text("Cloud", style: TextStyle(fontSize: 20))
+                    ],
+                  )),
           ],
         )
       ],
