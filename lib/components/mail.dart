@@ -55,23 +55,23 @@ class MailMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var buttons = [
-      ElevatedButton(onPressed: () => launch("https://webmail.kag-langenfeld.de"), child: Text("Webmail öffnen", style: style)),
-      ElevatedButton(onPressed: () => _openMailDialog(context), child: Text(API.of(context).requests.getUserInfo().useSie ? "Ihr Mail Account" : "Dein Mail Account", style: style)),
-      ElevatedButton(
-          onPressed: () => _generateAppPasswordPrompt(context),
-          child: Text("App Passwort generieren", style: style)
-      ),
-      if (kIsWeb || Platform.isIOS)
-        ElevatedButton(onPressed: () => _openMailiOSConfig(context), child: Text(kIsWeb ? "MacOS/iOS Konfiguration generieren" : "Konfiguration installieren", style: style))
-    ];
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: buttons,
-      ),
-    );
-  }
-
+      Column(
+        ElevatedButton(onPressed: () => launch("https://webmail.kag-langenfeld.de"), child: Text("Webmail öffnen", style: style)),
+        ElevatedButton(onPressed: () => _openMailDialog(context), child: Text(API.of(context).requests.getUserInfo().useSie ? "Ihr Mail Account" : "Dein Mail Account", style: style)),
+        ElevatedButton(
+            onPressed: () => _generateAppPasswordPrompt(context),
+            child: Text("App Passwort generieren", style: style)
+        ),
+        if (kIsWeb || Platform.isIOS)
+          ElevatedButton(onPressed: () => _openMailiOSConfig(context), child: Text(kIsWeb ? "MacOS/iOS Konfiguration generieren" : "Konfiguration installieren", style: style))
+      ],
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: buttons,
+        ),
+      );
+    }
 }
 
 void _openMailDialog(BuildContext context) {
