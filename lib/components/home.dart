@@ -159,10 +159,10 @@ class ShortcutsWidget extends StatelessWidget {
                     MaterialButton(
                       child: Image.asset("assets/atrium.png", width: isTablet ? 170 : 100),
                       onPressed: () async {
-                        if (await canLaunch("moodlemobile://atrium.kag-langenfeld.de")) {
-                          launch("moodlemobile://atrium.kag-langenfeld.de");
+                        if (await canLaunchUrl(Uri.parse("moodlemobile://atrium.kag-langenfeld.de"))) {
+                          launchUrl(Uri.parse("moodlemobile://atrium.kag-langenfeld.de"));
                         } else {
-                          launch("https://atrium.kag-langenfeld.de");
+                          launchUrl(Uri.https("atrium.kag-langenfeld.de", ""));
                         }
                       },
                     ),
@@ -179,10 +179,10 @@ class ShortcutsWidget extends StatelessWidget {
                         child: Image.asset("assets/zulip.png",
                             width: isTablet ? 170 : 100),
                         onPressed: () async {
-                          if (await canLaunch("zulip://lehrer.chat.kag-langenfeld.de")) {
-                            launch("zulip://lehrer.chat.kag-langenfeld.de");
+                          if (await canLaunchUrl(Uri.parse("zulip://lehrer.chat.kag-langenfeld.de"))) {
+                            launchUrl(Uri.parse("zulip://lehrer.chat.kag-langenfeld.de"));
                           } else {
-                            launch("https://lehrer.chat.kag-langenfeld.de");
+                            launchUrl(Uri.https("lehrer.chat.kag-langenfeld.de", ""));
                           }
                         }
                     ),

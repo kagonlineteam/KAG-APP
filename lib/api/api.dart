@@ -365,7 +365,7 @@ class _APIRequests {
 
 
   Future <Uint8List> getFile(String id) async {
-    var resp = await http.client.get("${http.API}files/$id", headers: _api._authenticationUser.isLoggedIn() ? {'Authorization': 'Bearer ${_api._authenticationUser.getJWT()}'} : {});
+    var resp = await http.client.get(Uri.https(http.API, "files/$id"), headers: _api._authenticationUser.isLoggedIn() ? {'Authorization': 'Bearer ${_api._authenticationUser.getJWT()}'} : {});
     return resp.bodyBytes;
   }
 

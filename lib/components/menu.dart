@@ -36,11 +36,11 @@ class ExtraOptionsMenu extends StatelessWidget {
           }
 
         } else if (value == "support") {
-          launch("mailto:app@kag-langenfeld.de");
+          launchUrl(Uri.parse("mailto:app@kag-langenfeld.de"));
         } else if (value == "kagsupport") {
-          launch("mailto:support@kag-langenfeld.de");
+          launchUrl(Uri.parse("mailto:support@kag-langenfeld.de"));
         } else if (value == "source") {
-          launch("https://github.com/kagonlineteam/KAG-APP");
+          launchUrl(Uri.https("github.com", "kagonlineteam/KAG-APP"));
         } else if (value == "logout") {
           user_widget.User.logout(context);
         } else if (value == "fcmtoken") {

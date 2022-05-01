@@ -151,7 +151,7 @@ class CalendarDetailWidget extends StatelessWidget {
                     Visibility(
                       visible: termin.hasDescription,
                       child: Container(
-                        child: Html(data: (termin.hasDescription ? termin.description : "").replaceAll('\n', ''), onLinkTap: launch),
+                        child: Html(data: (termin.hasDescription ? termin.description : "").replaceAll('\n', ''), onLinkTap: _launch),
                         margin: EdgeInsets.fromLTRB(10, 10, 10, 10),
                         alignment: Alignment.topLeft,
                       ),
@@ -164,4 +164,7 @@ class CalendarDetailWidget extends StatelessWidget {
     );
   }
 
+  static void _launch(String url) {
+    launchUrl(Uri.parse(url));
+  }
 }
