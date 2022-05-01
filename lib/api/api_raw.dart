@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-const API = "https://api.kag-langenfeld.de/";
+const API = "api.kag-langenfeld.de";
 
 // This is here so it is possible to have a mock client
 http.Client client = http.Client();
@@ -14,7 +14,7 @@ http.Client client = http.Client();
 Future<Map<String, String>> login(String username, String password) async {
   var loginBody = jsonEncode(
       {"username": username, "password": password, "client": "appclient"});
-  var response = await client.post("${API}login?type=refresh",
+  var response = await client.post(Uri.https(API, "login", {"type": "refresh"}),
       body: loginBody, headers: {"Content-Type": "application/json"});
   if (response.statusCode == 200) {
     var res = jsonDecode(response.body);
@@ -34,7 +34,7 @@ Future<Map<String, String>> refreshLogin(
     "refresh_token": refreshToken,
     "client": "appclient"
   });
-  var response = await client.post("${API}refresh?type=refresh",
+  var response = await client.post(Uri.https(API, "refresh", {"type": "refresh"}),
       body: loginBody, headers: {"Content-Type": "application/json"});
   if (response.statusCode == 200) {
     var res = jsonDecode(response.body);
@@ -44,7 +44,7 @@ Future<Map<String, String>> refreshLogin(
 }
 
 Future<bool> logout(String refreshToken) async {
-  var response = await client.post("${API}logout",
+  var response = await client.post(Uri.https(API, "logout"),
       body: jsonEncode({
         "refresh_token": refreshToken
       }),
@@ -63,16 +63,8 @@ Future<bool> logout(String refreshToken) async {
 ///
 Future<String> getFromAPI(
     String path, Map<String, String> params, String jwt) async {
-  String query = "";
-  if (params != null) {
-    query = "?";
-    params.forEach((name, value) {
-      if (query != "?") query += "&";
-      query += "$name=$value";
-    });
-  }
   // Check that app is not null. So that tests work
-  var response = await client.get("$API$path$query",
+  var response = await client.get(Uri.https(API, path, params),
           headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null);
   if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
   return response.body;
@@ -86,16 +78,8 @@ Future<String> getFromAPI(
 ///
 Future<String> sendEmptyPostToAPI(
     String path, Map<String, String> params, String jwt) async {
-  String query = "";
-  if (params != null) {
-    query = "?";
-    params.forEach((name, value) {
-      if (query != "?") query += "&";
-      query += "$name=$value";
-    });
-  }
   // Check that app is not null. So that tests work
-  var response = await client.post("$API$path$query",
+  var response = await client.post(Uri.https(API, path, params),
       headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null);
   if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
   return response.body;

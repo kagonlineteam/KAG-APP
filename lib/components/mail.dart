@@ -55,7 +55,7 @@ class MailMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var buttons = [
-      ElevatedButton(onPressed: () => launch("https://webmail.kag-langenfeld.de"), child: Text("Webmail öffnen", style: style)),
+      ElevatedButton(onPressed: () => launchUrl(Uri.https("webmail.kag-langenfeld.de", "")), child: Text("Webmail öffnen", style: style)),
       ElevatedButton(onPressed: () => _openMailDialog(context), child: Text(API.of(context).requests.getUserInfo().useSie ? "Ihr Mail Account" : "Dein Mail Account", style: style)),
       ElevatedButton(
           onPressed: () => _generateAppPasswordPrompt(context),

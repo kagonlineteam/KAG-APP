@@ -13,11 +13,11 @@ void main() {
   raw.client = MockClient();
 
   test('test raw get', () async {
-    when(raw.client.get("${raw.API}request?test=param&param=test", headers: {"Authorization": "Bearer 123"})).thenAnswer((_) async => http.Response('testResponse1', 200));
-    when(raw.client.get("${raw.API}request?test=param&param=test", headers: null)).thenAnswer((_) async => http.Response('testResponse2', 200));
-    when(raw.client.get("${raw.API}request?test=errorCode", headers: null)).thenAnswer((_) async => http.Response('testResponse3', 400));
+    when(raw.client.get(any, headers: {"Authorization": "Bearer 123"})).thenAnswer((_) async => http.Response('testResponse1', 200));
     expect(await raw.getFromAPI("request", {"test": "param", "param": "test"}, "123"), "testResponse1");
+    when(raw.client.get(any, headers: null)).thenAnswer((_) async => http.Response('testResponse2', 200));
     expect(await raw.getFromAPI("request", {"test": "param", "param": "test"}, null), "testResponse2");
+    when(raw.client.get(any, headers: null)).thenAnswer((_) async => http.Response('testResponse3', 400));
     expect(() => raw.getFromAPI("request", {"test": "errorCode"}, null), throwsException);
   });
 
@@ -41,11 +41,11 @@ void main() {
       }, count: 2),
     );
 
-    when(raw.client.get("${raw.API}mock?limit=${resource.limit}&offset=0&testParam=test", headers: anyNamed("headers"))).thenAnswer((_) async => http.Response('{"found": 5, "max": 100, "entities": [{"ping": "mock"}]}', 200));
-    when(raw.client.get("${raw.API}mock?limit=${resource.limit}&offset=5&testParam=test", headers: anyNamed("headers"))).thenAnswer((_) async => http.Response('{"found": 2, "max": 98, "entities": [{"pong": "mock"}]}', 200));
+    when(raw.client.get(any, headers: anyNamed("headers"))).thenAnswer((_) async => http.Response('{"found": 5, "max": 100, "entities": [{"ping": "mock"}]}', 200));
 
     await resource.loadMore();
     expect(resource.loaded, 5);
+    when(raw.client.get(any, headers: anyNamed("headers"))).thenAnswer((_) async => http.Response('{"found": 2, "max": 98, "entities": [{"pong": "mock"}]}', 200));
     await resource.loadMore();
     expect(resource.loaded, 7);
   });

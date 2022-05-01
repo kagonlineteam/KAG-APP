@@ -54,7 +54,7 @@ class ImageBox extends StatelessWidget {
                 image: new DecorationImage(
                     fit: BoxFit.fitWidth,
                     alignment: FractionalOffset.center,
-                    image: CachedNetworkImageProvider("${api_raw.API}files/${article.imageID}")
+                    image: CachedNetworkImageProvider("https://${api_raw.API}/files/${article.imageID}")
                 )
             ),
           )
@@ -110,11 +110,15 @@ class ArticleDetailWidget extends StatelessWidget {
       ),
       body: Container(
         child: ListView(
-          children: <Widget>[Html(data: htmlData, onLinkTap: launch)],
+          children: <Widget>[Html(data: htmlData, onLinkTap: _launch)],
         ),
         padding: EdgeInsets.fromLTRB(10, 4, 10, 0),
       ),
     );
+  }
+
+  static void _launch(String url) {
+    launchUrl(Uri.parse(url));
   }
 
 }
