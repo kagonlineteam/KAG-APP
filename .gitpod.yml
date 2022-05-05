@@ -1,0 +1,19 @@
+image:
+  file: .gitpod.Dockerfile
+tasks:
+  - init: |
+      flutter upgrade
+      flutter config --enable-web
+      flutter doctor
+      flutter pub get
+      
+  - command: |
+      flutter run -d web-server --web-port 8080
+ports:
+  # flutter
+  - port: 8080
+    onOpen: open-preview
+
+vscode:
+  extensions:
+    - dart-code.flutter
