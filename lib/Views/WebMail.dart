@@ -11,7 +11,7 @@ import '../components/mail.dart';
 class WebMail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    if (kIsWeb || Platform.isMacOS) {
+    if (kIsWeb || Platform.isMacOS || Platform.isLinux) {
       return Scaffold(
         appBar: AppBar(),
         body: MailMenu()

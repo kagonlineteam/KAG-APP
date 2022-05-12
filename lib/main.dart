@@ -59,7 +59,7 @@ void main() async {
         ), api),
   );
   // Push Notification Stuff
-  if (!kIsWeb) {
+  if (PushNotificationsManager.isPushPlatform()) {
     PushNotificationsManager pushNotificationsManager = new PushNotificationsManager();
     pushNotificationsManager.init().then((_) {
       if (FirebaseMessaging.instance != null) {
