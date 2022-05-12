@@ -1,6 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -49,7 +48,7 @@ class LoginState extends State<Login>
         SharedPreferences preferences = await SharedPreferences.getInstance();
         preferences.setString(RPlan.SP_FILTER, userInfo.kuerzel);
       }
-      if (!kIsWeb && FirebaseMessaging.instance != null) FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_LOGGED_IN); // the messages sent are still public. This is only to annoy less people
+      if (PushNotificationsManager.isPushPlatform() && FirebaseMessaging.instance != null) FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_LOGGED_IN); // the messages sent are still public. This is only to annoy less people
       KAGAppState.app.setLoggedIn();
       KAGAppState.app.goToPage(0);
     } else {

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,7 +10,6 @@ import '../Views/Calendar.dart';
 import '../api/api.dart';
 import '../api/api_models.dart';
 import '../components/news.dart';
-
 import 'main.dart';
 
 class PushNotificationsManager {
@@ -69,5 +71,13 @@ class PushNotificationsManager {
         }
       }
     }
+  }
+
+  /**
+   * Returns true for platforms we want to use
+   * and initialize push notifications for
+   */
+  static bool isPushPlatform() {
+    return !kIsWeb && (Platform.isIOS || Platform.isAndroid);
   }
 }
