@@ -148,68 +148,79 @@ class ShortcutsWidget extends StatelessWidget {
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
         ),
-        Row(
-          mainAxisAlignment: API.of(context).requests.getUserInfo().isTeacher ? MainAxisAlignment.spaceEvenly : MainAxisAlignment.start,
-          children: [
-            Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    MaterialButton(
-                      child: Image.asset("assets/atrium.png", width: isTablet ? 170 : 100),
-                      onPressed: () async {
-                        if (await canLaunchUrl(Uri.parse("moodlemobile://atrium.kag-langenfeld.de"))) {
-                          launchUrl(Uri.parse("moodlemobile://atrium.kag-langenfeld.de"));
-                        } else {
-                          launchUrl(Uri.https("atrium.kag-langenfeld.de", ""));
-                        }
-                      },
-                    ),
-                    Text("Atrium", style: TextStyle(fontSize: 20))
-                  ],
-                )
-            ),
-            if (API.of(context).requests.getUserInfo().isTeacher) Container(
-                alignment: Alignment.topLeft,
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  children: [
-                    MaterialButton(
-                        child: Image.asset("assets/zulip.png",
-                            width: isTablet ? 170 : 100),
-                        onPressed: () async {
-                          if (await canLaunchUrl(Uri.parse("zulip://lehrer.chat.kag-langenfeld.de"))) {
-                            launchUrl(Uri.parse("zulip://lehrer.chat.kag-langenfeld.de"));
-                          } else {
-                            launchUrl(Uri.https("lehrer.chat.kag-langenfeld.de", ""));
-                          }
-                        }
-                    ),
-                    Text("Lehrerchat", style: TextStyle(fontSize: 20))
-                  ],
-                )
-            ),
-          if (API.of(context).requests.getUserInfo().cloudConsent)
+        Container(
+          height: isTablet ? 180 : 130,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
               Container(
                   alignment: Alignment.topLeft,
                   padding: EdgeInsets.all(10),
                   child: Column(
                     children: [
                       MaterialButton(
-                          child: Image.asset("assets/nextcloud.png",
-                              width: isTablet ? 170 : 100),
-                          onPressed: () async {
-                            if (await canLaunchUrl(Uri.parse("nextcloud://cloud.kag-langenfeld.de"))) {
-                              launchUrl(Uri.parse("nextcloud://cloud.kag-langenfeld.de"));
-                            } else {
-                              launchUrl(Uri.https("cloud.kag-langenfeld.de", ""));
-                            }
-                          }),
-                      Text("Cloud", style: TextStyle(fontSize: 20))
+                        child: Image.asset("assets/atrium.png",
+                            width: isTablet ? 170 : 100),
+                        onPressed: () async {
+                          if (await canLaunchUrl(Uri.parse(
+                              "moodlemobile://atrium.kag-langenfeld.de"))) {
+                            launchUrl(Uri.parse(
+                                "moodlemobile://atrium.kag-langenfeld.de"));
+                          } else {
+                            launchUrl(
+                                Uri.https("atrium.kag-langenfeld.de", ""));
+                          }
+                        },
+                      ),
+                      Text("Atrium", style: TextStyle(fontSize: 20))
                     ],
                   )),
-          ],
+              if (API.of(context).requests.getUserInfo().isTeacher)
+                Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        MaterialButton(
+                            child: Image.asset("assets/zulip.png",
+                                width: isTablet ? 170 : 100),
+                            onPressed: () async {
+                              if (await canLaunchUrl(Uri.parse(
+                                  "zulip://lehrer.chat.kag-langenfeld.de"))) {
+                                launchUrl(Uri.parse(
+                                    "zulip://lehrer.chat.kag-langenfeld.de"));
+                              } else {
+                                launchUrl(Uri.https(
+                                    "lehrer.chat.kag-langenfeld.de", ""));
+                              }
+                            }),
+                        Text("Lehrerchat", style: TextStyle(fontSize: 20))
+                      ],
+                    )),
+              if (API.of(context).requests.getUserInfo().cloudConsent)
+                Container(
+                    alignment: Alignment.topLeft,
+                    padding: EdgeInsets.all(10),
+                    child: Column(
+                      children: [
+                        MaterialButton(
+                            child: Image.asset("assets/nextcloud.png",
+                                width: isTablet ? 170 : 100),
+                            onPressed: () async {
+                              if (await canLaunchUrl(Uri.parse(
+                                  "nextcloud://cloud.kag-langenfeld.de"))) {
+                                launchUrl(Uri.parse(
+                                    "nextcloud://cloud.kag-langenfeld.de"));
+                              } else {
+                                launchUrl(
+                                    Uri.https("cloud.kag-langenfeld.de", ""));
+                              }
+                            }),
+                        Text("Cloud", style: TextStyle(fontSize: 20))
+                      ],
+                    )),
+            ],
+          ),
         )
       ],
     );
