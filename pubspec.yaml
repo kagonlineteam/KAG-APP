@@ -31,7 +31,6 @@ dependencies:
   cupertino_icons: ^1.0.4
   firebase_messaging: ^11.2.15
   firebase_core: ^1.13.1
-  flip_panel: ^1.0.1
   open_file: ^3.2.1
   package_info: ^2.0.2
   webview_flutter: ^3.0.2
