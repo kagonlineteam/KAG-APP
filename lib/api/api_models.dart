@@ -202,6 +202,8 @@ class KAGUser {
 
   // This consent shows some dev focussed features
   bool get isAppDev => _consent.contains("app-dev");
+
+  bool get cloudConsent => _consent.contains("cloud");
 }
 
 class Article {
