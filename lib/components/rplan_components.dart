@@ -199,7 +199,18 @@ class MobileLesson extends StatelessWidget {
                     children: [
                       Expanded(child: Visibility(
                         visible: RPlan.of(context).hasTeacherPlan,
-                        child: Text("${lesson.lehrer != null ? "${lesson.lehrer} -> " : ""}${lesson.v_lehrer == null || lesson.v_lehrer == "" ? "-" : lesson.v_lehrer}", style: normalText, textAlign: TextAlign.left),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // need to be expanded for the arrow to be consistent in rows
+                            Expanded(child: Text(lesson.lehrer != null ? lesson.lehrer : "", style: normalText, textAlign: TextAlign.left)),
+                            Padding(
+                              child: Icon(Icons.arrow_forward, size: 20),
+                              padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                            ),
+                            Expanded(child: Text(lesson.v_lehrer == null || lesson.v_lehrer == "" ? "-" : lesson.v_lehrer, style: normalText, textAlign: TextAlign.center))
+                          ],
+                        ),
                       )),
                       Expanded(child: Visibility(
                         visible: !RPlan.of(context).hasTeacherPlan,
