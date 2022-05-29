@@ -412,3 +412,84 @@ class TeacherKuerzelButton extends StatelessWidget {
     );
   }
 }
+
+class DetailElement extends StatelessWidget {
+  final String title, value;
+  static const TextStyle textStyle = const TextStyle(fontSize: 25);
+
+  DetailElement(this.title, this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.fromLTRB(20, 15, 20, 15),
+      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+      height: 60,
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            height: 30,
+          ),
+          Expanded(
+              child: Container(
+            child: Text(value != null ? value : '',
+                style: textStyle,
+                textAlign: TextAlign.left,
+                overflow: TextOverflow.visible),
+            height: 30,
+          ))
+        ],
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+      ),
+    );
+  }
+}
+
+class TwoValueDetailElement extends StatelessWidget {
+  final String title, firstValue, secondValue;
+  static const TextStyle textStyle  = const TextStyle(fontSize: 25);
+
+  TwoValueDetailElement(this.title, this.firstValue, this.secondValue);
+
+  @override
+  Widget build(BuildContext context) {
+    if (firstValue == null && secondValue == null) {
+      return (Container());
+    }
+
+    return Container(
+      margin: EdgeInsets.fromLTRB(20, 15, 20, 15),
+      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+      child: Column(
+        children: <Widget>[
+          Container(
+            child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            height: 30,
+          ),
+          Row(
+            // We wrap two Childs in Expanded to always have the Arrow centered, even if the text is different in length
+            children: <Widget>[
+              Expanded(child: Container(
+                child: Text(firstValue != null ? firstValue : "-", style: textStyle, textAlign: TextAlign.left, overflow: TextOverflow.visible),
+                height: 30,
+              )),
+              Container(
+                child: Icon(Icons.arrow_forward, size: 25),
+                height: 25,
+                padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+              ),
+              Expanded(child: Container(
+                child: Text(secondValue != null ? secondValue : "-", style: textStyle, textAlign: TextAlign.right),
+                height: 30,
+              ))
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
+        ],
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+      ),
+    );
+  }
+
+}
