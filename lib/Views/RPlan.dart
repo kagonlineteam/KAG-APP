@@ -159,24 +159,22 @@ class RPlanDetail extends StatelessWidget {
 
   api_models.Lesson lesson;
   double width;
-  static const TextStyle textStyle  = const TextStyle(fontSize: 25);
-  static const TextStyle titleStyle = const TextStyle(fontSize: 20, fontWeight: FontWeight.bold);
 
   @override
   Widget build(BuildContext context) {
     width = MediaQuery.of(context).size.width;
 
     List<Widget> widgets = [
-      element("Art", lesson.type, ""),
-      element("Stunde", lesson.stunde, ""),
-      element("Fach", lesson.fach, lesson.v_fach),
-      element("Raum", lesson.raum, lesson.v_raum),
-      element("Infos", lesson.infos, ""),
+      DetailElement("Art", lesson.type),
+      DetailElement("Stunde", lesson.stunde),
+      TwoValueDetailElement("Fach", lesson.fach, lesson.v_fach),
+      TwoValueDetailElement("Raum", lesson.raum, lesson.v_raum),
+      DetailElement("Infos", lesson.infos),
     ];
 
     if (getTeacherText(lesson.lehrer, lesson.v_lehrer).compareTo("") != 0) {
       widgets.insert(1,
-          element(getTeacherText(lesson.lehrer,
+          TwoValueDetailElement(getTeacherText(lesson.lehrer,
               lesson.v_lehrer),
               lesson.lehrer,
               lesson.v_lehrer));
@@ -194,63 +192,6 @@ class RPlanDetail extends StatelessWidget {
           )
       ),
     );
-  }
-
-  Container element(String title, String first, String second) {
-    if (first == null && second == null) {
-      return (Container());
-    }
-
-    String arrow = second != null && second.isEmpty ? "" : "->";
-
-    final container = Container(
-      margin: EdgeInsets.fromLTRB(20, 15, 20, 15),
-      //color: Colors.pink,
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Flexible(
-                child: Container(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  child: Text(title, style: titleStyle,
-                  ),
-                  width: width - 40,
-                  height: 30,
-                ),
-              )
-            ],
-          ),
-          Row(
-            children: <Widget>[
-              Flexible(
-                  child: Container(
-                    child: Text(first != null ? first : "-", style: textStyle, textAlign: TextAlign.left),
-                    height: 30,
-                  ),
-                  fit: FlexFit.loose
-              ),
-              Flexible(
-                child: Container(
-                  child: Text(arrow, style: textStyle, textAlign: TextAlign.center),
-                  height: 30,
-                ),
-                flex: 0,
-              ),
-              Flexible(
-                  child: Container(
-                    child: Text(second != null ? second : "-", style: textStyle, textAlign: TextAlign.right),
-                    height: 30,
-                  ),
-                  fit: FlexFit.loose
-              )
-            ],
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          ),
-        ],
-      ),
-    );
-    return container;
   }
 
   String getAppBarText() {
