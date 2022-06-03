@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flip_panel/flip_panel.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -274,35 +271,19 @@ class FerienCountdownNumber extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        kIsWeb || Platform.isMacOS ?
-        StreamBuilder(
-          stream: stream,
-          builder: (context, snapshot) {
-            var data = 0;
-            if (snapshot.hasData) data = snapshot.data;
-            return Text(data.toString(), style: TextStyle(fontSize: isTablet ? 50 : 35));
-          },
-        )
-            : FlipPanel<int>.stream(
-          itemStream: stream,
-          itemBuilder: (context, value) => Container(
-            // The width has to be calculated like this to fit on mobile and tablet. But there should be a better way I do not know.
-            width: isTablet ? MediaQuery.of(context).size.width / 3 / 7 : MediaQuery.of(context).size.width / 7,
-            color: Colors.black,
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: Text(
-                addLeadingZero(value),
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white),
-              ),
-            ),
-          ),
-          initValue: 0,
+        Container(
+          width: isTablet ? 90 : 60,
+          alignment: Alignment.center,
+          child: StreamBuilder(
+            stream: stream,
+            builder: (context, snapshot) {
+              var data = 0;
+              if (snapshot.hasData) data = snapshot.data;
+              return Text(data.toString(), style: TextStyle(fontSize: isTablet ? 50 : 35));
+            },
+          )
         ),
-        Text(abbreviation)
+        Text(abbreviation, style: TextStyle(fontSize: isTablet ? 25 : 10))
       ],
     );
   }
