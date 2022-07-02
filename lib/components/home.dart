@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../Views/Calendar.dart';
+
 import '../Views/News.dart';
 import '../api/api.dart';
 import '../api/api_helpers.dart';
