@@ -63,7 +63,7 @@ class PushNotificationsManager {
           Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => ArticleDetailWidget(article)));
         }
       } else if (message.data['open'] == "termin") {
-        if (message.data['id'] != undefined) {
+        if (message.data['id'] != null) {
           Termin termin = await API.of(KAGAppState.app.context).requests.getTermin(message.data['id']);
           Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => CalendarDetail(termin)));
         }
