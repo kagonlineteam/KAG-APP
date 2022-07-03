@@ -57,8 +57,10 @@ class PushNotificationsManager {
       } else if (message.data['open'] == "webmail") {
         if (KAGAppState.app.type == AppType.NORMAL_WITH_WEBMAIL) KAGAppState.app.goToPage(5);
       } else if (message.data['open'] == "article") {
-        Article article = await API.of(KAGAppState.app.context).requests.getArticle(message.data['id']);
-        Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => ArticleDetailWidget(article)));
+        if (message.data['id'] != undefined) {
+          Article article = await API.of(KAGAppState.app.context).requests.getArticle(message.data['id']);
+          Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => ArticleDetailWidget(article)));
+        }
       }
     }
   }
