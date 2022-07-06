@@ -1,6 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../api/api.dart';
+import '../api/api_models.dart';
+import '../components/news.dart';
 
 import 'main.dart';
 
@@ -40,7 +45,7 @@ class PushNotificationsManager {
     }
   }
 
-  void parseMessage(RemoteMessage message) {
+  void parseMessage(RemoteMessage message) async {
     if (message != null && message.data.containsKey("open")) {
       if (message.data['open'] == "splan") {
         //TODO RELOAD
@@ -51,6 +56,11 @@ class PushNotificationsManager {
         if (KAGAppState.app.type == AppType.NORMAL || KAGAppState.app.type == AppType.NORMAL_WITH_WEBMAIL) KAGAppState.app.goToPage(4);
       } else if (message.data['open'] == "webmail") {
         if (KAGAppState.app.type == AppType.NORMAL_WITH_WEBMAIL) KAGAppState.app.goToPage(5);
+      } else if (message.data['open'] == "article") {
+        if (message.data['id'] != null) {
+          Article article = await API.of(KAGAppState.app.context).requests.getArticle(message.data['id']);
+          Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => ArticleDetailWidget(article)));
+        }
       }
     }
   }
