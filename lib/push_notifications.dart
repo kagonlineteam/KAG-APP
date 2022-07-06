@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Views/Calendar.dart';
 import '../api/api.dart';
 import '../api/api_models.dart';
 import '../components/news.dart';
@@ -60,6 +61,11 @@ class PushNotificationsManager {
         if (message.data['id'] != null) {
           Article article = await API.of(KAGAppState.app.context).requests.getArticle(message.data['id']);
           Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => ArticleDetailWidget(article)));
+        }
+      } else if (message.data['open'] == "termin") {
+        if (message.data['id'] != null) {
+          Termin termin = await API.of(KAGAppState.app.context).requests.getTermin(message.data['id']);
+          Navigator.push(KAGAppState.app.context, MaterialPageRoute(builder: (context) => CalendarDetail(termin)));
         }
       }
     }
