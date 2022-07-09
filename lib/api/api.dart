@@ -452,11 +452,17 @@ class _APIRequests {
   }
 
   ///
-  /// Get raw JWT token for mail usage
+  /// Returns the hash for SSO to the webmail
+  /// This needs to request the webmail, not the API
   ///
-  Future<String> getMailJWTToken() async {
+  Future<String> getWebmailHash() async {
     await _actionExecution(APIAction.MAIL);
-    return _api._authenticationUser._jwt;
+    var response = await http.getWebmailHash(_api._authenticationUser._jwt);
+    if (response != null) {
+      Map<String, dynamic> jsonResponse = json.decode(response);
+      if (jsonResponse.containsKey('hash')) return jsonResponse['hash'];
+    }
+    return "brokenhash"; // With a hash given that is invalid, the use can still just relogin
   }
 
 }

@@ -84,3 +84,14 @@ Future<String> sendEmptyPostToAPI(
   if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
   return response.body;
 }
+
+///
+/// Sends a request to the webmail server, not the api server.
+/// This includes the JWT for authentication
+///
+Future<String> getWebmailHash(String jwt) async {
+  // Check that app is not null. So that tests work
+  var response = await client.post(Uri.https("webmail.kag-langenfeld.de", "app.php", null), body: jsonEncode({"token": jwt}), headers: {"Content-Type": "application/json"});
+  if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
+  return response.body;
+}
