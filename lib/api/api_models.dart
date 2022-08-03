@@ -316,6 +316,44 @@ class Exam {
   String get id => _id;
 }
 
+class Homework {
+  int _id, _deadline;
+  String _grade, _matchingClass, _course, _task, _reported, _author; // if matchingClass is named class you can not use the variable in the getters area
+
+  Homework(this._id, this._grade, this._matchingClass, this._course, this._task, this._reported, this._author, this._deadline);
+
+  Homework.fromJSON(Map<dynamic, dynamic> rawJSON) {
+    if (rawJSON.containsKey('id')) _id = rawJSON['id'];
+    if (rawJSON.containsKey('grade')) _grade = rawJSON['grade'];
+    if (rawJSON.containsKey('class')) _matchingClass = rawJSON['class'];
+    if (rawJSON.containsKey('course')) _course = rawJSON['course'];
+    if (rawJSON.containsKey('task')) _task = rawJSON['task'];
+    if (rawJSON.containsKey('reportedBy')) _reported = rawJSON['reportedBy'];
+    if (rawJSON.containsKey('author')) _author = rawJSON['author'];
+    if (rawJSON.containsKey('deadline')) _deadline = rawJSON['deadline'];
+  }
+
+  int get id => _id;
+
+  String get grade => _grade;
+
+  String get matchingClass => _matchingClass;
+
+  String get course => _course;
+  set course(String course) => _course = course;
+
+  String get task => _task;
+  set task(String task) => _task = task;
+
+  String get reported => _reported;
+
+  String get author => _author;
+
+  int get deadline => _deadline;
+  DateTime get deadlineDatetime => _deadline != null ? new DateTime.fromMillisecondsSinceEpoch(_deadline * 1000) : new DateTime.now();
+  set deadline(int deadline) => _deadline = deadline;
+}
+
 ///
 /// This model is only used in UnitTests, as it only saves data
 ///

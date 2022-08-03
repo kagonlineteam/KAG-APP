@@ -21,7 +21,11 @@ enum APIAction {
   GET_ARTICLE,
   MAIL,
   GET_SPLAN,
-  GET_EXAM
+  GET_EXAM,
+  GET_MY_HOMEWORKS,
+  ADD_HOMEWORK,
+  EDIT_HOMEWORK,
+  REPORT_HOMEWORK
 }
 
 class API {
@@ -73,6 +77,14 @@ class API {
       case APIAction.GET_SPLAN:
         return true;
       case APIAction.GET_EXAM:
+        return true;
+      case APIAction.GET_MY_HOMEWORKS:
+        return true;
+      case APIAction.ADD_HOMEWORK:
+        return true;
+      case APIAction.EDIT_HOMEWORK:
+        return true;
+      case APIAction.REPORT_HOMEWORK:
         return true;
     }
     return true;
@@ -465,6 +477,62 @@ class _APIRequests {
     return "brokenhash"; // With a hash given that is invalid, the use can still just relogin
   }
 
+  Future<List<models.Homework>> getMyHomeworks() async {
+    await _actionExecution(APIAction.GET_MY_HOMEWORKS);
+    var response = await http.getFromAPI(
+        "homework/v1/my",
+        {},
+        _api._authenticationUser.getJWT()
+    );
+    if (response != null) {
+      final List jsonResponse = json.decode(response)['entities'];
+      List<models.Homework> homeworks = [];
+      for (var entity in jsonResponse) {
+        homeworks.add(new models.Homework.fromJSON(entity));
+      }
+      return homeworks;
+    }
+    return [];
+  }
+
+  Future<models.Homework> addHomework(String course, String task, int deadline) async {
+    await _actionExecution(APIAction.ADD_HOMEWORK);
+    var response = await http.postToAPI(
+      "homework/v1/homeworks",
+      {},
+      jsonEncode({
+        "course": course,
+        "task": task,
+        "deadline": deadline
+      }),
+      _api._authenticationUser.getJWT()
+    );
+    if (response != null) {
+      final jsonResponse = json.decode(response)['entitiy'];
+      return jsonResponse;
+    }
+    return Future.error('Ein Fehler ist aufgetreten');
+  }
+
+  void editHomework(int id, String course, String task, int deadline) async {
+    await _actionExecution(APIAction.EDIT_HOMEWORK);
+    await http.putToAPI(
+      "homework/v1/homeworks/$id",
+      {"content-type": "application/json"},
+      jsonEncode({
+        "course": course,
+        "task": task,
+        "deadline": deadline
+      }),
+      _api._authenticationUser.getJWT()
+    );
+    return;
+  }
+
+  void reportHomework(int id) async {
+    await _actionExecution(APIAction.REPORT_HOMEWORK);
+    await http.postToAPI("/homework/v1/report/$id", {}, jsonEncode({}), _api._authenticationUser.getJWT());
+  }
 }
 
 class User {

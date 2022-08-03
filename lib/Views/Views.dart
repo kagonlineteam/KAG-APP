@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import './Calendar.dart'	as Calendar; // ignore: library_prefixes
 import './Home.dart'      as Home; // ignore: library_prefixes
+import './Homework.dart' as Homework; // ignore: library_prefixes
 import './Login.dart'     as Login; // ignore: library_prefixes
 import './News.dart'      as News; // ignore: library_prefixes
 import './RPlan.dart'     as RPlan; // ignore: library_prefixes
@@ -31,6 +32,7 @@ List<Widget> AppViews(AppType type) {
         new News.News(),
         new User.User(),
         new RPlan.RPlanViewWidget(),
+        new Homework.HomeworkWidget(),
         if (type == AppType.NORMAL_WITH_WEBMAIL) WebMail.WebMail(),
       ];
     case AppType.VPLAN_LOGGED_OUT:
@@ -59,10 +61,10 @@ int getPageCount(AppType type) {
       return 4;
       break;
     case AppType.NORMAL:
-      return 5;
+      return 6;
       break;
     case AppType.NORMAL_WITH_WEBMAIL:
-      return 6;
+      return 7;
       break;
     case AppType.VPLAN_LOGGED_OUT:
       return 1;
