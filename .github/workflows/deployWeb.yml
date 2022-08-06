@@ -18,7 +18,7 @@ jobs:
       - run: flutter pub get
       # Build web Data
       - name: build-web
-        run: flutter config --enable-web && flutter build web
+        run: flutter build web --dart-define=FLUTTER_WEB_CANVASKIT_URL=/canvaskit/
       - name: generate random id to not load old cach
         run: sed -i.bak -e "s/main.dart.js/main.dart.js?version=$RANDOM/g" build/web/index.html
       # Deploy Web by Copying the Files to Production
