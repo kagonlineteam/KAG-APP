@@ -354,6 +354,16 @@ class _APIRequests {
     return new helpers.ListResource<models.Article>.load("articles", params);
   }
 
+  helpers.ListResource<models.Article> getInformation() {
+    // Not calling actionExecution here, because login not needed and needs async
+    Map<String, String> params = {};
+    params['view'] = "preview-with-image";
+    params['tags'] = "eq-7GGb4jjj11wXYKdD00XPJt";
+    params['orderby'] = "asc-title";
+
+    return new helpers.ListResource<models.Article>.load("articles", params);
+  }
+
   Future<models.Article> getArticle(String id) async {
     await _actionExecution(APIAction.GET_ARTICLE);
 
