@@ -80,9 +80,8 @@ class MailMenu extends StatelessWidget {
 void _openMailDialog(BuildContext context) {
   API.of(context).requests.getMailSettings().then((mailInfos) {
     if (mailInfos.consent) {
-      print(API.of(context).requests.getUserInfo().mailPasswordConsent);
       showCupertinoDialog(context: context,
-          builder: (context) => CupertinoAlertDialog(
+          builder: (dialogContext) => CupertinoAlertDialog(
             actions: [
               CupertinoButton(child: Text("Abbruch"), onPressed: () => Navigator.pop(context)),
               Visibility(
@@ -95,6 +94,7 @@ void _openMailDialog(BuildContext context) {
               if (!mailInfos.exists || API.of(context).requests.getUserInfo().mailPasswordConsent) CupertinoButton(
                   child: Text(mailInfos.exists ? "Neues Passwort" : "Mail erstellen"),
                   onPressed: () {
+                    Navigator.pop(dialogContext);
                     if (API.of(context).requests.getUserInfo().mailPasswordConsent) {
                       API.of(context).requests.resetMailPassword().then((newPassword) => _showNewMailPassword(context, newPassword, mailInfos.exists ? null : mailInfos.primaryMail));
                     } else { // New account
