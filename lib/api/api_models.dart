@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/src/widgets/framework.dart';
-
 import 'api_helpers.dart';
 
 /// This file contains the models for the API
@@ -341,9 +339,11 @@ class Homework {
 
   String get matchingClass => _matchingClass;
 
+  // ignore: unnecessary_getters_setters
   String get course => _course;
   set course(String course) => _course = course;
 
+  // ignore: unnecessary_getters_setters
   String get task => _task;
   set task(String task) => _task = task;
 
@@ -351,6 +351,7 @@ class Homework {
 
   String get author => _author;
 
+  // ignore: unnecessary_getters_setters
   int get deadline => _deadline;
   DateTime get deadlineDatetime => _deadline != null ? new DateTime.fromMillisecondsSinceEpoch(_deadline * 1000) : new DateTime.now();
   set deadline(int deadline) => _deadline = deadline;

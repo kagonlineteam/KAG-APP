@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Views/HomeworkPage.dart';
 import '../main.dart';
 import 'api_helpers.dart' as helpers;
 import 'api_models.dart' as models;
@@ -478,7 +477,6 @@ class _APIRequests {
     );
     if (response != null) {
       final List jsonResponse = json.decode(response)['entities'];
-      List<models.Homework> homeworks = [];
       return jsonResponse.map((homework) => models.Homework.fromJSON(homework)).toList().cast<models.Homework>();
     }
     return [];
