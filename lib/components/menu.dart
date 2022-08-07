@@ -139,6 +139,10 @@ class BottomNavigationBarMenu extends StatelessWidget {
             text: "VPlan",
             icon: Icon(Icons.swap_horiz, size: 35),
           ),
+          if (API.of(KAGAppState.app.context).requests.getUserInfo().homeworkConsent) Tab(
+            text: "Hausaufgaben",
+            icon: Icon(Icons.home_work_outlined, size: 35),
+          ),
           if (type == AppType.NORMAL_WITH_WEBMAIL) Tab(
             text: "Mail",
             icon: Icon(Icons.mail, size: 35),
@@ -244,6 +248,10 @@ List<NavigationRailDestination> getNavigationRail(AppType type) {
         NavigationRailDestination(
           label: Text("VPlan"),
           icon: Icon(Icons.swap_horiz, size: 35),
+        ),
+        NavigationRailDestination(
+          label: Text("Hausaufgaben"),
+          icon: Icon(Icons.home_work_outlined, size: 35),
         ),
         if (type == AppType.NORMAL_WITH_WEBMAIL) NavigationRailDestination(
           label: Text("Mail"),

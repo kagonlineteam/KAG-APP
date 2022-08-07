@@ -70,6 +70,21 @@ Future<String> getFromAPI(
   return response.body;
 }
 
+Future<String> postToAPI(String path, Map<String, String> params, String body, String jwt) async {
+  var response = await client.post(Uri.https(API, path, params),
+    headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null,
+    body: body);
+  return response.body;
+}
+
+Future<String> putToAPI(
+    String path, Map<String, String> params, String body, String jwt) async {
+  var response = await client.put(Uri.https(API, path, params),
+      headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null,
+      body: body);
+  return response.body;
+}
+
 ///
 /// Sends an empty Post Request to API
 /// Makes request, returns response body
