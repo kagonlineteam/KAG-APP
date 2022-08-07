@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../Views/User.dart' as user_widget;
 import '../api/api.dart';
-import '../api/api_models.dart';
 import '../main.dart';
 import '../push_notifications.dart';
 import 'dev.dart';
