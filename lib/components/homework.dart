@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../Views/HomeworkPage.dart';
 import '../api/api.dart';
 import '../api/api_models.dart';
-import '../Views/Homework.dart';
 
 class HomeworkCard extends StatefulWidget {
   HomeworkCard(this.homework);
@@ -10,7 +10,6 @@ class HomeworkCard extends StatefulWidget {
   final Homework homework;
 
   _HomeworkCardState createState() => _HomeworkCardState(homework);
-
 }
 
 class _HomeworkCardState extends State<HomeworkCard> {
@@ -53,9 +52,6 @@ class _HomeworkCardState extends State<HomeworkCard> {
   void _navigateToEditScreen(BuildContext context) async {
     final result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EditHomework(homework)));
     if (result == null) return;
-    else if (result == 'reported') {
-      HomeworkWidget();
-    }
     setState(() => {
       homework = result
     });
@@ -83,7 +79,6 @@ class _CreateHomeworkState extends State<CreateHomework> {
           children: [
             TextFormField(
               decoration: InputDecoration(labelText: "Kurs"),
-              //controller: controller,
               maxLines: 1,
               initialValue: '',
               onChanged: (value) => {
@@ -92,7 +87,6 @@ class _CreateHomeworkState extends State<CreateHomework> {
             ),
             TextFormField(
               decoration: InputDecoration(labelText: "Aufgabe"),
-              //controller: controller,
               maxLines: 1,
               initialValue: '',
               onChanged: (value) => {
@@ -136,7 +130,7 @@ class _CreateHomeworkState extends State<CreateHomework> {
               ),
               SizedBox(
                 height: 400,
-                width: 500, // TODO Ändern
+                width: 500,
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
                   initialDateTime: initialDeadline,
@@ -186,23 +180,14 @@ class _EditHomeworkState extends State<EditHomework> {
         margin: EdgeInsets.all(20),
         child: Column(
           children: [
+            Text(homework.course, style: TextStyle(fontSize: 20)),
             TextFormField(
-              decoration: InputDecoration(labelText: "Kurs"),
-              //controller: controller,
+              decoration: InputDecoration(labelText: "Aufgabe"),
               maxLines: 1,
-              initialValue: homework.course,
+              initialValue: homework.task,
               onChanged: (value) => {
-                homework.course = value
+                homework.task = value
               }
-            ),
-            TextFormField(
-                decoration: InputDecoration(labelText: "Aufgabe"),
-                //controller: controller,
-                maxLines: 1,
-                initialValue: homework.task,
-                onChanged: (value) => {
-                  homework.task = value
-                }
             ),
             Padding(
               padding: EdgeInsets.only(left: 0, top: 20, right: 0, bottom: 0),
@@ -217,11 +202,9 @@ class _EditHomeworkState extends State<EditHomework> {
               padding: EdgeInsets.only(left: 0, top: 20, right: 0, bottom: 0),
               child: ElevatedButton(
                 child: Text("Hausaufgabe melden"),
-                onPressed: () => {
-                  _reportWarning(context, homework.id).then(() => {
-                    Navigator.pop(context, 'reported')
-                  })
-                }
+                onPressed: () async {
+                  _reportWarning(context, homework.id);
+                  }
               )
             ),
             Padding(
@@ -252,7 +235,7 @@ class _EditHomeworkState extends State<EditHomework> {
             ),
             SizedBox(
               height: 400,
-              width: 500, // TODO Ändern
+              width: 500,
               child: CupertinoDatePicker(
                 mode: CupertinoDatePickerMode.date,
                 initialDateTime: initialDeadline,
@@ -281,15 +264,15 @@ class _EditHomeworkState extends State<EditHomework> {
     );
   }
 
-  _reportWarning(BuildContext context, int id) {
+  void _reportWarning(BuildContext context, int id) {
     showCupertinoDialog(
       builder: (context) => CupertinoAlertDialog(
-        content: Text('Wenn die Hausaufgabe gemeldet wird, kann nur noch ein Lehrer die Hausaufgabe sehen und bearbeiten.', style: TextStyle(fontSize: 20)),
+        content: Text('Bitte eine Hausaufgabe nur melden, wenn dort Dinge geschrieben werden, die nichts mit Hausaufgaben zu tun haben. Bei falschen Informationen kann man die Hausaufgabe bearbeiten. Wenn die Hausaufgabe gemeldet wird, wird sich ein Admin diese ansehen.', style: TextStyle(fontSize: 15)),
         actions: [
           CupertinoButton(
             child: Text("Hausaufgabe melden", textAlign: TextAlign.left),
-            onPressed: () {
-              API.of(context).requests.reportHomework(id);
+            onPressed: () async {
+              await API.of(context).requests.reportHomework(id);
               Navigator.pop(context);
             }
           )

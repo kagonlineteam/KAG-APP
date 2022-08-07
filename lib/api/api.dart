@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Views/HomeworkPage.dart';
 import '../main.dart';
 import 'api_helpers.dart' as helpers;
 import 'api_models.dart' as models;
@@ -22,10 +23,7 @@ enum APIAction {
   MAIL,
   GET_SPLAN,
   GET_EXAM,
-  GET_MY_HOMEWORKS,
-  ADD_HOMEWORK,
-  EDIT_HOMEWORK,
-  REPORT_HOMEWORK
+  GET_HOMEWORK
 }
 
 class API {
@@ -78,13 +76,7 @@ class API {
         return true;
       case APIAction.GET_EXAM:
         return true;
-      case APIAction.GET_MY_HOMEWORKS:
-        return true;
-      case APIAction.ADD_HOMEWORK:
-        return true;
-      case APIAction.EDIT_HOMEWORK:
-        return true;
-      case APIAction.REPORT_HOMEWORK:
+      case APIAction.GET_HOMEWORK:
         return true;
     }
     return true;
@@ -478,7 +470,7 @@ class _APIRequests {
   }
 
   Future<List<models.Homework>> getMyHomeworks() async {
-    await _actionExecution(APIAction.GET_MY_HOMEWORKS);
+    await _actionExecution(APIAction.GET_HOMEWORK);
     var response = await http.getFromAPI(
         "homework/v1/my",
         {},
@@ -487,16 +479,13 @@ class _APIRequests {
     if (response != null) {
       final List jsonResponse = json.decode(response)['entities'];
       List<models.Homework> homeworks = [];
-      for (var entity in jsonResponse) {
-        homeworks.add(new models.Homework.fromJSON(entity));
-      }
-      return homeworks;
+      return jsonResponse.map((homework) => models.Homework.fromJSON(homework)).toList().cast<models.Homework>();
     }
     return [];
   }
 
   Future<models.Homework> addHomework(String course, String task, int deadline) async {
-    await _actionExecution(APIAction.ADD_HOMEWORK);
+    await _actionExecution(APIAction.GET_HOMEWORK);
     var response = await http.postToAPI(
       "homework/v1/homeworks",
       {},
@@ -515,7 +504,7 @@ class _APIRequests {
   }
 
   void editHomework(int id, String course, String task, int deadline) async {
-    await _actionExecution(APIAction.EDIT_HOMEWORK);
+    await _actionExecution(APIAction.GET_HOMEWORK);
     await http.putToAPI(
       "homework/v1/homeworks/$id",
       {"content-type": "application/json"},
@@ -530,8 +519,8 @@ class _APIRequests {
   }
 
   void reportHomework(int id) async {
-    await _actionExecution(APIAction.REPORT_HOMEWORK);
-    await http.postToAPI("/homework/v1/report/$id", {}, jsonEncode({}), _api._authenticationUser.getJWT());
+    await _actionExecution(APIAction.GET_HOMEWORK);
+    http.postToAPI("/homework/v1/report/$id", {}, jsonEncode({}), _api._authenticationUser.getJWT());
   }
 }
 

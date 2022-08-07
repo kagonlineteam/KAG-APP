@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 
 import './Calendar.dart'	as Calendar; // ignore: library_prefixes
 import './Home.dart'      as Home; // ignore: library_prefixes
-import './Homework.dart' as Homework; // ignore: library_prefixes
+import './HomeworkPage.dart' as Homework; // ignore: library_prefixes
 import './Login.dart'     as Login; // ignore: library_prefixes
 import './News.dart'      as News; // ignore: library_prefixes
 import './RPlan.dart'     as RPlan; // ignore: library_prefixes
 import './User.dart'      as User; // ignore: library_prefixes
 import './WebMail.dart'   as WebMail; // ignore: library_prefixes
 
+import '../api/api.dart';
 import '../main.dart';
 
 /// Used by main.dart
@@ -32,7 +33,7 @@ List<Widget> AppViews(AppType type) {
         new News.News(),
         new User.User(),
         new RPlan.RPlanViewWidget(),
-        new Homework.HomeworkWidget(),
+        if (!API.of(KAGAppState.app.context).requests.getUserInfo().useSie && !API.of(KAGAppState.app.context).requests.getUserInfo().isOberstufe) new Homework.HomeworkView(),
         if (type == AppType.NORMAL_WITH_WEBMAIL) WebMail.WebMail(),
       ];
     case AppType.VPLAN_LOGGED_OUT:
@@ -61,10 +62,12 @@ int getPageCount(AppType type) {
       return 4;
       break;
     case AppType.NORMAL:
-      return 6;
+      if (!API.of(KAGAppState.app.context).requests.getUserInfo().useSie && !API.of(KAGAppState.app.context).requests.getUserInfo().isOberstufe) return 6;
+      return 5;
       break;
     case AppType.NORMAL_WITH_WEBMAIL:
-      return 7;
+      if (!API.of(KAGAppState.app.context).requests.getUserInfo().useSie && !API.of(KAGAppState.app.context).requests.getUserInfo().isOberstufe) return 7;
+      return 6;
       break;
     case AppType.VPLAN_LOGGED_OUT:
       return 1;

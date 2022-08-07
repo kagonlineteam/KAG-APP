@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/src/widgets/framework.dart';
+
 import 'api_helpers.dart';
 
 /// This file contains the models for the API
