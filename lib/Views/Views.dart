@@ -33,7 +33,7 @@ List<Widget> AppViews(AppType type) {
         new News.News(),
         new User.User(),
         new RPlan.RPlanViewWidget(),
-        if (!API.of(KAGAppState.app.context).requests.getUserInfo().useSie && !API.of(KAGAppState.app.context).requests.getUserInfo().isOberstufe) new Homework.HomeworkView(),
+        if (API.of(KAGAppState.app.context).requests.getUserInfo().homeworkConsent) new Homework.HomeworkView(),
         if (type == AppType.NORMAL_WITH_WEBMAIL) WebMail.WebMail(),
       ];
     case AppType.VPLAN_LOGGED_OUT:
@@ -62,11 +62,11 @@ int getPageCount(AppType type) {
       return 4;
       break;
     case AppType.NORMAL:
-      if (!API.of(KAGAppState.app.context).requests.getUserInfo().useSie && !API.of(KAGAppState.app.context).requests.getUserInfo().isOberstufe) return 6;
+      if (API.of(KAGAppState.app.context).requests.getUserInfo().homeworkConsent) return 6;
       return 5;
       break;
     case AppType.NORMAL_WITH_WEBMAIL:
-      if (!API.of(KAGAppState.app.context).requests.getUserInfo().useSie && !API.of(KAGAppState.app.context).requests.getUserInfo().isOberstufe) return 7;
+      if (API.of(KAGAppState.app.context).requests.getUserInfo().homeworkConsent) return 7;
       return 6;
       break;
     case AppType.VPLAN_LOGGED_OUT:

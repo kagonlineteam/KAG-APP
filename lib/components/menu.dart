@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../Views/User.dart' as user_widget;
 import '../api/api.dart';
+import '../api/api_models.dart';
 import '../main.dart';
 import '../push_notifications.dart';
 import 'dev.dart';
@@ -139,7 +140,7 @@ class BottomNavigationBarMenu extends StatelessWidget {
             text: "VPlan",
             icon: Icon(Icons.swap_horiz, size: 35),
           ),
-          Tab(
+          if (API.of(KAGAppState.app.context).requests.getUserInfo().homeworkConsent) Tab(
             text: "Hausaufgaben",
             icon: Icon(Icons.home_work_outlined, size: 35),
           ),

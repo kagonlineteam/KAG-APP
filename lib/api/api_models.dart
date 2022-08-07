@@ -204,6 +204,8 @@ class KAGUser {
   bool get isAppDev => _consent.contains("app-dev");
 
   bool get cloudConsent => _consent.contains("cloud");
+
+  bool get homeworkConsent => _consent.contains("homework_use");
 }
 
 class Article {
