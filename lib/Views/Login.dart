@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../api/api.dart';
 import '../api/api_models.dart';
+import '../app_type/app_type_managment.dart';
 import '../main.dart';
 import '../push_notifications.dart';
 import 'RPlan.dart';
@@ -50,7 +51,7 @@ class LoginState extends State<Login>
       }
       if (PushNotificationsManager.isPushPlatform() && FirebaseMessaging.instance != null) FirebaseMessaging.instance.subscribeToTopic(PushNotificationsManager.TOPIC_LOGGED_IN); // the messages sent are still public. This is only to annoy less people
       KAGAppState.app.setLoggedIn();
-      KAGAppState.app.goToPage(0);
+      KAGAppState.app.goToPage(AppPage.HOME);
     } else {
       showDialog(
           context: context,

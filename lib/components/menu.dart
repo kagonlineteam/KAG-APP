@@ -6,6 +6,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../Views/User.dart' as user_widget;
 import '../api/api.dart';
+import '../app_type/app_type_managment.dart';
+import '../app_type/pages.dart';
 import '../main.dart';
 import '../push_notifications.dart';
 import 'dev.dart';
@@ -65,7 +67,7 @@ class ExtraOptionsMenu extends StatelessWidget {
             value: "source",
             child: Text("Source Code der App"),
           ),
-          if (!kIsWeb && KAGAppState.app.type != AppType.LOGGED_OUT && API.of(context).requests.getUserInfo().isAppDev) PopupMenuItem(
+          if (!kIsWeb && KAGAppState.app.appType != AppType.LOGGED_OUT && API.of(context).requests.getUserInfo().isAppDev) PopupMenuItem(
             value: "fcmtoken",
             child: Text("Dev: FCM Token"),
           ),
@@ -73,7 +75,7 @@ class ExtraOptionsMenu extends StatelessWidget {
             value: "about",
             child: Text("Über die App"),
           ),
-          if (KAGAppState.app.type != AppType.LOGGED_OUT)
+          if (KAGAppState.app.appType != AppType.LOGGED_OUT)
             PopupMenuItem(
               value: "logout",
               child: Text("Ausloggen")
@@ -86,105 +88,20 @@ class ExtraOptionsMenu extends StatelessWidget {
 }
 
 class BottomNavigationBarMenu extends StatelessWidget {
-  BottomNavigationBarMenu(this.type, this.controller);
+  BottomNavigationBarMenu(this.pages, this.controller);
 
   final TabController controller;
-  final AppType type;
+  final List<AppPage> pages;
 
   @override
   Widget build(BuildContext context) {
     List<Widget> widgets = [];
 
-    switch (type) {
-      case AppType.LOGGED_OUT:
-        widgets = [
-          Tab(
-            text: "Home",
-            icon: Icon(Icons.home, size: 35),
-          ),
-          Tab(
-            text: "Termine",
-            icon: Icon(Icons.event, size: 35),
-          ),
-          Tab(
-            text: "News",
-            icon: Icon(Icons.public, size: 35),
-          ),
-          Tab(
-            text: "Login",
-            icon: Icon(Icons.person, size: 35),
-          )
-        ];
-        break;
-      case AppType.NORMAL:
-      case AppType.NORMAL_WITH_WEBMAIL:
-        widgets = [
-          Tab(
-            text: "Home",
-            icon: Icon(Icons.home, size: 35),
-          ),
-          Tab(
-            text: "Termine",
-            icon: Icon(Icons.event, size: 35),
-          ),
-          Tab(
-            text: "News",
-            icon: Icon(Icons.public, size: 35),
-          ),
-          Tab(
-            text: "SPlan",
-            icon: Icon(Icons.widgets, size: 35),
-          ),
-          Tab(
-            text: "VPlan",
-            icon: Icon(Icons.swap_horiz, size: 35),
-          ),
-          if (API.of(KAGAppState.app.context).requests.getUserInfo().homeworkConsent) Tab(
-            text: "Hausaufgaben",
-            icon: Icon(Icons.home_work_outlined, size: 35),
-          ),
-          if (type == AppType.NORMAL_WITH_WEBMAIL) Tab(
-            text: "Mail",
-            icon: Icon(Icons.mail, size: 35),
-          ),
-        ];
-        break;
-      case AppType.VPLAN_LOGGED_OUT:
-        widgets = [
-          Tab(
-            text: "Login",
-            icon: Icon(Icons.person, size: 35),
-          ),
-        ];
-        break;
-      case AppType.VPLAN:
-        widgets = [
-          Tab(
-            text: "VPlan",
-            icon: Icon(Icons.swap_horiz, size: 35),
-          ),
-          Tab(
-            text: "SPlan",
-            icon: Icon(Icons.widgets, size: 35),
-          ),
-        ];
-        break;
-      case AppType.MOBILE_SITE:
-        widgets = [
-          Tab(
-            text: "News",
-            icon: Icon(Icons.public, size: 35),
-          ),
-          Tab(
-            text: "Termine",
-            icon: Icon(Icons.event, size: 35),
-          ),
-          Tab(
-            text: "Login",
-            icon: Icon(Icons.person, size: 35),
-          ),
-        ];
-        break;
+    for (AppPage page in pages) {
+      widgets.add(Tab(
+        text: getPageName(page),
+        icon: Icon(getPageIcon(page), size: 35),
+      ));
     }
 
     return Container(
@@ -204,97 +121,13 @@ class BottomNavigationBarMenu extends StatelessWidget {
   }
 }
 
-// ignore: avoid_positional_boolean_parameters
-List<NavigationRailDestination> getNavigationRail(AppType type) {
-  switch (type) {
-    case AppType.LOGGED_OUT:
-      return <NavigationRailDestination>[
-        NavigationRailDestination(
-          label: Text("Home"),
-          icon: Icon(Icons.home, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("Termine"),
-          icon: Icon(Icons.event, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("News"),
-          icon: Icon(Icons.public, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("Login"),
-          icon: Icon(Icons.person, size: 35),
-        )
-      ];
-    case AppType.NORMAL:
-    case AppType.NORMAL_WITH_WEBMAIL:
-      return <NavigationRailDestination>[
-        NavigationRailDestination(
-          label: Text("Home"),
-          icon: Icon(Icons.home, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("Termine"),
-          icon: Icon(Icons.event, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("News"),
-          icon: Icon(Icons.public, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("SPlan"),
-          icon: Icon(Icons.widgets, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("VPlan"),
-          icon: Icon(Icons.swap_horiz, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("Hausaufgaben"),
-          icon: Icon(Icons.home_work_outlined, size: 35),
-        ),
-        if (type == AppType.NORMAL_WITH_WEBMAIL) NavigationRailDestination(
-          label: Text("Mail"),
-          icon: Icon(Icons.mail, size: 35),
-        ),
-      ];
-    case AppType.VPLAN_LOGGED_OUT:
-      return <NavigationRailDestination>[
-        NavigationRailDestination(
-          label: Text("Login"),
-          icon: Icon(Icons.person, size: 35),
-        ),
-        NavigationRailDestination( // We need this here as Flutter does not allow having only one item
-          label: Text("Login"),
-          icon: Icon(Icons.swap_horiz, size: 35),
-        ),
-      ];
-    case AppType.VPLAN:
-      return <NavigationRailDestination>[
-        NavigationRailDestination(
-          label: Text("VPlan"),
-          icon: Icon(Icons.swap_horiz, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("SPlan"),
-          icon: Icon(Icons.person, size: 35),
-        ),
-      ];
-    case AppType.MOBILE_SITE:
-      return <NavigationRailDestination>[
-        NavigationRailDestination(
-          label: Text("News"),
-          icon: Icon(Icons.public, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("Termine"),
-          icon: Icon(Icons.event, size: 35),
-        ),
-        NavigationRailDestination(
-          label: Text("Login"),
-          icon: Icon(Icons.person, size: 35),
-        ),
-      ];
+List<NavigationRailDestination> getNavigationRail(List<AppPage> pages) {
+  List<NavigationRailDestination> navRail = [];
+  for (AppPage page in pages) {
+    navRail.add(NavigationRailDestination(
+      label: Text(getPageName(page)),
+      icon: Icon(getPageIcon(page), size: 35),
+    ));
   }
-  return <NavigationRailDestination>[];
+  return navRail;
 }
