@@ -10,6 +10,7 @@ import '../Views/Calendar.dart';
 import '../api/api.dart';
 import '../api/api_models.dart';
 import '../components/news.dart';
+import 'app_type/app_type_managment.dart';
 import 'main.dart';
 
 class PushNotificationsManager {
@@ -52,13 +53,13 @@ class PushNotificationsManager {
     if (message != null && message.data.containsKey("open")) {
       if (message.data['open'] == "splan") {
         //TODO RELOAD
-        if (KAGAppState.app.type == AppType.NORMAL || KAGAppState.app.type == AppType.NORMAL_WITH_WEBMAIL) KAGAppState.app.goToPage(3);
+        if (KAGAppState.app.appType == AppType.NORMAL) KAGAppState.app.goToPage(AppPage.SPLAN);
       }
       else if (message.data['open'] == "vplan") {
         //TODO RELOAD
-        if (KAGAppState.app.type == AppType.NORMAL || KAGAppState.app.type == AppType.NORMAL_WITH_WEBMAIL) KAGAppState.app.goToPage(4);
+        KAGAppState.app.goToPage(AppPage.RPLAN);
       } else if (message.data['open'] == "webmail") {
-        if (KAGAppState.app.type == AppType.NORMAL_WITH_WEBMAIL) KAGAppState.app.goToPage(5);
+        KAGAppState.app.goToPage(AppPage.WEBMAIL);
       } else if (message.data['open'] == "article") {
         if (message.data['id'] != null) {
           Article article = await API.of(KAGAppState.app.context).requests.getArticle(message.data['id']);

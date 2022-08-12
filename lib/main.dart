@@ -6,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
-import 'Views/Views.dart';
 import 'api/api.dart';
 import 'api/api_helpers.dart';
+import 'api/api_models.dart';
+import 'app_type/app_type_managment.dart';
 import 'components/menu.dart';
 import 'dynimports/webinfo.dart' if (dart.library.html) 'dart:html' as webinfo;
 import 'push_notifications.dart';
@@ -88,17 +89,8 @@ class KAGApp extends StatefulWidget {
 
 }
 
-enum AppType {
-  LOGGED_OUT,
-  NORMAL,
-  NORMAL_WITH_WEBMAIL,
-  VPLAN_LOGGED_OUT,
-  VPLAN,
-  MOBILE_SITE
-}
-
 class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
-  AppType _type = getDefaultAppType();
+  AppTypeState _type = getDefaultAppType();
   GlobalKey _key = GlobalKey();
   static KAGAppState app;
   TabController controller;
@@ -107,10 +99,10 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(initialIndex: 0, length: getPageCount(_type), vsync: this); // If you change something here change it in build, too.
+    controller = TabController(initialIndex: 0, length: _type.length, vsync: this); // If you change something here change it in build, too.
     API.of(context).hasLoginCredentials().then((loggedIn) => {
       if (loggedIn) {
-        setState(() => type = getLoggedInAppType(webmail: API.of(context).requests.getUserInfo().mailConsent))
+        setState(() => type = getLoggedInAppType(API.of(context).requests.getUserInfo()))
       }
     });
   }
@@ -121,8 +113,8 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (getPageCount(_type) != controller.length) {
-      controller = TabController(initialIndex: controller.index, length: getPageCount(type), vsync: this);
+    if (_type.length != controller.length) {
+      controller = TabController(initialIndex: controller.index, length: _type.length, vsync: this);
     }
     if (MediaQuery.of(context).size.width > 700 || (!kIsWeb && Platform.isMacOS)) { //  !kIsWeb is required to not cause an exception by calling Platform on web.
       return Row(
@@ -143,14 +135,14 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
               });
             },
             labelType: NavigationRailLabelType.selected,
-            destinations: getNavigationRail(_type),
+            destinations: getNavigationRail(_type.pages),
           ),
           VerticalDivider(thickness: 2, width: 2, color: Theme.of(context).colorScheme.secondary),
           // This is the main content.
           Expanded(
             child: IndexedStack(
               index: controller.index,
-              children: AppViews(_type),
+              children: _type.getAppViews(),
             ),
           ),
         ],
@@ -160,10 +152,10 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
           key: _key,
           body: TabBarView(
             controller: controller,
-            children: AppViews(_type),
+            children: _type.getAppViews(),
             physics: NeverScrollableScrollPhysics(),
           ),
-          bottomNavigationBar: BottomNavigationBarMenu(_type, controller)
+          bottomNavigationBar: BottomNavigationBarMenu(_type.pages, controller)
       );
     }
   }
@@ -176,35 +168,39 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
 
   void setLoggedIn() {
     setState(() {
-      type = getLoggedInAppType(webmail: API.of(context).requests.getUserInfo().mailConsent);
+      type = getLoggedInAppType(API.of(context).requests.getUserInfo());
     });
   }
 
-  void goToPage(int page) {
+  void goToPage(AppPage page) {
     setState(() {
-      controller.animateTo(page);
+      controller.animateTo(_type.getPageNumber(page));
     });
   }
 
-  static AppType getDefaultAppType() {
+  static AppTypeState getDefaultAppType() {
+    AppType type = AppType.LOGGED_OUT;
     if (kIsWeb) {
-      if (webinfo.window.location.host.startsWith("vplan.")) return AppType.VPLAN_LOGGED_OUT;
-      if (webinfo.window.location.host.startsWith("m.")) return AppType.MOBILE_SITE;
-      return AppType.LOGGED_OUT;
+      if (webinfo.window.location.host.startsWith("vplan.")) type =  AppType.VPLAN_LOGGED_OUT;
+      if (webinfo.window.location.host.startsWith("m.")) type = AppType.MOBILE_SITE;
     }
-    return AppType.LOGGED_OUT;
+    // We have the logged out states
+    // so we do not need to hide anything.
+    return AppTypeState(type, []);
   }
 
-  static AppType getLoggedInAppType({bool webmail = false}) {
+  static AppTypeState getLoggedInAppType(KAGUser user) {
     if (kIsWeb) {
-      if (webinfo.window.location.host.startsWith("vplan.")) return AppType.VPLAN;
+      if (webinfo.window.location.host.startsWith("vplan.")) return getStateForUser(AppType.VPLAN, user);
     }
-    return webmail ? AppType.NORMAL_WITH_WEBMAIL : AppType.NORMAL;
+    return getStateForUser(AppType.NORMAL, user);
   }
 
-  AppType get type => _type;
+  AppType get appType => _type.appType;
 
-  set type (AppType type) {
+  AppTypeState get type => _type;
+
+  set type (AppTypeState type) {
     _type = type;
     _key = GlobalKey();
   }

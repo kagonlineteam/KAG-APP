@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api.dart';
 import '../api/api_models.dart';
+import '../app_type/app_type_managment.dart';
 import '../components/timetable.dart';
 import '../components/user.dart';
 import '../main.dart';
@@ -28,7 +29,7 @@ class User extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Logged out!"),
         action: SnackBarAction(
-            label: 'Zurück zum Start!', onPressed: () => KAGAppState.app.goToPage(0))
+            label: 'Zurück zum Login!', onPressed: () => KAGAppState.app.goToPage(AppPage.LOGIN))
     ));
   }
 
