@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -128,7 +130,7 @@ class HomeList extends StatelessWidget {
         if (kIsWeb) splittingContainer,
         if (kIsWeb) ImpressumWidget(),
         splittingContainer,
-        NewsWidget(),
+        NewsWidget(homeScreenData: homeScreenData),
     ],
     );
   }
@@ -230,29 +232,47 @@ class ShortcutsWidget extends StatelessWidget {
 }
 
 class NewsWidget extends StatelessWidget {
-  final News news;
   final HomeScreenData homeScreenData;
+  NewsWidget({Key key, this.homeScreenData}) : super(key: key);
 
-  const NewsWidget({Key key, this.news, this.homeScreenData}) : super(key: key);
+  //News news;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.green,
-      child: ResourceListBuilder(
-        API.of(context).requests.getNewsArticles,
-          (data, controller) => ListView(
-            controller: controller,
-            children: [
-              Align(
-                alignment: AlignmentDirectional.topCenter,
-                child: Wrap(
-                  children: data.map<Widget>((article) => ArticleCard(article)).toList(),
-              ),
-            )
-          ],
+    return Column(
+      //color: Colors.pink,
+      children: [
+        Container(
+          child: Text("News", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+          alignment: Alignment.centerLeft,
         )
-      )
+      ]..addAll(homeScreenData.news.map((news) => NewsListItem(news))),
+    );
+  }
+}
+
+class NewsListItem extends StatelessWidget {
+  const NewsListItem(this.news);
+
+  final Article news;
+
+  @override
+  Widget build(BuildContext context) {
+    return
+    Container(
+      margin: EdgeInsets.all(2),
+        decoration: BoxDecoration(
+          border: Border.all(
+          width: 3,
+          color: Color.fromARGB(47, 0, 0, 0),
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(16))
+      ),
+      child: ListTile(
+        title: Text(news.title, style: TextStyle(fontSize: 24)),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(news))),
+      ),
     );
   }
 }

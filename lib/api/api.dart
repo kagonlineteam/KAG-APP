@@ -357,6 +357,26 @@ class _APIRequests {
     return new helpers.ListResource<models.Article>.load("articles", params);
   }
 
+    Future<List<models.Article>> getHomescreenNews() async {
+    // Not calling actionExecution here, because login not needed and needs async
+    Map<String, String> params = {};
+    params['limit'] = 3.toString();
+    params['tags'] = "eq-5uxbYvmfyVLejcyMSD4lMu";
+    params['orderby'] = "desc-priority,desc-changed";
+
+    String response = await http.getFromAPI("articles", params, null);
+    print(response);
+    var jsonResponse = jsonDecode(response)["entities"];
+    print(jsonResponse);
+    //if (!jsonResponse.containsKey('entities')) return null;
+    List<models.Article> articles = [];
+    for (var entity in jsonResponse) {
+      print(entity);
+      articles.add(new models.Article.fromJSON(entity));
+    }
+    return articles;
+  }
+
   Future<models.Article> getArticle(String id) async {
     await _actionExecution(APIAction.GET_ARTICLE);
 
@@ -379,7 +399,9 @@ class _APIRequests {
     if (_api._authenticationUser.isLoggedIn() && _api._userData.isOberstufe) {
       exams = await _getUpcomingExams();
     }
-    return helpers.HomeScreenData(termine, ferien, exams);
+    List<models.Article> news = await getHomescreenNews();
+    //models.Termin ferien = await _getNextFerienEvent();
+    return helpers.HomeScreenData(termine, ferien, exams, news);
   }
 
   Future<models.MailSettings> getMailSettings() async {
