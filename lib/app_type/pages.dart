@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../Views/Calendar.dart'	          as Calendar; // ignore: library_prefixes
 import '../Views/Home.dart'               as Home; // ignore: library_prefixes
 import '../Views/HomeworkPage.dart'       as Homework; // ignore: library_prefixes
+import '../Views/Krankmeldung.dart'       as Krankmeldung; // ignore: library_prefixes
 import '../Views/Login.dart'              as Login; // ignore: library_prefixes
 import '../Views/News.dart'               as News; // ignore: library_prefixes
 import '../Views/PrivacyInformation.dart' as PrivacyInfo; // ignore: library_prefixes
@@ -32,6 +33,8 @@ IconData getPageIcon(AppPage page) {
       return Icons.mail;
     case AppPage.PRIVACY_INFO:
       return Icons.info;
+    case AppPage.KRANKMELDUNG:
+      return Icons.medical_services_outlined;
     default:
       return Icons.question_mark;
   }
@@ -57,6 +60,8 @@ String getPageName(AppPage page) {
       return "Mail";
     case AppPage.PRIVACY_INFO:
       return 'Datenschutz &\nImpressum';
+    case AppPage.KRANKMELDUNG:
+      return "Krankmeldung";
     default:
       return "?";
   }
@@ -82,6 +87,8 @@ Widget getPageWidget(AppPage page) {
       return WebMail.WebMail();
     case AppPage.PRIVACY_INFO:
       return PrivacyInfo.PrivacyInformation();
+    case AppPage.KRANKMELDUNG:
+      return Krankmeldung.KrankmeldungWidget();
     default:
       return Container();
   }

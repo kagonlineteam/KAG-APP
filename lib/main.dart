@@ -179,7 +179,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   }
 
   static AppTypeState getDefaultAppType() {
-    AppType type = AppType.LOGGED_OUT;
+    AppType type = AppType.MOBILE_SITE;
     if (kIsWeb) {
       if (webinfo.window.location.host.startsWith("vplan.")) type =  AppType.VPLAN_LOGGED_OUT;
       if (webinfo.window.location.host.startsWith("m.")) type = AppType.MOBILE_SITE;
