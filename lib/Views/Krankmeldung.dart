@@ -9,7 +9,7 @@ class KrankmeldungWidget extends StatefulWidget {
 
 class KrankmeldungState extends State<KrankmeldungWidget> {
 
-  String sek, name, grade, klasse, leader, email, remarks;
+  String sek = '', name = '', grade = '', klasse = '', leader = '', email = '', remarks = '', info = '';
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +31,8 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         },
                         items: [
                           DropdownMenuItem(
-                            child: Text('Sekundarstufe'),
-                            value: null,
+                            child: Text('Sekundarstufe *'),
+                            value: '',
                           ),
                           DropdownMenuItem(
                             child: Text('I (5. - 9. Klasse)'),
@@ -45,7 +45,7 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         ]
                     ),
                     TextFormField(
-                        decoration: InputDecoration(labelText: "Name"),
+                        decoration: InputDecoration(labelText: "Name *"),
                         maxLines: 1,
                         initialValue: '',
                         onChanged: (value) {
@@ -53,7 +53,7 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         }
                     ),
                     TextFormField(
-                        decoration: InputDecoration(labelText: sek == 'sek2' ? 'Stufe' : 'Klasse'),
+                        decoration: InputDecoration(labelText: sek == 'sek2' ? 'Stufe*' : 'Klasse *'),
                         maxLines: 1,
                         initialValue: '',
                         onChanged: (value) {
@@ -65,7 +65,7 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         }
                     ),
                     TextFormField(
-                        decoration: InputDecoration(labelText: sek == 'sek2' ? 'Stufenleitung' : 'Klassenleitung'),
+                        decoration: InputDecoration(labelText: sek == 'sek2' ? 'Stufenleitung *' : 'Klassenleitung *'),
                         maxLines: 1,
                         initialValue: '',
                         onChanged: (value) {
@@ -73,7 +73,7 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         }
                     ),
                     TextFormField(
-                        decoration: InputDecoration(labelText: 'E-Mail-Adresse'),
+                        decoration: InputDecoration(labelText: 'E-Mail-Adresse *'),
                         maxLines: 1,
                         initialValue: '',
                         onChanged: (value) {
@@ -89,12 +89,34 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         }
                     ),
                     Padding(
-                        padding: EdgeInsets.only(left: 0, top: 50, right: 0, bottom: 60),
+                      padding: EdgeInsets.only(left: 0, top: 20, right: 0, bottom: 0),
+                      child: Text("Alle Felder mit einem * sind Pflichtfelder")
+                    ),
+                    Padding(
+                        padding: EdgeInsets.only(left: 0, top: 20, right: 0, bottom: 0),
+                        child: Text(info)
+                    ),
+                    Padding(
+                        padding: EdgeInsets.only(left: 0, top: 30, right: 0, bottom: 60),
                         child: ElevatedButton(
                             child: Text('Krankmeldung absenden', style: TextStyle(fontSize: 20)),
                             onPressed: () async {
-                              await API.of(context).requests.sendKrankmeldung(sek, name, grade, klasse, leader, email, remarks);
-                              KAGAppState().goToPage(AppPage.CALENDAR);
+                              if (
+                                (
+                                  (sek == 'sek1' && klasse != '')
+                                  ||
+                                  (sek == 'sek2' && grade != '')
+                                )
+                                &&
+                                (name != '' && leader != '' && email != '')
+                              ) {
+                                //await API.of(context).requests.sendKrankmeldung(sek, name, grade, klasse, leader, email, remarks);
+                                KAGAppState.app.goToPage(AppPage.CALENDAR);
+                              } else {
+                                setState(() {
+                                  info = 'Es wurden nicht alle Pflichtfelder ausgefüllt!';
+                                });
+                              }
                             }
                         )
                     )

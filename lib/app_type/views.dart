@@ -7,7 +7,6 @@ import 'app_type_managment.dart';
 List<AppPage> AppViews(AppType type) {
   switch (type) {
     case AppType.LOGGED_OUT:
-      print('Logged OUt');
       return [
         AppPage.HOME,
         AppPage.CALENDAR,
@@ -16,7 +15,6 @@ List<AppPage> AppViews(AppType type) {
         AppPage.PRIVACY_INFO
       ];
     case AppType.NORMAL:
-      print('Normal');
       return [
         AppPage.HOME,
         AppPage.CALENDAR,
@@ -39,7 +37,6 @@ List<AppPage> AppViews(AppType type) {
         AppPage.PRIVACY_INFO
       ];
     case AppType.MOBILE_SITE:
-      print('Mobile');
       return [
         AppPage.CALENDAR,
         AppPage.NEWS,
