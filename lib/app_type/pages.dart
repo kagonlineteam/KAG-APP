@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../Views/Calendar.dart'	as Calendar; // ignore: library_prefixes
-import '../Views/Home.dart'      as Home; // ignore: library_prefixes
-import '../Views/HomeworkPage.dart' as Homework; // ignore: library_prefixes
-import '../Views/Login.dart'     as Login; // ignore: library_prefixes
-import '../Views/News.dart'      as News; // ignore: library_prefixes
-import '../Views/RPlan.dart'     as RPlan; // ignore: library_prefixes
-import '../Views/User.dart'      as SPlan; // ignore: library_prefixes
-import '../Views/WebMail.dart'   as WebMail; // ignore: library_prefixes
+import '../Views/Calendar.dart'	          as Calendar; // ignore: library_prefixes
+import '../Views/Home.dart'               as Home; // ignore: library_prefixes
+import '../Views/HomeworkPage.dart'       as Homework; // ignore: library_prefixes
+import '../Views/Login.dart'              as Login; // ignore: library_prefixes
+import '../Views/News.dart'               as News; // ignore: library_prefixes
+import '../Views/RPlan.dart'              as RPlan; // ignore: library_prefixes
+import '../Views/User.dart'               as SPlan; // ignore: library_prefixes
+import '../Views/WebMail.dart'            as WebMail; // ignore: library_prefixes
+import '../Views/PrivacyInformation.dart' as PrivacyInfo; // ignore: library_prefixes
 
+import '../main.dart';
 import 'app_type_managment.dart';
 
 IconData getPageIcon(AppPage page) {
@@ -29,6 +31,8 @@ IconData getPageIcon(AppPage page) {
       return Icons.home_work_outlined;
     case AppPage.WEBMAIL:
       return Icons.mail;
+    case AppPage.PrivacyInfo:
+      return Icons.info;
     default:
       return Icons.question_mark;
   }
@@ -52,6 +56,8 @@ String getPageName(AppPage page) {
       return "Aufgaben";
     case AppPage.WEBMAIL:
       return "Mail";
+    case AppPage.PrivacyInfo:
+      return 'Impressum & Datenschutz';
     default:
       return "?";
   }
@@ -75,6 +81,8 @@ Widget getPageWidget(AppPage page) {
       return Homework.HomeworkView();
     case AppPage.WEBMAIL:
       return WebMail.WebMail();
+    case AppPage.PrivacyInfo:
+      return PrivacyInfo.PrivacyInformation();
     default:
       return Container();
   }

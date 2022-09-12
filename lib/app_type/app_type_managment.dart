@@ -46,7 +46,8 @@ enum AppPage {
   RPLAN,
   HOMEWORK,
   WEBMAIL,
-  LOGIN
+  LOGIN,
+  PrivacyInfo
 }
 
 enum AppType {
@@ -54,6 +55,7 @@ enum AppType {
   NORMAL,
   VPLAN_LOGGED_OUT,
   VPLAN,
+  MOBILE_LOGGED_OUT,
   MOBILE_SITE
 }
 
