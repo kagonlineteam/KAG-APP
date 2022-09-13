@@ -5,10 +5,10 @@ import '../Views/Home.dart'               as Home; // ignore: library_prefixes
 import '../Views/HomeworkPage.dart'       as Homework; // ignore: library_prefixes
 import '../Views/Login.dart'              as Login; // ignore: library_prefixes
 import '../Views/News.dart'               as News; // ignore: library_prefixes
+import '../Views/PrivacyInformation.dart' as PrivacyInfo; // ignore: library_prefixes
 import '../Views/RPlan.dart'              as RPlan; // ignore: library_prefixes
 import '../Views/User.dart'               as SPlan; // ignore: library_prefixes
 import '../Views/WebMail.dart'            as WebMail; // ignore: library_prefixes
-import '../Views/PrivacyInformation.dart' as PrivacyInfo; // ignore: library_prefixes
 
 import 'app_type_managment.dart';
 
