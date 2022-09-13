@@ -15,8 +15,8 @@ List<AppPage> AppViews(AppType type) {
       ];
     case AppType.NORMAL:
       return [
-        AppPage.HOME,
         AppPage.PrivacyInfo,
+        AppPage.HOME,
         AppPage.CALENDAR,
         AppPage.NEWS,
         AppPage.SPLAN,
@@ -33,21 +33,12 @@ List<AppPage> AppViews(AppType type) {
         AppPage.RPLAN,
         AppPage.SPLAN
       ];
-    case AppType.MOBILE_LOGGED_OUT:
+    case AppType.MOBILE_SITE:
       return [
         AppPage.PrivacyInfo,
         AppPage.CALENDAR,
         AppPage.NEWS,
         AppPage.LOGIN,
-      ];
-    case AppType.MOBILE_SITE:
-      return [
-        AppPage.PrivacyInfo,
-        AppPage.HOME,
-        AppPage.CALENDAR,
-        AppPage.NEWS,
-        AppPage.SPLAN,
-        AppPage.RPLAN
       ];
     default:
       return [];

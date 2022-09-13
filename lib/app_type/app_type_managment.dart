@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../api/api_models.dart';
 import 'pages.dart';
@@ -55,13 +56,13 @@ enum AppType {
   NORMAL,
   VPLAN_LOGGED_OUT,
   VPLAN,
-  MOBILE_LOGGED_OUT,
   MOBILE_SITE
 }
 
 AppTypeState getStateForUser(AppType type, KAGUser user) {
   List<AppPage> hide = [];
-  if (user == null || !user.mailConsent) hide.add(AppPage.WEBMAIL);
-  if (user == null || !user.homeworkConsent) hide.add(AppPage.HOMEWORK);
+  if (user == null || !user.mailConsent || kIsWeb) hide.add(AppPage.WEBMAIL);
+  if (user == null || !user.homeworkConsent || kIsWeb) hide.add(AppPage.HOMEWORK);
+  if (!kIsWeb) hide.add(AppPage.PrivacyInfo);
   return AppTypeState(type, hide);
 }

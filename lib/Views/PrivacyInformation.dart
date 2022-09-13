@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import './News.dart';
 import '../api/api.dart';
 import '../api/api_models.dart';
 
@@ -27,7 +26,7 @@ class PrivacyInformation extends StatelessWidget {
                   future: API.of(context).requests.getArticle('Y7XsWhFGGgeITfmmEAjo7'),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return TabBarPage(snapshot.data);
+                      return _PrivacyTabBarPage(snapshot.data);
                     } else {
                       return Center(
                         child: Text('Die Datenschutzerklärung konnte nicht geladen werden. Bitte überprüfen sie ihre Internetverbindung'),
@@ -39,7 +38,7 @@ class PrivacyInformation extends StatelessWidget {
                   future: API.of(context).requests.getArticle('mz8Ohncn3OiFJPRfhwsGr'),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return TabBarPage(snapshot.data);
+                      return _PrivacyTabBarPage(snapshot.data);
                     } else {
                       return Center(
                         child: Text('Das Impressum konnte nicht geladen werden. Bitte überprüfen sie ihre Internetverbindung'),
@@ -54,8 +53,8 @@ class PrivacyInformation extends StatelessWidget {
   }
 }
 
-class TabBarPage extends StatelessWidget {
-  TabBarPage(this.content);
+class _PrivacyTabBarPage extends StatelessWidget {
+  _PrivacyTabBarPage(this.content);
 
   final Article content;
 

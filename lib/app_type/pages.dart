@@ -10,7 +10,6 @@ import '../Views/User.dart'               as SPlan; // ignore: library_prefixes
 import '../Views/WebMail.dart'            as WebMail; // ignore: library_prefixes
 import '../Views/PrivacyInformation.dart' as PrivacyInfo; // ignore: library_prefixes
 
-import '../main.dart';
 import 'app_type_managment.dart';
 
 IconData getPageIcon(AppPage page) {
@@ -57,7 +56,7 @@ String getPageName(AppPage page) {
     case AppPage.WEBMAIL:
       return "Mail";
     case AppPage.PrivacyInfo:
-      return 'Impressum & Datenschutz';
+      return 'Datenschutz &\nImpressum';
     default:
       return "?";
   }
