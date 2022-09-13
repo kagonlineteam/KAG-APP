@@ -8,6 +8,7 @@ List<AppPage> AppViews(AppType type) {
   switch (type) {
     case AppType.LOGGED_OUT:
       return [
+        AppPage.PrivacyInfo,
         AppPage.HOME,
         AppPage.CALENDAR,
         AppPage.NEWS,
@@ -26,10 +27,12 @@ List<AppPage> AppViews(AppType type) {
       ];
     case AppType.VPLAN_LOGGED_OUT:
       return [
+        AppPage.PrivacyInfo,
         AppPage.LOGIN
       ];
     case AppType.VPLAN:
       return [
+        AppPage.PrivacyInfo,
         AppPage.RPLAN,
         AppPage.SPLAN
       ];
