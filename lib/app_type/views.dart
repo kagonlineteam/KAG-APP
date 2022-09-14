@@ -8,40 +8,40 @@ List<AppPage> AppViews(AppType type) {
   switch (type) {
     case AppType.LOGGED_OUT:
       return [
-        AppPage.PrivacyInfo,
         AppPage.HOME,
         AppPage.CALENDAR,
         AppPage.NEWS,
         AppPage.LOGIN,
+        AppPage.PRIVACY_INFO
       ];
     case AppType.NORMAL:
       return [
-        AppPage.PrivacyInfo,
         AppPage.HOME,
         AppPage.CALENDAR,
         AppPage.NEWS,
         AppPage.SPLAN,
         AppPage.RPLAN,
         AppPage.HOMEWORK,
-        AppPage.WEBMAIL
+        AppPage.WEBMAIL,
+        AppPage.PRIVACY_INFO
       ];
     case AppType.VPLAN_LOGGED_OUT:
       return [
-        AppPage.PrivacyInfo,
-        AppPage.LOGIN
+        AppPage.LOGIN,
+        AppPage.PRIVACY_INFO
       ];
     case AppType.VPLAN:
       return [
-        AppPage.PrivacyInfo,
         AppPage.RPLAN,
-        AppPage.SPLAN
+        AppPage.SPLAN,
+        AppPage.PRIVACY_INFO
       ];
     case AppType.MOBILE_SITE:
       return [
-        AppPage.PrivacyInfo,
         AppPage.CALENDAR,
         AppPage.NEWS,
         AppPage.LOGIN,
+        AppPage.PRIVACY_INFO
       ];
     default:
       return [];

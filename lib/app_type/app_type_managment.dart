@@ -48,7 +48,7 @@ enum AppPage {
   HOMEWORK,
   WEBMAIL,
   LOGIN,
-  PrivacyInfo
+  PRIVACY_INFO
 }
 
 enum AppType {
@@ -61,8 +61,8 @@ enum AppType {
 
 AppTypeState getStateForUser(AppType type, KAGUser user) {
   List<AppPage> hide = [];
-  if (user == null || !user.mailConsent || kIsWeb) hide.add(AppPage.WEBMAIL);
-  if (user == null || !user.homeworkConsent || kIsWeb) hide.add(AppPage.HOMEWORK);
-  if (!kIsWeb) hide.add(AppPage.PrivacyInfo);
+  if (user == null || !user.mailConsent) hide.add(AppPage.WEBMAIL);
+  if (user == null || !user.homeworkConsent) hide.add(AppPage.HOMEWORK);
+  if (!kIsWeb) hide.add(AppPage.PRIVACY_INFO);
   return AppTypeState(type, hide);
 }

@@ -30,7 +30,7 @@ IconData getPageIcon(AppPage page) {
       return Icons.home_work_outlined;
     case AppPage.WEBMAIL:
       return Icons.mail;
-    case AppPage.PrivacyInfo:
+    case AppPage.PRIVACY_INFO:
       return Icons.info;
     default:
       return Icons.question_mark;
@@ -55,7 +55,7 @@ String getPageName(AppPage page) {
       return "Aufgaben";
     case AppPage.WEBMAIL:
       return "Mail";
-    case AppPage.PrivacyInfo:
+    case AppPage.PRIVACY_INFO:
       return 'Datenschutz &\nImpressum';
     default:
       return "?";
@@ -80,7 +80,7 @@ Widget getPageWidget(AppPage page) {
       return Homework.HomeworkView();
     case AppPage.WEBMAIL:
       return WebMail.WebMail();
-    case AppPage.PrivacyInfo:
+    case AppPage.PRIVACY_INFO:
       return PrivacyInfo.PrivacyInformation();
     default:
       return Container();

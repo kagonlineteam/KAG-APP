@@ -13,12 +13,13 @@ class PrivacyInformation extends StatelessWidget {
         length: 2,
         child: Scaffold(
             appBar: AppBar(
-              title: TabBar(
+              title: Text("Datenschutz & Impressum"),
+              bottom: TabBar(
                 tabs: [
                   Tab(text: 'Datenschutz'),
                   Tab(text: 'Impressum',)
                 ],
-              ),
+              )
             ),
             body: TabBarView(
               children: [

@@ -99,7 +99,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    controller = TabController(initialIndex: getTabControllerIndex(), length: _type.length, vsync: this); // If you change something here change it in build, too.
+    controller = TabController(initialIndex: 0, length: _type.length, vsync: this); // If you change something here change it in build, too.
     API.of(context).hasLoginCredentials().then((loggedIn) => {
       if (loggedIn) {
         setState(() => type = getLoggedInAppType(API.of(context).requests.getUserInfo()))
@@ -178,23 +178,13 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
     });
   }
 
-  int getTabControllerIndex() {
-    if (kIsWeb) {
-      if (KAGAppState.app.appType == AppType.MOBILE_SITE) return 2;
-      return 1;
-    }
-    return 0;
-  }
-
   static AppTypeState getDefaultAppType() {
     AppType type = AppType.LOGGED_OUT;
     if (kIsWeb) {
       if (webinfo.window.location.host.startsWith("vplan.")) type =  AppType.VPLAN_LOGGED_OUT;
       if (webinfo.window.location.host.startsWith("m.")) type = AppType.MOBILE_SITE;
     }
-    // We have the logged out states
-    // so we do not need to hide anything.
-    return AppTypeState(type, []);
+    return getStateForUser(type, null);
   }
 
   static AppTypeState getLoggedInAppType(KAGUser user) {
