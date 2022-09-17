@@ -235,7 +235,7 @@ class NewsWidget extends StatelessWidget {
   final HomeScreenData homeScreenData;
   NewsWidget({Key key, this.homeScreenData}) : super(key: key);
 
-  //News news;
+  News news;
 
   @override
   Widget build(BuildContext context) {
@@ -262,17 +262,19 @@ class NewsListItem extends StatelessWidget {
     return
     Container(
       margin: EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          border: Border.all(
-          width: 3,
-          color: Color.fromARGB(47, 0, 0, 0),
-        ),
+      decoration: BoxDecoration(
+        color: Color.fromARGB(33, 0, 0, 0),
         borderRadius: BorderRadius.all(Radius.circular(16))
       ),
-      child: ListTile(
-        title: Text(news.title, style: TextStyle(fontSize: 24)),
-        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(news))),
-      ),
+      child: Column(
+        children: [
+          Text("Test"),
+          ListTile(
+          title: Text(news.title, style: TextStyle(fontSize: 24)),
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(news))),
+          ),
+        ],
+      )
     );
   }
 }
