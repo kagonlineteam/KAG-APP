@@ -98,15 +98,18 @@ class BottomNavigationBarMenu extends StatelessWidget {
     List<Widget> widgets = [];
 
     for (AppPage page in pages) {
-      widgets.add(Tab(
-        text: getPageName(page),
-        icon: Icon(getPageIcon(page), size: 35),
-      ));
+      widgets.add(
+        Tab(
+          text: getPageName(page),
+          icon: Icon(getPageIcon(page), size: 35),
+        )
+      );
     }
 
     return Container(
       color: Color.fromRGBO(244, 244, 244, 1),
       child: TabBar(
+        labelPadding: EdgeInsets.symmetric(horizontal: 0),
         controller: controller,
         tabs: widgets,
         isScrollable: false,
@@ -115,7 +118,7 @@ class BottomNavigationBarMenu extends StatelessWidget {
         indicatorColor: Colors.transparent,
         labelStyle: TextStyle(
           fontSize: 10,
-        ),
+        )
       ),
     );
   }
