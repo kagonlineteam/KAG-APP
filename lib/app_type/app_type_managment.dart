@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 import '../api/api_models.dart';
 import 'pages.dart';
@@ -46,7 +47,8 @@ enum AppPage {
   RPLAN,
   HOMEWORK,
   WEBMAIL,
-  LOGIN
+  LOGIN,
+  PRIVACY_INFO
 }
 
 enum AppType {
@@ -59,7 +61,8 @@ enum AppType {
 
 AppTypeState getStateForUser(AppType type, KAGUser user) {
   List<AppPage> hide = [];
-  if (user == null || !user.mailConsent) hide.add(AppPage.WEBMAIL);
-  if (user == null || !user.homeworkConsent) hide.add(AppPage.HOMEWORK);
+  if (user == null || !user.mailConsent || kIsWeb) hide.add(AppPage.WEBMAIL);
+  if (user == null || !user.homeworkConsent || kIsWeb) hide.add(AppPage.HOMEWORK);
+  if (!kIsWeb) hide.add(AppPage.PRIVACY_INFO);
   return AppTypeState(type, hide);
 }

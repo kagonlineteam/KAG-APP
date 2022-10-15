@@ -184,9 +184,7 @@ class KAGAppState extends State<KAGApp> with TickerProviderStateMixin {
       if (webinfo.window.location.host.startsWith("vplan.")) type =  AppType.VPLAN_LOGGED_OUT;
       if (webinfo.window.location.host.startsWith("m.")) type = AppType.MOBILE_SITE;
     }
-    // We have the logged out states
-    // so we do not need to hide anything.
-    return AppTypeState(type, []);
+    return getStateForUser(type, null);
   }
 
   static AppTypeState getLoggedInAppType(KAGUser user) {
