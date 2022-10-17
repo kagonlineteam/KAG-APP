@@ -71,7 +71,7 @@ Future<String> getFromAPI(
 }
 
 Future<String> postToAPI(String path, Map<String, String> params, String body, String jwt) async {
-  response = await client.post(Uri.https(API, path, params),
+  var response = await client.post(Uri.https(API, path, params),
     headers: jwt != null ? {"Authorization": "Bearer $jwt"} : null,
     body: body);
   if (response.statusCode != 200) throw Exception("HTTP Status is not 200");
