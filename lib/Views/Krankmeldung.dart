@@ -9,7 +9,8 @@ class KrankmeldungWidget extends StatefulWidget {
 
 class KrankmeldungState extends State<KrankmeldungWidget> {
 
-  String sek = '', name = '', grade = '', klasse = '', leader = '', email = '', remarks = '', info = '';
+  String sek = '', name = '', grade = '', leader = '', email = '', remarks = '', info = '';
+  bool checked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -57,11 +58,7 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         maxLines: 1,
                         initialValue: '',
                         onChanged: (value) {
-                          if (sek == 'sek2') {
-                            grade = value;
-                          } else {
-                            klasse = value;
-                          }
+                          grade = value;
                         }
                     ),
                     TextFormField(
@@ -89,6 +86,19 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         }
                     ),
                     Padding(
+                        padding: EdgeInsets.only(left: 0, top: 20, right: 0, bottom: 0),
+                        child: CheckboxListTile(
+                          title: Text("Ich habe den Datenschutzhinweis zur Kenntnis genommen und willige in die Verarbeitung der von mir angegebenen Daten ein. *", style: TextStyle(fontSize: 15)),
+                          value: checked,
+                          onChanged: (value) {
+                            setState(() {
+                              checked = value;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                        )
+                    ),
+                    Padding(
                       padding: EdgeInsets.only(left: 0, top: 20, right: 0, bottom: 0),
                       child: Text("Alle Felder mit einem * sind Pflichtfelder")
                     ),
@@ -101,17 +111,15 @@ class KrankmeldungState extends State<KrankmeldungWidget> {
                         child: ElevatedButton(
                             child: Text('Krankmeldung absenden', style: TextStyle(fontSize: 20)),
                             onPressed: () async {
-                              if (
-                                (
-                                  (sek == 'sek1' && klasse != '')
-                                  ||
-                                  (sek == 'sek2' && grade != '')
-                                )
-                                &&
-                                (name != '' && leader != '' && email != '')
-                              ) {
-                                //await API.of(context).requests.sendKrankmeldung(sek, name, grade, klasse, leader, email, remarks);
-                                KAGAppState.app.goToPage(AppPage.CALENDAR);
+                              if ( (sek == 'sek1' || sek == "sek2") && (grade != '' && name != '' && leader != '' && email != '' && checked) ) {
+                                var response = await API.of(context).requests.sendKrankmeldung(sek, name, grade, leader, email, remarks);
+                                if (response == false) {
+                                  setState(() {
+                                    info = 'Es ist ein Fehler aufgetreten';
+                                  });
+                                } else {
+                                  KAGAppState.app.goToPage(AppPage.CALENDAR);
+                                }
                               } else {
                                 setState(() {
                                   info = 'Es wurden nicht alle Pflichtfelder ausgefüllt!';

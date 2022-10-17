@@ -524,7 +524,7 @@ class _APIRequests {
     http.postToAPI("/homework/v1/report/$id", {}, jsonEncode({}), _api._authenticationUser.getJWT());
   }
 
-  Future<bool> sendKrankmeldung(String sek, String name, String grade, String klasse, String leader, String email, String remarks) async {
+  Future<bool> sendKrankmeldung(String sek, String name, String grade, String leader, String email, String remarks) async {
     await _actionExecution(APIAction.SEND_KRANKMELDUNG);
     var response = await http.postToAPI(
         '/krankmeldung',
@@ -532,7 +532,7 @@ class _APIRequests {
         jsonEncode({
           "sek": sek,
           "name": name,
-          if (sek == 'sek1') "klasse": klasse,
+          if (sek == 'sek1') "klasse": grade,
           if (sek == 'sek1') "klassenleitung": leader,
           if (sek == 'sek2') "stufe": grade,
           if (sek == 'sek2') "stufenleitung": leader,
@@ -540,11 +540,7 @@ class _APIRequests {
           "bemerkungen": remarks
         }),
         null);
-    if (response != null) {
-      final jsonResponse = json.decode(response)['message'];
-      return (jsonResponse == "Krankmeldung erfolgreich abgegeben" ? true : false);
-    }
-    return false;
+    return response != null;
   }
 }
 
