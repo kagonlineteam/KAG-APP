@@ -130,7 +130,7 @@ class HomeList extends StatelessWidget {
         if (kIsWeb) splittingContainer,
         if (kIsWeb) ImpressumWidget(),
         splittingContainer,
-        NewsWidget(homeScreenData: homeScreenData),
+        NewsWidget(homeScreenData),
     ],
     );
   }
@@ -233,9 +233,7 @@ class ShortcutsWidget extends StatelessWidget {
 
 class NewsWidget extends StatelessWidget {
   final HomeScreenData homeScreenData;
-  NewsWidget({Key key, this.homeScreenData}) : super(key: key);
-
-  News news;
+  NewsWidget(this.homeScreenData, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -246,8 +244,15 @@ class NewsWidget extends StatelessWidget {
           child: Text("News", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
           margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
           alignment: Alignment.centerLeft,
+        ),
+          ListView.builder(
+          shrinkWrap: true,
+          itemCount: 3,
+          itemBuilder: (context, index) {
+            return NewsListItem(homeScreenData.news[index]);
+          },
         )
-      ]..addAll(homeScreenData.news.map((news) => NewsListItem(news))),
+      ]
     );
   }
 }
@@ -261,14 +266,14 @@ class NewsListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return
     Container(
-      margin: EdgeInsets.all(2),
+      margin: EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Color.fromARGB(33, 0, 0, 0),
         borderRadius: BorderRadius.all(Radius.circular(16))
       ),
       child: Column(
         children: [
-          Text("Test"),
+          if(news.hasImage) Image(image: CachedNetworkImageProvider("https://${api_raw.API}/files/${news.imageID}")),
           ListTile(
           title: Text(news.title, style: TextStyle(fontSize: 24)),
           onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(news))),
