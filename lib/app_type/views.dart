@@ -38,8 +38,8 @@ List<AppPage> AppViews(AppType type) {
       ];
     case AppType.MOBILE_SITE:
       return [
-        AppPage.CALENDAR,
         AppPage.NEWS,
+        AppPage.CALENDAR,
         AppPage.LOGIN,
         AppPage.PRIVACY_INFO
       ];
