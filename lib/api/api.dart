@@ -22,7 +22,8 @@ enum APIAction {
   MAIL,
   GET_SPLAN,
   GET_EXAM,
-  GET_HOMEWORK
+  GET_HOMEWORK,
+  SEND_KRANKMELDUNG
 }
 
 class API {
@@ -77,6 +78,8 @@ class API {
         return true;
       case APIAction.GET_HOMEWORK:
         return true;
+      case APIAction.SEND_KRANKMELDUNG:
+        return false;
     }
     return true;
   }
@@ -519,6 +522,25 @@ class _APIRequests {
   void reportHomework(int id) async {
     await _actionExecution(APIAction.GET_HOMEWORK);
     http.postToAPI("/homework/v1/report/$id", {}, jsonEncode({}), _api._authenticationUser.getJWT());
+  }
+
+  Future<bool> sendKrankmeldung(String sek, String name, String grade, String leader, String email, String remarks) async {
+    await _actionExecution(APIAction.SEND_KRANKMELDUNG);
+    var response = await http.postToAPI(
+        '/krankmeldung',
+        null,
+        jsonEncode({
+          "sek": sek,
+          "name": name,
+          if (sek == 'sek1') "klasse": grade,
+          if (sek == 'sek1') "klassenleitung": leader,
+          if (sek == 'sek2') "stufe": grade,
+          if (sek == 'sek2') "stufenleitung": leader,
+          "email": email,
+          "bemerkungen": remarks
+        }),
+        null);
+    return response != null;
   }
 }
 

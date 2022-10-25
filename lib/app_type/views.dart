@@ -40,6 +40,7 @@ List<AppPage> AppViews(AppType type) {
       return [
         AppPage.NEWS,
         AppPage.CALENDAR,
+        AppPage.KRANKMELDUNG,
         AppPage.LOGIN,
         AppPage.PRIVACY_INFO
       ];

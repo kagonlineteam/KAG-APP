@@ -45,6 +45,7 @@ enum AppPage {
   NEWS,
   SPLAN,
   RPLAN,
+  KRANKMELDUNG,
   HOMEWORK,
   WEBMAIL,
   LOGIN,
