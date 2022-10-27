@@ -366,7 +366,7 @@ class _APIRequests {
     params['view'] = "preview-with-image";
 
     String response = await http.getFromAPI("articles", params, null);
-    print(response);
+    //print(response);
     var jsonResponse = jsonDecode(response)["entities"];
     //if (!jsonResponse.containsKey('entities')) return null;
     List<models.Article> articles = [];

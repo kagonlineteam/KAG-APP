@@ -267,9 +267,10 @@ class NewsListItem extends StatelessWidget {
     return
     Container(
       margin: EdgeInsets.all(20),
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         color: Color.fromARGB(33, 0, 0, 0),
-        borderRadius: BorderRadius.all(Radius.circular(16))
+        borderRadius: BorderRadius.all(Radius.circular(25))
       ),
       child: Column(
         children: [
