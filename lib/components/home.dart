@@ -246,6 +246,7 @@ class NewsWidget extends StatelessWidget {
           alignment: Alignment.centerLeft,
         ),
           ListView.builder(
+          scrollDirection: Axis.horizontal,
           shrinkWrap: true,
           itemCount: 3,
           itemBuilder: (context, index) {
