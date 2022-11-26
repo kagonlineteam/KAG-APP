@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:js';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -6,11 +7,19 @@ import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 
+import 'Views/Calendar.dart';
+import 'Views/Login.dart';
+import 'Views/News.dart';
+import 'Views/PrivacyInformation.dart';
 import 'api/api.dart';
 import 'api/api_helpers.dart';
 import 'api/api_models.dart';
+import 'api/api_raw.dart';
 import 'app_type/app_type_managment.dart';
+import 'app_type/views.dart';
+import 'components/home.dart';
 import 'components/menu.dart';
+import 'components/news.dart';
 import 'dynimports/webinfo.dart' if (dart.library.html) 'dart:html' as webinfo;
 import 'push_notifications.dart';
 
@@ -57,6 +66,12 @@ void main() async {
             )
           ),
           home: KAGApp(),
+          routes: {
+            '/datenschutz': (context) => PrivacyInformation(),
+            '/kalender': (context) => Calendar(),
+            '/login': (context) => Login(),
+            //'/artikeldetail': (context) => ArticleDetail(originArticle),
+          },
         ), api),
   );
   // Push Notification Stuff

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -312,7 +313,7 @@ class _TableCalendarState extends State<_TableCalendar> with TickerProviderState
             child: MaterialButton(
               child: Text(event.title, style: TextStyle(color: Colors.white),),
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CalendarDetail(event))),
+                MaterialPageRoute(builder: (context) => CalendarDetail(event), settings: RouteSettings(name: "kalenderdetail"))),
             ),
           ))
               .toList(),
