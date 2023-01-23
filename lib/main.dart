@@ -67,7 +67,7 @@ void main() async {
           ),
           home: KAGApp(),
           routes: {
-            '/datenschutz': (context) => PrivacyInformation(),
+            '/impressum': (context) => PrivacyInformation(),
             '/kalender': (context) => Calendar(),
             '/login': (context) => Login(),
             //'/artikeldetail': (context) => ArticleDetail(originArticle),
