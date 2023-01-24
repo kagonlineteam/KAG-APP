@@ -24,7 +24,7 @@ class LoginState extends State<Login>
       username = new TextEditingController();
 
   // ignore: non_constant_identifier_names
-  static final Uri PASSWORD_RESET_URL = Uri.https("atrium.kag-langenfeld.de", "login/forgot_password.php");
+  static final Uri PASSWORD_RESET_URL = Uri.https("account.kag-langenfeld.de", "realms/kag-langenfeld/login-actions/reset-credentials", {"client_id": "account-console", "tab_id": "vDnCPd2rl6Q"});
 
   Future login() async {
     showDialog(
