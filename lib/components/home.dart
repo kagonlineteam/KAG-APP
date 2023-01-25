@@ -353,14 +353,14 @@ class ImpressumWidget extends StatelessWidget {
           child: Text("Impressum"),
           onPressed: () async {
             Article article = await API.of(context).requests.getArticle("mz8Ohncn3OiFJPRfhwsGr");
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article), settings: RouteSettings(name: "impressum")));
           },
         ),
         MaterialButton(
           child: Text("Datenschutz"),
           onPressed: () async {
             Article article = await API.of(context).requests.getArticle("6m90o7IQw3UGhxaoD9g3GB");
-            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleDetail(article), settings: RouteSettings(name: "datenschutz")));
           },
         )
       ],
