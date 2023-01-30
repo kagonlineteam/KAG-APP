@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../Views/News.dart';
 import 'api.dart';
 import 'api_models.dart';
 import 'api_raw.dart' show getFromAPI;
@@ -136,11 +137,12 @@ Map<dynamic, dynamic> getDecodedJWT(String jwt) {
 }
 
 class HomeScreenData {
-  HomeScreenData(this.termine, this.countdown, this.exams);
+  HomeScreenData(this.termine, this.countdown, this.exams, this.news);
 
   final List<Termin> termine;
   final Termin countdown;
   final List<Exam> exams;
+  final List<Article> news;
 
   DateTime get ferienDatetime => countdown.startDatetime;
 }
