@@ -527,7 +527,7 @@ class _APIRequests {
   Future<bool> sendKrankmeldung(String sek, String name, String grade, String leader, String email, String remarks) async {
     await _actionExecution(APIAction.SEND_KRANKMELDUNG);
     var response = await http.postToAPI(
-        '/krankmeldung',
+        '/krankmeldung/v1/krankmeldung',
         null,
         jsonEncode({
           "sek": sek,
