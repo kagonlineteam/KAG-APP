@@ -42,6 +42,7 @@ List<AppPage> AppViews(AppType type) {
         AppPage.CALENDAR,
         AppPage.KRANKMELDUNG,
         AppPage.LOGIN,
+        AppPage.WEBMAIL,
         AppPage.PRIVACY_INFO
       ];
     default:
