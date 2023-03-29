@@ -49,7 +49,6 @@ void main() async {
               onSurface: Colors.black,
               surface: Colors.white
             ),
-            backgroundColor: Color.fromRGBO(47, 47, 47, 1),
             elevatedButtonTheme: ElevatedButtonThemeData(
               style: ButtonStyle(
                 backgroundColor: MaterialStateColor.resolveWith((states) => Color.fromRGBO(0, 82, 1, 1))
