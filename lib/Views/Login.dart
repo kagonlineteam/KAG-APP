@@ -163,7 +163,7 @@ class LoginState extends State<Login>
             padding: const EdgeInsets.fromLTRB(70, 35, 70, 5),
             width: 500,
             height: 300,
-            color: Theme.of(context).backgroundColor.withOpacity(0.9),
+            color: Theme.of(context).colorScheme.background.withOpacity(0.9),
             child: inputs,
           ) : inputs,
         ),
