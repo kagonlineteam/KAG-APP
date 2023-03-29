@@ -10,6 +10,6 @@ jobs:
     - uses: actions/checkout@v2
     - uses: subosito/flutter-action@v1
       with:
-        channel: 'flutter-2.8-candidate.20'
+        channel: 'flutter-2.13-candidate.10'
     - run: flutter analyze
     - run: flutter test
