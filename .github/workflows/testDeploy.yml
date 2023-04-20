@@ -13,7 +13,7 @@ jobs:
     steps:
       # Setup Enviroment
       - uses: actions/checkout@v1
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '2.10.0'
       - run: flutter pub get
