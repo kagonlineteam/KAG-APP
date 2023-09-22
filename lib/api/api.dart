@@ -158,7 +158,7 @@ class _APIRequests {
         await _api.preloadUserData();
       } else {
         _api._authenticationUser.setLoginCredentials(null, null, callLogout: false); // We do not call Logout, because it is not a manual logout
-        KAGAppState.app.setLoggedOut();
+        if (KAGAppState.app != null) KAGAppState.app.setLoggedOut();
         throw Exception("Login to API is not possible");
       }
     }
